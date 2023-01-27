@@ -1,4 +1,4 @@
-import React, {ReactText} from 'react';
+import React, {ReactText, useMemo} from 'react';
 import {
     Box,
     BoxProps,
@@ -17,7 +17,7 @@ import {
 import {FiMenu,} from 'react-icons/fi';
 import {IconType} from 'react-icons';
 import {ConnectWallet} from "@thirdweb-dev/react";
-import {SideBarDataProps} from "../constants/SideBarData";
+import {SideBarData, SideBarDataProps} from "../constants/SideBarData";
 import {useRouter} from "next/router";
 
 
@@ -98,7 +98,12 @@ interface NavItemProps extends FlexProps {
 
 const NavItem = ({icon, children, link, ...rest}: NavItemProps) => {
     const {pathname} = useRouter()
-    const isSelect = pathname.replace('/', '') === link.replace('/', '')
+    const isSelect = useMemo(() => {
+        if (pathname == '/' && link == SideBarData[0].link) {
+            return true
+        }
+        return pathname.replace('/', '') === link.replace('/', '')
+    }, [pathname, link])
     return (
         <Link href={link} style={{textDecoration: 'none'}} _focus={{boxShadow: 'none'}}>
             <Flex
