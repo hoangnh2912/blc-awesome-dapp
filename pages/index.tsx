@@ -1,14 +1,8 @@
-import type {NextPage} from 'next'
-import BaseLayout from "../layouts/BaseLayout";
+import type { NextPage } from "next";
+import TokenCreator from "./token-creator";
 
 const Home: NextPage = () => {
+  return <TokenCreator />;
+};
 
-
-    return (
-        <BaseLayout>
-            <div>Wellcome</div>
-        </BaseLayout>
-    )
-}
-
-export default Home
+export default Home;
