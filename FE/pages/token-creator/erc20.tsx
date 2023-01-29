@@ -22,29 +22,29 @@ const Erc20 = () => {
 
   const { onOpen, setTxResult } = useModal();
   const deployToken = async () => {
-    if (onOpen) onOpen();
-    try {
-      if (!sdk) return;
-      const contract = await sdk.getContract(
-        "0xFc2dBC410dB016A36223FCe55f8c7BcD947A30b9",
-        ABI.Deployer.abi
-      );
-      const tx = await contract.call("deploy", "0x00");
-      setTxResult({
-        reason: "",
-        txHash: tx.receipt.transactionHash,
-        receipt: tx.receipt,
-        txState: "success",
-      });
-    } catch (error: any) {
-      setTxResult({
-        reason: error.message,
-        txHash: "",
-        receipt: {},
-        txState: "error",
-      });
-    } finally {
-    }
+    // if (onOpen) onOpen();
+    // try {
+    //   if (!sdk) return;
+    //   const contract = await sdk.getContract(
+    //     "0xFc2dBC410dB016A36223FCe55f8c7BcD947A30b9",
+    //     ABI.Deployer.abi
+    //   );
+    //   const tx = await contract.call("deploy", "0x00");
+    //   setTxResult({
+    //     reason: "",
+    //     txHash: tx.receipt.transactionHash,
+    //     receipt: tx.receipt,
+    //     txState: "success",
+    //   });
+    // } catch (error: any) {
+    //   setTxResult({
+    //     reason: error.message,
+    //     txHash: "",
+    //     receipt: {},
+    //     txState: "error",
+    //   });
+    // } finally {
+    // }
   };
 
   return (
