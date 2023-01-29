@@ -11,7 +11,6 @@ type ErrorResponse = {
 };
 type OptionResponse<T> = SuccessResponse<T> | ErrorResponse;
 
-
 function onError(error: any, message?: string): ErrorResponse {
   let msg = null;
   if (typeof error == 'object') {
@@ -26,9 +25,9 @@ function onError(error: any, message?: string): ErrorResponse {
   };
 }
 
-function onSuccess<T = any>(data?: T): SuccessResponse<T> {
+function onSuccess<T>(data?: T): SuccessResponse<T> {
   return {
-    data: data || {},
+    data: data || null,
     success: true,
     message: Constant.NETWORK_STATUS_MESSAGE.SUCCESS,
   };
@@ -49,4 +48,4 @@ function onSuccessArray<T>(data: T[]): SuccessResponse<T[]> {
   };
 }
 
-export { onError, onSuccess, onSuccessArray, OptionResponse  };
+export { onError, onSuccess, onSuccessArray, OptionResponse };

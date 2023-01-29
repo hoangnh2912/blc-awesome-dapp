@@ -38,7 +38,6 @@
       "@app/*": ["./src/app/*"],
       "@constants": ["./src/constants/index.ts"],
       "@middlewares": ["./src/middlewares/index.ts"],
-      "@schemas": ["./src/schemas/index.ts"],
       "@providers": ["./src/providers/index.ts"]
     }
   }
