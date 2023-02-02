@@ -39,7 +39,11 @@ const ModalComponent = () => {
           <>
             <ModalHeader>Transaction success</ModalHeader>
             <ModalCloseButton />
-            <ModalBody>TxHash: {txResult.txHash}</ModalBody>
+            {txResult.content.map((item, index) => (
+              <ModalBody>
+                <Text fontWeight="bold">{item.title}</Text>: {item.value}
+              </ModalBody>
+            ))}
           </>
         );
       case "error":
@@ -56,7 +60,7 @@ const ModalComponent = () => {
       default:
         break;
     }
-  }, [txResult.txState, txResult.txHash, txResult.reason]);
+  }, [txResult.txState, txResult.content, txResult.reason]);
 
   useEffect(() => {
     if (!!isOpen) clearTxResult();

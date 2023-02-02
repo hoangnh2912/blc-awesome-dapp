@@ -4,13 +4,16 @@ import ModalComponent from "../components/modal";
 type TxStateProps = "pending" | "success" | "error";
 
 interface TxResultProps {
-  txHash: string;
+  content: {
+    title: string;
+    value: string | React.ReactNode;
+  }[];
   reason: string;
   receipt: any;
   txState: TxStateProps;
 }
 export const defaultTxResult: TxResultProps = {
-  txHash: "",
+  content: [],
   reason: "",
   receipt: {},
   txState: "pending",

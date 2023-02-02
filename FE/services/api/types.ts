@@ -17,4 +17,4 @@ interface VerifyInput {
   address: string;
 }
 
-export { ERC20Input, VerifyInput, ERC20Output };
+export { ERC20Input, ERC20Output, VerifyInput };
