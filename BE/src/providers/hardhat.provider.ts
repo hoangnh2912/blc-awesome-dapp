@@ -38,7 +38,7 @@ const verify = async (
     return true;
   } catch (error) {
     await sleep(3000);
-    return verify(uuid, name, address, tryTime + 1);
+    return await verify(uuid, name, address, tryTime + 1);
   }
 };
 

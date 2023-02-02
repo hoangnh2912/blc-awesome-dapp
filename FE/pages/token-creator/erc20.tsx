@@ -64,6 +64,8 @@ const Erc20 = () => {
               title: "Transaction Hash",
               value: (
                 <a
+                  target="_blank"
+                  rel="noopener noreferrer"
                   href={`https://goerli.etherscan.io/tx/${tx.receipt.transactionHash}`}
                 >
                   {tx.receipt.transactionHash}
@@ -74,6 +76,8 @@ const Erc20 = () => {
               title: "Contract Address",
               value: (
                 <a
+                  target="_blank"
+                  rel="noopener noreferrer"
                   href={`https://goerli.etherscan.io/address/${contractAddressDeployed}`}
                 >
                   {contractAddressDeployed}
