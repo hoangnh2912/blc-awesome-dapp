@@ -4,7 +4,13 @@ import { SideBarData } from "../constants/data/sidebar";
 import { useEffect, useState } from "react";
 import Sidebar from "../components/sidebar";
 
-const BaseLayout = ({ children }: { children: React.ReactNode }) => {
+const BaseLayout = ({
+  children,
+  selectTabIndex = 0,
+}: {
+  children: React.ReactNode;
+  selectTabIndex?: number;
+}) => {
   const [isBrowser, setIsBrowser] = useState(false);
 
   useEffect(() => {
@@ -20,7 +26,11 @@ const BaseLayout = ({ children }: { children: React.ReactNode }) => {
       <Head>
         <title>Awesome DApp</title>
       </Head>
-      <Sidebar selectIndex={0} content={children} data={SideBarData} />
+      <Sidebar
+        selectIndex={selectTabIndex}
+        content={children}
+        data={SideBarData}
+      />
     </div>
   );
 };
