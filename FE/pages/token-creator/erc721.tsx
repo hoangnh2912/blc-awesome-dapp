@@ -19,11 +19,11 @@ import { useModal } from "../../components/modal";
 import ABI from "../../constants/abi";
 import ApiServices from "../../services/api";
 
-const Erc20 = () => {
+const Erc721 = () => {
   const [accessControlState, setAccessControlState] = useBoolean(false);
   const [name, setName] = useState("MyToken");
   const [symbol, setSymbol] = useState("mtk");
-  const [preMint, setPreMint] = useState(0);
+  const [baseURI, setBaseURI] = useState("");
   const [features, setFeatures] = useState<(string | number)[]>([]);
 
   const sdk = useSDK();
@@ -34,6 +34,7 @@ const Erc20 = () => {
       Mintable: "Mintable",
       Burnable: "Burnable",
       Pausable: "Pausable",
+      URI_Storage: "URI_Storage",
     }),
     []
   );
@@ -49,13 +50,14 @@ const Erc20 = () => {
   const { onOpen, setTxResult } = useModal();
   const deployToken = async () => {
     try {
-      const res = await ApiServices.tokenCreator.erc20({
+      const res = await ApiServices.tokenCreator.erc721({
         name,
         symbol,
-        initial_supply: preMint,
+        baseURI,
         is_burnable: features.includes(featuresMap.Burnable),
         is_mintable: features.includes(featuresMap.Mintable),
         is_pausable: features.includes(featuresMap.Pausable),
+        is_uri_storage: features.includes(featuresMap.URI_Storage),
       });
       const { bytecode, name: contractName, uuid } = res.data.data;
       if (onOpen) onOpen();
@@ -162,12 +164,11 @@ const Erc20 = () => {
         </InputGroup>
         <InputGroup>
           <InputLeftAddon>
-            <p>Pre-mint</p>
+            <p>Base URI</p>
           </InputLeftAddon>
           <Input
-            value={preMint}
-            onChange={(e) => setPreMint(parseInt(e.target.value))}
-            type={"number"}
+            value={baseURI}
+            onChange={(e) => setBaseURI(e.target.value)}
             placeholder=""
             defaultValue={18}
           />
@@ -185,6 +186,7 @@ const Erc20 = () => {
             <Checkbox value={featuresMap.Mintable}>Mintable</Checkbox>
             <Checkbox value={featuresMap.Burnable}>Burnable</Checkbox>
             <Checkbox value={featuresMap.Pausable}>Pausable</Checkbox>
+            <Checkbox value={featuresMap.URI_Storage}>URI Storage</Checkbox>
           </Stack>
         </CheckboxGroup>
       </Stack>
@@ -219,4 +221,4 @@ const Erc20 = () => {
   );
 };
 
-export default Erc20;
+export default Erc721;

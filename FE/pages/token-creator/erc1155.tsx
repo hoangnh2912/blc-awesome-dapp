@@ -19,11 +19,10 @@ import { useModal } from "../../components/modal";
 import ABI from "../../constants/abi";
 import ApiServices from "../../services/api";
 
-const Erc20 = () => {
+const Erc1155 = () => {
   const [accessControlState, setAccessControlState] = useBoolean(false);
   const [name, setName] = useState("MyToken");
-  const [symbol, setSymbol] = useState("mtk");
-  const [preMint, setPreMint] = useState(0);
+  const [uri, setUri] = useState("");
   const [features, setFeatures] = useState<(string | number)[]>([]);
 
   const sdk = useSDK();
@@ -34,13 +33,15 @@ const Erc20 = () => {
       Mintable: "Mintable",
       Burnable: "Burnable",
       Pausable: "Pausable",
+      Updatable_URI: "Updatable_URI",
     }),
     []
   );
   useEffect(() => {
     if (
       features.includes(featuresMap.Mintable) ||
-      features.includes(featuresMap.Pausable)
+      features.includes(featuresMap.Pausable) ||
+      features.includes(featuresMap.Updatable_URI)
     ) {
       setAccessControlState.on();
     }
@@ -49,13 +50,13 @@ const Erc20 = () => {
   const { onOpen, setTxResult } = useModal();
   const deployToken = async () => {
     try {
-      const res = await ApiServices.tokenCreator.erc20({
+      const res = await ApiServices.tokenCreator.erc1155({
         name,
-        symbol,
-        initial_supply: preMint,
+        uri,
         is_burnable: features.includes(featuresMap.Burnable),
         is_mintable: features.includes(featuresMap.Mintable),
         is_pausable: features.includes(featuresMap.Pausable),
+        is_updatable_uri: features.includes(featuresMap.Updatable_URI),
       });
       const { bytecode, name: contractName, uuid } = res.data.data;
       if (onOpen) onOpen();
@@ -152,22 +153,11 @@ const Erc20 = () => {
         </InputGroup>
         <InputGroup>
           <InputLeftAddon>
-            <p>Token Symbol</p>
+            <p>URI</p>
           </InputLeftAddon>
           <Input
-            value={symbol}
-            onChange={(e) => setSymbol(e.target.value)}
-            placeholder=""
-          />
-        </InputGroup>
-        <InputGroup>
-          <InputLeftAddon>
-            <p>Pre-mint</p>
-          </InputLeftAddon>
-          <Input
-            value={preMint}
-            onChange={(e) => setPreMint(parseInt(e.target.value))}
-            type={"number"}
+            value={uri}
+            onChange={(e) => setUri(e.target.value)}
             placeholder=""
             defaultValue={18}
           />
@@ -185,6 +175,7 @@ const Erc20 = () => {
             <Checkbox value={featuresMap.Mintable}>Mintable</Checkbox>
             <Checkbox value={featuresMap.Burnable}>Burnable</Checkbox>
             <Checkbox value={featuresMap.Pausable}>Pausable</Checkbox>
+            <Checkbox value={featuresMap.Updatable_URI}>Updatable URI</Checkbox>
           </Stack>
         </CheckboxGroup>
       </Stack>
@@ -203,7 +194,6 @@ const Erc20 = () => {
         >
           <Stack spacing={5} direction="row">
             <Radio value="Ownable">Ownable</Radio>
-            {/* <Radio value="Roles">Roles</Radio> */}
           </Stack>
         </RadioGroup>
       </Stack>
@@ -219,4 +209,4 @@ const Erc20 = () => {
   );
 };
 
-export default Erc20;
+export default Erc1155;

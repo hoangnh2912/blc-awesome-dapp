@@ -2,7 +2,13 @@ import { Constant, logger, onError, onSuccess, OptionResponse } from '@constants
 import { SignatureMiddleware } from '@middlewares';
 import { Singleton } from '@providers';
 import { Body, Controller, Middlewares, Post, Route, Security, Tags } from 'tsoa';
-import { ERC20Input, ERC20Output, VerifyInput } from './token-creator';
+import {
+  ERC1155Input,
+  ERC20Input,
+  ERC721Input,
+  TokenCreatorOutput,
+  VerifyInput,
+} from './token-creator';
 
 const { NETWORK_STATUS_CODE, NETWORK_STATUS_MESSAGE } = Constant;
 @Tags('token-creator')
@@ -14,9 +20,37 @@ export class TokenCreatorController extends Controller {
   public async erc20(
     @Body()
     payload: ERC20Input,
-  ): Promise<OptionResponse<ERC20Output>> {
+  ): Promise<OptionResponse<TokenCreatorOutput>> {
     try {
       return onSuccess(await Singleton.getTokenCreatorInstance().erc20(payload));
+    } catch (error) {
+      logger.error(error);
+      this.setStatus(NETWORK_STATUS_CODE.INTERNAL_SERVER_ERROR);
+      return onError(NETWORK_STATUS_MESSAGE.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @Post('erc721')
+  public async erc721(
+    @Body()
+    payload: ERC721Input,
+  ): Promise<OptionResponse<TokenCreatorOutput>> {
+    try {
+      return onSuccess(await Singleton.getTokenCreatorInstance().erc721(payload));
+    } catch (error) {
+      logger.error(error);
+      this.setStatus(NETWORK_STATUS_CODE.INTERNAL_SERVER_ERROR);
+      return onError(NETWORK_STATUS_MESSAGE.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @Post('erc1155')
+  public async erc1155(
+    @Body()
+    payload: ERC1155Input,
+  ): Promise<OptionResponse<TokenCreatorOutput>> {
+    try {
+      return onSuccess(await Singleton.getTokenCreatorInstance().erc1155(payload));
     } catch (error) {
       logger.error(error);
       this.setStatus(NETWORK_STATUS_CODE.INTERNAL_SERVER_ERROR);

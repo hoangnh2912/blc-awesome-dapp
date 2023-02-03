@@ -1,5 +1,11 @@
 import { Axios, AxiosRequestConfig, AxiosResponse } from "axios";
-import { ERC20Input, ERC20Output, VerifyInput } from "./types";
+import {
+  ERC20Input,
+  TokenCreatorOutput,
+  ERC721Input,
+  VerifyInput,
+  ERC1155Input,
+} from "./types";
 type SuccessResponse<T> = {
   data: T;
   message: string;
@@ -29,7 +35,11 @@ const AxiosGet = <O>(url: string, config?: AxiosRequestConfig) =>
 const ApiServices = {
   tokenCreator: {
     erc20: (payload: ERC20Input) =>
-      AxiosPost<ERC20Output>("/token-creator/erc20", payload),
+      AxiosPost<TokenCreatorOutput>("/token-creator/erc20", payload),
+    erc721: (payload: ERC721Input) =>
+      AxiosPost<TokenCreatorOutput>("/token-creator/erc721", payload),
+    erc1155: (payload: ERC1155Input) =>
+      AxiosPost<TokenCreatorOutput>("/token-creator/erc1155", payload),
     verify: (payload: VerifyInput) =>
       AxiosPost<boolean>("/token-creator/verify-contract", payload),
   },

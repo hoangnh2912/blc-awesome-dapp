@@ -2,6 +2,8 @@ import type { NextPage } from "next";
 import BaseLayout from "../layouts/base";
 import { Box, Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
 import Erc20 from "./token-creator/erc20";
+import Erc721 from "./token-creator/erc721";
+import Erc1155 from "./token-creator/erc1155";
 
 const TokenCreator: NextPage = () => {
   return (
@@ -18,10 +20,10 @@ const TokenCreator: NextPage = () => {
               <Erc20 />
             </TabPanel>
             <TabPanel>
-              <p>ERC721!</p>
+              <Erc721 />
             </TabPanel>
             <TabPanel>
-              <p>ERC1155!</p>
+              <Erc1155 />
             </TabPanel>
           </TabPanels>
         </Tabs>

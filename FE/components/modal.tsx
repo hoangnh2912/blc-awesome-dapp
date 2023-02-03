@@ -40,8 +40,11 @@ const ModalComponent = () => {
             <ModalHeader>Transaction success</ModalHeader>
             <ModalCloseButton />
             {txResult.content.map((item, index) => (
-              <ModalBody>
-                <Text fontWeight="bold">{item.title}</Text>: {item.value}
+              <ModalBody key={index}>
+                <Text fontWeight="bold">{item.title}</Text>
+                <Text color={"green"} fontSize={"sm"}>
+                  {item.value}
+                </Text>
               </ModalBody>
             ))}
           </>

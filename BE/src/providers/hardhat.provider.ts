@@ -7,16 +7,16 @@ const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 const runCommand = (command: string) => {
   return new Promise((resolve, reject) => {
     exec(command, function (error, stdout, stderr) {
-      console.log(stdout);
-      resolve(stdout);
       if (stderr) {
         console.error(stderr);
         reject(stderr);
       }
-      if (error !== null) {
+      if (error) {
         console.error(error);
         reject(error);
       }
+      console.log(stdout);
+      resolve(stdout);
     });
   });
 };
