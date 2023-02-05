@@ -28,6 +28,7 @@ interface TokenCreatorOutput {
   bytecode: string;
   name: string;
   uuid: string;
+  abi: any;
 }
 interface VerifyInput {
   uuid: string;

@@ -1,3 +1,5 @@
+import { ContractInterface } from "ethers";
+
 interface ERC20Input {
   name: string;
   symbol: string;
@@ -27,6 +29,7 @@ interface TokenCreatorOutput {
   bytecode: string;
   name: string;
   uuid: string;
+  abi: ContractInterface;
 }
 interface VerifyInput {
   uuid: string;

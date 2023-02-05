@@ -1,1 +1,1 @@
-{"Deployer":{"address":"0x70f9c80C2D93bc159036269D515e7b73FAdA5EF9","abi":[{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"addr","type":"address"}],"name":"Deployed","type":"event"},{"inputs":[{"internalType":"bytes","name":"_bytecode","type":"bytes"}],"name":"deploy","outputs":[{"internalType":"address","name":"addr","type":"address"}],"stateMutability":"payable","type":"function"}],"contractName":"Deployer"}}
+{}

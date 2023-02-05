@@ -9,7 +9,7 @@ interface TxResultProps {
     value: string | React.ReactNode;
   }[];
   reason: string;
-  receipt: any;
+  receipt?: any;
   txState: TxStateProps;
 }
 export const defaultTxResult: TxResultProps = {

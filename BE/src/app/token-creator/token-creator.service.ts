@@ -76,12 +76,13 @@ export class TokenCreatorService {
         ${contractBody}
     }`;
     const finalContract = topContract + importLibraries + contractBase;
-    const { bytecode, nameUnique } = await this.compileContract(contractName, finalContract);
+    const { bytecode, nameUnique, abi } = await this.compileContract(contractName, finalContract);
 
     return {
       bytecode: bytecode,
       name: contractName,
       uuid: nameUnique,
+      abi,
     };
   }
 
@@ -182,12 +183,13 @@ export class TokenCreatorService {
         ${contractBody}
     }`;
     const finalContract = topContract + importLibraries + contractBase;
-    const { bytecode, nameUnique } = await this.compileContract(contractName, finalContract);
+    const { bytecode, nameUnique, abi } = await this.compileContract(contractName, finalContract);
 
     return {
       bytecode: bytecode,
       name: contractName,
       uuid: nameUnique,
+      abi,
     };
   }
   async erc1155({
@@ -278,12 +280,13 @@ export class TokenCreatorService {
         ${contractBody}
     }`;
     const finalContract = topContract + importLibraries + contractBase;
-    const { bytecode, nameUnique } = await this.compileContract(contractName, finalContract);
+    const { bytecode, nameUnique, abi } = await this.compileContract(contractName, finalContract);
 
     return {
       bytecode: bytecode,
       name: contractName,
       uuid: nameUnique,
+      abi,
     };
   }
   async compileContract(contractName: string, contractContent: string) {
@@ -299,6 +302,7 @@ export class TokenCreatorService {
     return {
       bytecode: jsonCompiled.bytecode,
       nameUnique,
+      abi: jsonCompiled.abi,
     };
   }
 
