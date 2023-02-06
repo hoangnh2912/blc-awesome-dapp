@@ -17,7 +17,6 @@ import { useSDK } from "@thirdweb-dev/react";
 import { useEffect, useMemo, useState } from "react";
 import { IoIosSettings } from "react-icons/io";
 import { useModal } from "../../components/modal";
-import ABI from "../../constants/abi";
 import ApiServices from "../../services/api";
 import { deployContract } from "../../services/thirdweb";
 

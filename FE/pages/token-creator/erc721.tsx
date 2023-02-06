@@ -7,6 +7,7 @@ import {
   InputLeftAddon,
   Radio,
   RadioGroup,
+  Spinner,
   Stack,
   Text,
   useBoolean,
@@ -16,8 +17,8 @@ import { useSDK } from "@thirdweb-dev/react";
 import { useEffect, useMemo, useState } from "react";
 import { IoIosSettings } from "react-icons/io";
 import { useModal } from "../../components/modal";
-import ABI from "../../constants/abi";
 import ApiServices from "../../services/api";
+import { deployContract } from "../../services/thirdweb";
 
 const Erc721 = () => {
   const [accessControlState, setAccessControlState] = useBoolean(false);
@@ -59,19 +60,11 @@ const Erc721 = () => {
         is_pausable: features.includes(featuresMap.Pausable),
         is_uri_storage: features.includes(featuresMap.URI_Storage),
       });
-      const { bytecode, name: contractName, uuid } = res.data.data;
+      const { bytecode, name: contractName, uuid, abi } = res.data.data;
       if (onOpen) onOpen();
       try {
         if (!sdk) return;
-        const contract = await sdk.getContract(
-          ABI.Deployer.address,
-          ABI.Deployer.abi
-        );
-        const tx = await contract.call("deploy", bytecode);
-        console.log(tx);
-        const contractAddressDeployed = tx.receipt.events.find(
-          (e: any) => e.event === "Deployed"
-        ).args[0];
+        const contractDeployed = await deployContract(sdk, abi, bytecode, []);
         setTxResult({
           reason: "",
           content: [
@@ -81,9 +74,32 @@ const Erc721 = () => {
                 <a
                   target="_blank"
                   rel="noopener noreferrer"
-                  href={`https://goerli.etherscan.io/tx/${tx.receipt.transactionHash}`}
+                  href={`https://goerli.etherscan.io/tx/${contractDeployed.transactionHash}`}
                 >
-                  {tx.receipt.transactionHash}
+                  {contractDeployed.transactionHash}
+                </a>
+              ),
+            },
+            {
+              title: "Contract Address",
+              value: <Spinner color="green.500" />,
+            },
+          ],
+          txState: "success",
+        });
+        const { contractAddress } = await contractDeployed.deployed();
+        setTxResult({
+          reason: "",
+          content: [
+            {
+              title: "Transaction Hash",
+              value: (
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href={`https://goerli.etherscan.io/tx/${contractDeployed.transactionHash}`}
+                >
+                  {contractDeployed.transactionHash}
                 </a>
               ),
             },
@@ -93,21 +109,21 @@ const Erc721 = () => {
                 <a
                   target="_blank"
                   rel="noopener noreferrer"
-                  href={`https://goerli.etherscan.io/address/${contractAddressDeployed}`}
+                  href={`https://goerli.etherscan.io/address/${contractAddress}`}
                 >
-                  {contractAddressDeployed}
+                  {contractAddress}
                 </a>
               ),
             },
           ],
-          receipt: tx.receipt,
           txState: "success",
         });
-        await ApiServices.tokenCreator.verify({
-          uuid,
-          address: contractAddressDeployed,
-          name: contractName,
-        });
+        if (contractAddress)
+          await ApiServices.tokenCreator.verify({
+            uuid,
+            address: contractAddress,
+            name: contractName,
+          });
       } catch (error: any) {
         setTxResult({
           reason: error.message,
