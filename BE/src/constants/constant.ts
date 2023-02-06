@@ -60,7 +60,7 @@ const uuid = () => {
     u += c == '-' || c == '4' ? c : h[v];
     rb = i % 8 == 0 ? (Math.random() * 0xffffffff) | 0 : rb >> 4;
   }
-  return u;
+  return `x${u}`.split('-').join('');
 };
 
 const Constant = {
