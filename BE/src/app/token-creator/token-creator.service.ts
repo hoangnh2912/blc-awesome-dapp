@@ -299,7 +299,14 @@ export class TokenCreatorService {
         'utf8',
       ),
     );
-    fs.unlinkSync(`${Constant.ROOT_PATH}/artifacts/build-info`);
+    fs.rmSync(`${Constant.ROOT_PATH}/artifacts/build-info`, {
+      recursive: true,
+      force: true,
+    });
+    fs.rmSync(`${Constant.ROOT_PATH}/cache`, {
+      recursive: true,
+      force: true,
+    });
     return {
       bytecode: jsonCompiled.bytecode,
       nameUnique,
@@ -312,10 +319,6 @@ export class TokenCreatorService {
     if (isSuccess) {
       fs.unlinkSync(`${Constant.ROOT_PATH}/contracts/${payload.uuid}.sol`);
       fs.rmSync(`${Constant.ROOT_PATH}/artifacts/contracts/${payload.uuid}.sol`, {
-        recursive: true,
-        force: true,
-      });
-      fs.rmSync(`${Constant.ROOT_PATH}/cache`, {
         recursive: true,
         force: true,
       });
