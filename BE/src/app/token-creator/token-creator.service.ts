@@ -299,6 +299,7 @@ export class TokenCreatorService {
         'utf8',
       ),
     );
+    fs.unlinkSync(`${Constant.ROOT_PATH}/artifacts/build-info`);
     return {
       bytecode: jsonCompiled.bytecode,
       nameUnique,
