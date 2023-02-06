@@ -33,7 +33,7 @@ const verify = async (
   if (tryTime > 5) return false;
   try {
     await runCommand(
-      `hardhat verify --contract contracts/${uuid}.sol:${name}  --network goerli ${address}`,
+      `yarn hardhat verify --contract contracts/${uuid}.sol:${name}  --network goerli ${address}`,
     );
     return true;
   } catch (error) {
