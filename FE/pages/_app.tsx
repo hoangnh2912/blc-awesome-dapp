@@ -1,21 +1,9 @@
-import "../styles/globals.css";
-import type { AppProps } from "next/app";
-import {
-  Button,
-  ChakraProvider,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalContextProvider,
-  ModalFooter,
-  ModalHeader,
-  useModal,
-  Text,
-  useDisclosure,
-} from "@chakra-ui/react";
+import { ChakraProvider } from "@chakra-ui/react";
 import { ChainId, ThirdwebProvider } from "@thirdweb-dev/react";
+import type { AppProps } from "next/app";
 import { ModalProvider } from "../contexts/modal";
+import "../styles/globals.css";
+import Head from "next/head";
 
 function App({ Component, pageProps }: AppProps) {
   return (
