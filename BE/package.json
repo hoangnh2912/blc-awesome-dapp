@@ -8,7 +8,7 @@
     "start": "node build/src/server.js",
     "format": "yarn prettier --write .",
     "dev": "concurrently \"nodemon\" \"nodemon -x tsoa spec-and-routes\"",
-    "postinstall": "patch-package && node-prune",
+    "postinstall": "patch-package",
     "compile": "truffle compile",
     "verify": "node ./scripts/verify.js",
     "deploy": "yarn compile && hardhat run --network goerli ./scripts/deploy.js"
@@ -19,7 +19,7 @@
     "@nomiclabs/hardhat-ethers": "^2.0.6",
     "@nomiclabs/hardhat-etherscan": "^3.0.3",
     "@nomiclabs/hardhat-waffle": "^2.0.3",
-    "@openzeppelin/contracts": "4.7.3",
+    "@openzeppelin/contracts": "4.8.1",
     "@truffle/hdwallet-provider": "^2.0.8",
     "axios": "^0.27.2",
     "chai": "^4.3.6",
