@@ -157,69 +157,61 @@ const Erc721 = () => {
   return (
     <Stack>
       <Text as={"b"}>Settings</Text>
-      <Stack direction={"row"}>
-        <InputGroup>
-          <InputLeftAddon>
-            <p>Token Name</p>
-          </InputLeftAddon>
+      <Stack direction={["column", "row"]}>
+        <Stack flex={1}>
+          <Text>Token Name</Text>
           <Input
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder=""
           />
-        </InputGroup>
-        <InputGroup>
-          <InputLeftAddon>
-            <p>Token Symbol</p>
-          </InputLeftAddon>
+        </Stack>
+        <Stack flex={1}>
+          <Text>Token Symbol</Text>
           <Input
             value={symbol}
             onChange={(e) => setSymbol(e.target.value)}
             placeholder=""
           />
-        </InputGroup>
-        <InputGroup>
-          <InputLeftAddon>
-            <p>Base URI</p>
-          </InputLeftAddon>
+        </Stack>
+        <Stack flex={1}>
+          <Text>Base URI</Text>
           <Input
             value={baseURI}
             onChange={(e) => setBaseURI(e.target.value)}
             placeholder=""
             defaultValue={18}
           />
-        </InputGroup>
+        </Stack>
       </Stack>
       <p />
       <Text as={"b"}>Features</Text>
-      <Stack direction={"row"}>
-        <CheckboxGroup
-          value={features}
-          onChange={setFeatures}
-          colorScheme="green"
-        >
-          <Stack spacing={[1, 5]} direction={["row"]}>
-            <Checkbox value={featuresMap.Mintable}>Mintable</Checkbox>
-            <Checkbox value={featuresMap.Burnable}>Burnable</Checkbox>
-            <Checkbox value={featuresMap.Pausable}>Pausable</Checkbox>
-            <Checkbox value={featuresMap.URI_Storage}>URI Storage</Checkbox>
-          </Stack>
-        </CheckboxGroup>
-      </Stack>
-      <Stack direction={"row"}>
+      <CheckboxGroup
+        value={features}
+        onChange={setFeatures}
+        colorScheme="green"
+      >
+        <Stack spacing={[1, 5]} direction={["column", "row"]}>
+          <Checkbox value={featuresMap.Mintable}>Mintable</Checkbox>
+          <Checkbox value={featuresMap.Burnable}>Burnable</Checkbox>
+          <Checkbox value={featuresMap.Pausable}>Pausable</Checkbox>
+          <Checkbox value={featuresMap.URI_Storage}>URI Storage</Checkbox>
+        </Stack>
+      </CheckboxGroup>
+      <Stack direction={["column", "row"]}>
         <Text as={"b"}>Access Control</Text>
         <Checkbox
           onChange={onChangeCheckBoxAccessControl}
           isChecked={accessControlState}
         />
       </Stack>
-      <Stack direction={"row"}>
+      <Stack direction={["column", "row"]}>
         <RadioGroup
           isDisabled={!accessControlState}
           colorScheme={"green"}
           defaultValue="Ownable"
         >
-          <Stack spacing={5} direction="row">
+          <Stack spacing={5} direction={["column", "row"]}>
             <Radio value="Ownable">Ownable</Radio>
             {/* <Radio value="Roles">Roles</Radio> */}
           </Stack>

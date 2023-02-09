@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "deploy": "scp -i ./scimta.pem -r .next ubuntu@165.232.170.40:/home/ubuntu/blc-awesome-dapp/FE",
     "start": "next start",
     "lint": "next lint"
   },

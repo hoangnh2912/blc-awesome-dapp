@@ -1,1 +1,1 @@
-yarn next start -H 0.0.0.0
+sudo yarn next start -H 0.0.0.0 -p 80

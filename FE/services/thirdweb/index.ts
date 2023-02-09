@@ -18,7 +18,6 @@ const deployContract = async (
         deployed: () =>
           new Promise((resolveDeployed, _rejectDeployed) => {
             const callBackDeployed = (eventDeployed: DeployEvent) => {
-              console.log(eventDeployed);
               if (eventDeployed.status == "completed") {
                 sdk.deployer.removeAllDeployListeners();
                 resolveDeployed(eventDeployed);
