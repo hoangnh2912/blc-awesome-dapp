@@ -315,14 +315,18 @@ export class TokenCreatorService {
   }
 
   async verifyContract(payload: VerifyInput) {
-    const isSuccess = await verify(payload.uuid, payload.name, payload.address);
-    if (isSuccess) {
+    const verifyUrl = await verify(payload.uuid, payload.name, payload.address);
+    if (verifyUrl) {
       fs.unlinkSync(`${Constant.ROOT_PATH}/contracts/${payload.uuid}.sol`);
+      fs.rmSync(`${Constant.ROOT_PATH}/cache`, {
+        recursive: true,
+        force: true,
+      });
       fs.rmSync(`${Constant.ROOT_PATH}/artifacts/contracts/${payload.uuid}.sol`, {
         recursive: true,
         force: true,
       });
     }
-    return isSuccess;
+    return verifyUrl;
   }
 }

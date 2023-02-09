@@ -4,7 +4,7 @@ import { exec } from 'child_process';
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-const runCommand = (command: string) => {
+const runCommand = (command: string): Promise<string> => {
   return new Promise((resolve, reject) => {
     exec(command, function (error, stdout, stderr) {
       if (stderr) {
@@ -29,13 +29,14 @@ const verify = async (
   name: string,
   address: string,
   tryTime: number = 0,
-): Promise<boolean> => {
-  if (tryTime > 5) return false;
+): Promise<string | undefined> => {
+  if (tryTime > 5) return undefined;
   try {
-    await runCommand(
+    const outputLogs = await runCommand(
       `yarn hardhat verify --contract contracts/${uuid}.sol:${name} --network mumbai ${address}`,
     );
-    return true;
+    const verifyUrl = outputLogs.split('\n').find(log => log.includes('https://'));
+    return verifyUrl;
   } catch (error) {
     await sleep(3000);
     return await verify(uuid, name, address, tryTime + 1);
