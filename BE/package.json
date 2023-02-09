@@ -11,7 +11,7 @@
     "postinstall": "patch-package && node-prune",
     "compile": "truffle compile",
     "verify": "node ./scripts/verify.js",
-    "deploy": "yarn compile && hardhat run --network goerli ./scripts/deploy.js"
+    "deploy": "yarn compile && hardhat run --network mumbai ./scripts/deploy.js"
   },
   "author": "",
   "license": "ISC",

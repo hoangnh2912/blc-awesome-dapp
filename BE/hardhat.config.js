@@ -16,7 +16,7 @@ module.exports = {
     },
   },
   networks: {
-    goerli: {
+    mumbai: {
       url: process.env.NETWORK_RPC,
       accounts: [`${PRIVATE_KEY}`],
     },

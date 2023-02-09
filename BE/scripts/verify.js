@@ -26,7 +26,7 @@ async function main() {
     const inputStr = contract?.input ? contract.input.join(' ') : '';
     console.log('Start verifying contract: ' + contract.contractName, contract.address);
     await runCommand(
-      `hardhat verify --contract contracts/${contract.contractName}.sol:${contract.contractName}  --network goerli ${contract.address} ${inputStr}`,
+      `hardhat verify --contract contracts/${contract.contractName}.sol:${contract.contractName}  --network mumbai ${contract.address} ${inputStr}`,
     );
   }
 }

@@ -117,7 +117,7 @@ export class TokenCreatorService {
 
     let contractBody: Array<string> | string = [];
 
-    if (is_uri_storage) {
+    if (baseURI) {
       contractBody.push(`    function _baseURI() internal pure override returns (string memory) {
         return "${baseURI}";
     }`);
