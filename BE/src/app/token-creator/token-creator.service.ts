@@ -124,7 +124,16 @@ export class TokenCreatorService {
     }
 
     if (is_mintable) {
-      contractBody.push(`    function safeMint(address to, uint256 tokenId) public onlyOwner {
+      if (is_uri_storage)
+        contractBody.push(`    function safeMint(address to, uint256 tokenId, string memory uri)
+      public
+      onlyOwner
+  {
+      _safeMint(to, tokenId);
+      _setTokenURI(tokenId, uri);
+  }`);
+      else
+        contractBody.push(`    function safeMint(address to, uint256 tokenId) public onlyOwner {
         _safeMint(to, tokenId);
     }`);
     }
