@@ -5,6 +5,7 @@ import express, { Request, Response } from 'express';
 import swaggerUi from 'swagger-ui-express';
 import { RegisterRoutes } from '../build/routes';
 import { logger } from './constants';
+import { exec } from 'child_process';
 
 const app = express();
 app.use(express.json());
@@ -42,7 +43,16 @@ app.use('/docs', swaggerUi.serve, async (_req: Request, res: Response) => {
 });
 
 app.use('/push', async (_req: Request, _res: Response) => {
-  console.log('push');
+  _res.json({ message: 'push' });
+  exec('yarn && pm2 restart 0', function (error, stdout, stderr) {
+    console.log('CD: ' + stdout);
+    if (stderr) {
+      console.log('CD stderr: ' + stderr);
+    }
+    if (error) {
+      console.log('CD error: ' + error);
+    }
+  });
 });
 logger.info('Server start at ' + new Date().toUTCString());
 app.listen(parseInt(process.env.PORT || ''), '0.0.0.0', () => {
