@@ -44,15 +44,9 @@ app.use('/docs', swaggerUi.serve, async (_req: Request, res: Response) => {
 
 app.use('/push', async (_req: Request, _res: Response) => {
   _res.json({ message: 'push' });
-  exec('yarn && pm2 restart 0', function (error, stdout, stderr) {
-    console.log('CD: ' + stdout);
-    if (stderr) {
-      console.log('CD stderr: ' + stderr);
-    }
-    if (error) {
-      console.log('CD error: ' + error);
-    }
-  });
+  exec(
+    'cd ~/ubuntu/blc-awesome-dapp/BE && yarn && cd ~/ubuntu/blc-awesome-dapp/FE && yarn && pm2 restart 0 && pm2 restart 3',
+  );
 });
 logger.info('Server start at ' + new Date().toUTCString());
 app.listen(parseInt(process.env.PORT || ''), '0.0.0.0', () => {
