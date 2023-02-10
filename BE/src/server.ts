@@ -40,6 +40,10 @@ app.use(function (req, _res, next) {
 app.use('/docs', swaggerUi.serve, async (_req: Request, res: Response) => {
   return res.send(swaggerUi.generateHTML(await import('../build/swagger.json')));
 });
+
+app.use('/push', async (_req: Request, _res: Response) => {
+  console.log('push');
+});
 logger.info('Server start at ' + new Date().toUTCString());
 app.listen(parseInt(process.env.PORT || ''), '0.0.0.0', () => {
   logger.info(`Server running on port ${process.env.PORT}`);
