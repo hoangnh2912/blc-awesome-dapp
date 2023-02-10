@@ -11,7 +11,7 @@ export interface SideBarDataProps {
 }
 
 export const SideBarData: Array<SideBarDataProps> = [
-  { name: "Contract creator", icon: BsCoin, link: "/token-creator" },
+  { name: "Token creator", icon: BsCoin, link: "/token-creator" },
   { name: "AMM", icon: MdOutlineSwapHorizontalCircle, link: "/amm" },
   { name: "Staking", icon: GiPayMoney, link: "/staking" },
   { name: "Lending", icon: RxBlendingMode, link: "/lending" },
