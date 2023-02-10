@@ -11,7 +11,7 @@ type SuccessResponse<T> = {
   message: string;
   success: boolean;
 };
-const BASE_URL = "http://165.232.170.40:3001";
+const BASE_URL = "http://api.scimta.com";
 
 const axios = new Axios({
   baseURL: BASE_URL,
