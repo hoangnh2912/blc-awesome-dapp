@@ -16,7 +16,7 @@ import {
 import { useSDK } from "@thirdweb-dev/react";
 import { useEffect, useMemo, useState } from "react";
 import { IoIosSettings } from "react-icons/io";
-import { useModal } from "../../components/modal";
+import { useModalTransaction } from "../../components/modal-transaction";
 import ApiServices from "../../services/api";
 import { deployContract } from "../../services/thirdweb";
 
@@ -48,9 +48,10 @@ const Erc1155 = () => {
     }
   }, [features]);
 
-  const { onOpen, setTxResult } = useModal();
+  const { onOpen, setTxResult } = useModalTransaction();
   const deployToken = async () => {
     try {
+      if (onOpen) onOpen();
       const res = await ApiServices.tokenCreator.erc1155({
         name,
         uri,
@@ -60,7 +61,6 @@ const Erc1155 = () => {
         is_updatable_uri: features.includes(featuresMap.Updatable_URI),
       });
       const { bytecode, name: contractName, uuid, abi } = res.data.data;
-      if (onOpen) onOpen();
       try {
         if (!sdk) return;
         const contractDeployed = await deployContract(sdk, abi, bytecode, []);

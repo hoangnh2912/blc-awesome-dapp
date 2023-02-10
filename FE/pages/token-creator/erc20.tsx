@@ -16,7 +16,7 @@ import {
 import { useSDK } from "@thirdweb-dev/react";
 import { useEffect, useMemo, useState } from "react";
 import { IoIosSettings } from "react-icons/io";
-import { useModal } from "../../components/modal";
+import { useModalTransaction } from "../../components/modal-transaction";
 import ApiServices from "../../services/api";
 import { deployContract } from "../../services/thirdweb";
 
@@ -47,9 +47,10 @@ const Erc20 = () => {
     }
   }, [features]);
 
-  const { onOpen, setTxResult } = useModal();
+  const { onOpen, setTxResult } = useModalTransaction();
   const deployToken = async () => {
     try {
+      if (onOpen) onOpen();
       const res = await ApiServices.tokenCreator.erc20({
         name,
         symbol,
@@ -59,10 +60,8 @@ const Erc20 = () => {
         is_pausable: features.includes(featuresMap.Pausable),
       });
       const { bytecode, name: contractName, uuid, abi } = res.data.data;
-      if (onOpen) onOpen();
       try {
         if (!sdk) return;
-
         const contractDeployed = await deployContract(sdk, abi, bytecode, []);
         setTxResult({
           reason: "",
@@ -129,7 +128,6 @@ const Erc20 = () => {
           content: [],
           txState: "error",
         });
-      } finally {
       }
     } catch (error) {
       console.log(error);

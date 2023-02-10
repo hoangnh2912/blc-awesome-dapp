@@ -1,6 +1,4 @@
 import {
-  Button,
-  Center,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -12,15 +10,17 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useCallback, useContext, useEffect, useMemo } from "react";
-import ModalContext, { defaultTxResult } from "../contexts/modal";
+import ModalTransactionContext, {
+  defaultTxResult,
+} from "../contexts/modal-transaction";
 
-const ModalComponent = () => {
+const ModalTransactionComponent = () => {
   const {
     isOpen,
     onClose = () => {},
     txResult,
     setTxResult,
-  } = useContext(ModalContext);
+  } = useContext(ModalTransactionContext);
 
   const handleTxState = useMemo(() => {
     switch (txResult.txState) {
@@ -76,8 +76,9 @@ const ModalComponent = () => {
     <Modal
       isCentered
       isOpen={!!isOpen}
-      closeOnOverlayClick={false}
+      closeOnOverlayClick={txResult.txState != "pending"}
       onClose={onClose}
+      scrollBehavior="inside"
     >
       <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(10px) " />
       <ModalContent>
@@ -88,8 +89,8 @@ const ModalComponent = () => {
   );
 };
 
-const useModal = () => {
-  return useContext(ModalContext);
+const useModalTransaction = () => {
+  return useContext(ModalTransactionContext);
 };
-export { useModal };
-export default ModalComponent;
+export { useModalTransaction };
+export default ModalTransactionComponent;

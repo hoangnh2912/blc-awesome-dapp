@@ -1,6 +1,6 @@
 import { useDisclosure, UseDisclosureProps } from "@chakra-ui/react";
 import React from "react";
-import ModalComponent from "../components/modal";
+import ModalTransactionComponent from "../components/modal-transaction";
 type TxStateProps = "pending" | "success" | "error";
 
 interface TxResultProps {
@@ -18,7 +18,7 @@ export const defaultTxResult: TxResultProps = {
   receipt: {},
   txState: "pending",
 };
-const ModalContext = React.createContext<
+const ModalTransactionContext = React.createContext<
   UseDisclosureProps & {
     txResult: TxResultProps;
     setTxResult: React.Dispatch<React.SetStateAction<TxResultProps>>;
@@ -27,12 +27,16 @@ const ModalContext = React.createContext<
   txResult: defaultTxResult,
   setTxResult: () => {},
 });
-export const ModalProvider = ({ children }: { children: React.ReactNode }) => {
+export const ModalTransactionProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const disclosure = useDisclosure();
   const [txResult, setTxResult] =
     React.useState<TxResultProps>(defaultTxResult);
   return (
-    <ModalContext.Provider
+    <ModalTransactionContext.Provider
       value={{
         ...disclosure,
         txResult,
@@ -40,8 +44,8 @@ export const ModalProvider = ({ children }: { children: React.ReactNode }) => {
       }}
     >
       {children}
-      <ModalComponent />
-    </ModalContext.Provider>
+      <ModalTransactionComponent />
+    </ModalTransactionContext.Provider>
   );
 };
-export default ModalContext;
+export default ModalTransactionContext;
