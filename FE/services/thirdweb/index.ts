@@ -5,7 +5,7 @@ const deployContract = async (
   sdk: ThirdwebSDK,
   abi: ContractInterface,
   bytecode: string,
-  contractParams: string[] = []
+  contractParams: any[] = []
 ): Promise<
   DeployEvent & {
     deployed: () => Promise<DeployEvent>;
