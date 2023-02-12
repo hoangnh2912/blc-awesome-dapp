@@ -82,7 +82,7 @@ const ContractFunctionComponent = ({
                       duration: null,
                     });
                 }
-              } catch (error) {
+              } catch (error: any) {
                 if (!isWriteFunction)
                   toast({
                     title: `${error.message}`,
