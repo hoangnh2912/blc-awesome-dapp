@@ -1,7 +1,7 @@
 import { Constant, uuid } from '@constants';
-import { compile, verify } from '@providers';
+import { AxiosGet, compile, verify } from '@providers';
 import fs from 'fs';
-import { ERC1155Input, ERC20Input, ERC721Input, VerifyInput } from './token-creator';
+import { GetAbiInput, ERC1155Input, ERC20Input, ERC721Input, VerifyInput } from './token-creator';
 
 export class TokenCreatorService {
   async erc20({ name, initial_supply, is_burnable, is_mintable, is_pausable, symbol }: ERC20Input) {
@@ -300,6 +300,7 @@ export class TokenCreatorService {
   }
   async compileContract(contractName: string, contractContent: string) {
     const nameUnique = uuid();
+    fs.mkdirSync(`${Constant.ROOT_PATH}/contracts`, { recursive: true });
     fs.writeFileSync(`${Constant.ROOT_PATH}/contracts/${nameUnique}.sol`, contractContent, 'utf8');
     await compile();
     const jsonCompiled = JSON.parse(
@@ -337,5 +338,19 @@ export class TokenCreatorService {
       });
     }
     return verifyUrl;
+  }
+
+  async getAbi(payload: GetAbiInput) {
+    const res = await AxiosGet<string>('https://api-testnet.polygonscan.com/api', {
+      params: {
+        module: 'contract',
+        action: 'getabi',
+        address: payload.address,
+        apikey: process.env.API_KEY,
+      },
+    });
+    return {
+      abi: JSON.parse(res.data.result),
+    };
   }
 }

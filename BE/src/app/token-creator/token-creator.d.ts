@@ -1,3 +1,5 @@
+import { AbiItem } from 'web3-utils';
+
 interface ERC20Input {
   name: string;
   symbol: string;
@@ -35,5 +37,20 @@ interface VerifyInput {
   name: string;
   address: string;
 }
+interface GetAbiInput {
+  address: string;
+}
 
-export { ERC20Input, VerifyInput, ERC721Input, ERC1155Input, TokenCreatorOutput };
+interface GetAbiOutput {
+  abi: AbiItem[];
+}
+
+export {
+  ERC20Input,
+  VerifyInput,
+  ERC721Input,
+  ERC1155Input,
+  TokenCreatorOutput,
+  GetAbiInput,
+  GetAbiOutput,
+};

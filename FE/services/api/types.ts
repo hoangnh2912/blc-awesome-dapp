@@ -1,5 +1,5 @@
 import { ContractInterface } from "ethers";
-
+import { AbiItem } from "web3-utils";
 interface ERC20Input {
   name: string;
   symbol: string;
@@ -36,11 +36,19 @@ interface VerifyInput {
   name: string;
   address: string;
 }
+interface GetAbiInput {
+  address: string;
+}
 
+interface GetAbiOutput {
+  abi: AbiItem[];
+}
 export type {
   ERC20Input,
   TokenCreatorOutput,
   VerifyInput,
   ERC721Input,
   ERC1155Input,
+  GetAbiInput,
+  GetAbiOutput,
 };

@@ -5,13 +5,18 @@ import {
   ERC721Input,
   VerifyInput,
   ERC1155Input,
+  GetAbiInput,
+  GetAbiOutput,
 } from "./types";
 type SuccessResponse<T> = {
   data: T;
   message: string;
   success: boolean;
 };
-const BASE_URL = "http://api.scimta.com";
+const BASE_URL =
+  process.env.NODE_ENV == "development"
+    ? "http://localhost:3001"
+    : "http://api.scimta.com";
 
 const axios = new Axios({
   baseURL: BASE_URL,
@@ -42,6 +47,10 @@ const ApiServices = {
       AxiosPost<TokenCreatorOutput>("/token-creator/erc1155", payload),
     verify: (payload: VerifyInput) =>
       AxiosPost<boolean>("/token-creator/verify-contract", payload),
+    abi: (payload: GetAbiInput) =>
+      AxiosGet<GetAbiOutput>("/token-creator/abi", {
+        params: payload,
+      }),
   },
 };
 

@@ -3,13 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "ENV_MODE=development && next dev",
     "build": "next build",
     "deploy": "scp -i ~/.ssh/scimta.pem -r .next ubuntu@165.232.170.40:/home/ubuntu/blc-awesome-dapp/FE",
     "start": "next start -H 0.0.0.0 -p 8080",
     "lint": "next lint"
   },
   "dependencies": {
+    "@chakra-ui/card": "^2.1.6",
     "@chakra-ui/react": "^1.8.8",
     "@emotion/react": "^11.9.0",
     "@emotion/styled": "^11.8.1",

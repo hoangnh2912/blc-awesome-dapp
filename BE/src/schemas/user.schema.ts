@@ -14,6 +14,6 @@ const userSchema = new Schema<IUser>({
   deleted_at: { required: false, type: Date },
 });
 
-export const User = mongoose.model('User', userSchema, undefined, {
+export const User = mongoose.model('user', userSchema, undefined, {
   overwriteModels: true,
 });

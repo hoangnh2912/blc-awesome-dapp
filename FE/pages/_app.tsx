@@ -3,11 +3,10 @@ import { ChainId, ThirdwebProvider } from "@thirdweb-dev/react";
 import type { AppProps } from "next/app";
 import { ModalTransactionProvider } from "../contexts/modal-transaction";
 import "../styles/globals.css";
-import Head from "next/head";
 
 function App({ Component, pageProps }: AppProps) {
   return (
-    <ThirdwebProvider desiredChainId={ChainId.Goerli}>
+    <ThirdwebProvider desiredChainId={ChainId.Mumbai}>
       <ChakraProvider>
         <ModalTransactionProvider>
           <Component {...pageProps} />
