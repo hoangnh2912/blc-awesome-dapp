@@ -3,6 +3,7 @@ import styles from "../styles/Home.module.css";
 import { SideBarData } from "../constants/data/sidebar";
 import { useEffect, useState } from "react";
 import Sidebar from "../components/sidebar";
+import { ChainId, useNetwork, useSDK } from "@thirdweb-dev/react";
 
 const BaseLayout = ({
   children,
@@ -12,10 +13,15 @@ const BaseLayout = ({
   selectTabIndex?: number;
 }) => {
   const [isBrowser, setIsBrowser] = useState(false);
+  const [currentNetwork, switchNetwork] = useNetwork();
 
   useEffect(() => {
     setIsBrowser(true);
-  }, []);
+    // if (currentNetwork.data.chain && switchNetwork)
+    //   if (currentNetwork.data.chain.id != ChainId.Mumbai) {
+    //     switchNetwork(ChainId.Mumbai);
+    //   }
+  }, [switchNetwork, currentNetwork]);
 
   if (typeof window === "undefined" || !isBrowser) {
     return <></>;
@@ -24,7 +30,8 @@ const BaseLayout = ({
   return (
     <div className={styles.App}>
       <Head>
-        <title>SCIMTA Dapp</title>
+        <title>SCIMTA Protocol</title>
+        <link rel="shortcut icon" href="/favicon.ico" />
         <meta name="description" content="SCIMTA" />
         <meta property="og:url" content="http://scimta.com" />
         <meta property="og:type" content="website" />

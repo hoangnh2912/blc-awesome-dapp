@@ -6,7 +6,10 @@ import "../styles/globals.css";
 
 function App({ Component, pageProps }: AppProps) {
   return (
-    <ThirdwebProvider desiredChainId={ChainId.Mumbai}>
+    <ThirdwebProvider
+      desiredChainId={ChainId.Mumbai}
+      supportedChains={[ChainId.Mumbai]}
+    >
       <ChakraProvider>
         <ModalTransactionProvider>
           <Component {...pageProps} />

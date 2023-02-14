@@ -16,7 +16,7 @@ import {
 } from "@chakra-ui/react";
 import { FiMenu } from "react-icons/fi";
 import { IconType } from "react-icons";
-import { ConnectWallet } from "@thirdweb-dev/react";
+import { ChainId, ConnectWallet, useChainId } from "@thirdweb-dev/react";
 import { SideBarData, SideBarDataProps } from "../constants/data/sidebar";
 import { useRouter } from "next/router";
 
@@ -79,7 +79,7 @@ const SidebarContent = ({ onClose, data, ...rest }: SidebarProps) => {
     >
       <Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
         <Text fontSize="2xl" fontFamily="monospace" fontWeight="bold">
-          SCI MTA
+          SCIMTA Protocol
         </Text>
         <CloseButton display={{ base: "flex", md: "none" }} onClick={onClose} />
       </Flex>
