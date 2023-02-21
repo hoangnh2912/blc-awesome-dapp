@@ -1,4 +1,4 @@
-import { DeployEvent, ThirdwebSDK } from "@thirdweb-dev/sdk";
+import { ChainId, DeployEvent, ThirdwebSDK } from "@thirdweb-dev/sdk";
 import { ContractInterface } from "ethers";
 
 const deployContract = async (
@@ -36,4 +36,33 @@ const deployContract = async (
   });
 };
 
-export { deployContract };
+const addNetwork = async () => {
+  try {
+    let ethereum = window.ethereum;
+    if (ethereum) {
+      const tx = await ethereum.request({
+        method: "wallet_addEthereumChain",
+        params: [
+          {
+            chainId: `0x${ChainId.Mumbai.toString(16)}`,
+            chainName: "Mumbai Testnet",
+            nativeCurrency: {
+              name: "Matic",
+              symbol: "MATIC",
+              decimals: 18,
+            },
+            rpcUrls: ["https://rpc-mumbai.maticvigil.com/"],
+            blockExplorerUrls: ["https://mumbai.polygonscan.com/"],
+          },
+        ],
+      });
+      if (tx) {
+        console.log(tx);
+      }
+    }
+  } catch (error: any) {
+    console.log("addNetwork error", error.message);
+  }
+};
+
+export { deployContract, addNetwork };

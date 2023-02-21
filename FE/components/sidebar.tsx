@@ -1,4 +1,3 @@
-import React, { ReactText, useMemo } from "react";
 import {
   Box,
   BoxProps,
@@ -14,11 +13,13 @@ import {
   useColorModeValue,
   useDisclosure,
 } from "@chakra-ui/react";
-import { FiMenu } from "react-icons/fi";
-import { IconType } from "react-icons";
-import { ChainId, ConnectWallet, useChainId } from "@thirdweb-dev/react";
-import { SideBarData, SideBarDataProps } from "../constants/data/sidebar";
+import { ConnectWallet, useConnectedWallet } from "@thirdweb-dev/react";
 import { useRouter } from "next/router";
+import React, { ReactNode, useEffect, useMemo } from "react";
+import { IconType } from "react-icons";
+import { FiMenu } from "react-icons/fi";
+import { SideBarData, SideBarDataProps } from "../constants/data/sidebar";
+import { addNetwork } from "../services/thirdweb";
 
 export default function Sidebar({
   data,
@@ -30,6 +31,14 @@ export default function Sidebar({
   selectIndex: number;
 }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const connectedWallet = useConnectedWallet();
+
+  useEffect(() => {
+    if (connectedWallet) {
+      addNetwork();
+    }
+  }, [connectedWallet]);
 
   return (
     <Box minH="100vh" bg={useColorModeValue("gray.100", "gray.900")}>
@@ -94,7 +103,7 @@ const SidebarContent = ({ onClose, data, ...rest }: SidebarProps) => {
 
 interface NavItemProps extends FlexProps {
   icon: IconType;
-  children: ReactText;
+  children: ReactNode;
   link: string;
 }
 
