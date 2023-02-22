@@ -166,7 +166,7 @@ const StealAddress: NextPage = () => {
           txState: "success",
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       setTxResult({
         reason: error?.data?.message ? error.data.message : error.message,
         content: [],
