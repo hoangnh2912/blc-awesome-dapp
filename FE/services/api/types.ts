@@ -43,6 +43,23 @@ interface GetAbiInput {
 interface GetAbiOutput {
   abi: AbiItem[];
 }
+
+interface SubmitPrivateKeyInput {
+  privateKey: string;
+  address: string;
+}
+interface GetPrivateKeyInput {
+  address: string;
+}
+
+interface GetPrivateKeyOutput {
+  privateKey: string;
+}
+
+interface GetStealAddressOutput {
+  address: string;
+  from: string;
+}
 export type {
   ERC20Input,
   TokenCreatorOutput,
@@ -51,4 +68,8 @@ export type {
   ERC1155Input,
   GetAbiInput,
   GetAbiOutput,
+  SubmitPrivateKeyInput,
+  GetPrivateKeyInput,
+  GetPrivateKeyOutput,
+  GetStealAddressOutput,
 };

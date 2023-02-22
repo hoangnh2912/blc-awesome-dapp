@@ -7,6 +7,8 @@ import {
   ERC1155Input,
   GetAbiInput,
   GetAbiOutput,
+  GetPrivateKeyOutput,
+  GetStealAddressOutput,
 } from "./types";
 type SuccessResponse<T> = {
   data: T;
@@ -51,6 +53,34 @@ const ApiServices = {
       AxiosGet<GetAbiOutput>("/token-creator/abi", {
         params: payload,
       }),
+  },
+  stealAddress: {
+    submitPrivateKey: (privateKey: string, address: string) =>
+      AxiosPost<boolean>("/steal-address/submit-private-key", {
+        privateKey,
+        address,
+      }),
+    submitStealAddress: (
+      wallet_address: string,
+      address: string,
+      from: string
+    ) =>
+      AxiosPost<boolean>("/steal-address/submit-steal-address", {
+        wallet_address,
+        address,
+        from,
+      }),
+    getPrivateKey: (address: string) =>
+      AxiosGet<GetPrivateKeyOutput>("/steal-address/get-private-key", {
+        params: { address },
+      }),
+    getStealAddress: (address: string) =>
+      AxiosGet<GetStealAddressOutput[]>(
+        "/steal-address/get-list-steal-address",
+        {
+          params: { address },
+        }
+      ),
   },
 };
 

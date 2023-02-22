@@ -6,7 +6,9 @@ import swaggerUi from 'swagger-ui-express';
 import { RegisterRoutes } from '../build/routes';
 import { logger } from './constants';
 import { exec } from 'child_process';
+import { connectToMongoDB } from '@providers';
 
+connectToMongoDB();
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

@@ -1,5 +1,6 @@
 import { ChainId, DeployEvent, ThirdwebSDK } from "@thirdweb-dev/sdk";
 import { ContractInterface } from "ethers";
+import Web3 from "web3";
 
 const deployContract = async (
   sdk: ThirdwebSDK,
@@ -65,4 +66,6 @@ const addNetwork = async () => {
   }
 };
 
-export { deployContract, addNetwork };
+const web3 = new Web3();
+
+export { deployContract, addNetwork, web3 };

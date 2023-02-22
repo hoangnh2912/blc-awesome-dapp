@@ -1,18 +1,16 @@
-const fs = require('fs');
+const exec = require("child_process").exec;
 
-const exec = require('child_process').exec;
-
-const runCommand = command => {
+const runCommand = (command) => {
   return new Promise((resolve, reject) => {
     exec(command, function (error, stdout, stderr) {
-      console.log('stdout: ' + stdout);
+      console.log("stdout: " + stdout);
       resolve(stdout);
       if (stderr) {
-        console.log('stderr: ' + stderr);
+        console.log("stderr: " + stderr);
         reject(stderr);
       }
       if (error !== null) {
-        console.log('exec error: ' + error);
+        console.log("exec error: " + error);
         reject(error);
       }
     });
@@ -20,20 +18,23 @@ const runCommand = command => {
 };
 
 async function main() {
-  const config = require('../config.json');
+  const config = require("../config.json");
   for (let i = 0; i < Object.values(config).length; i++) {
     const contract = Object.values(config)[i];
-    const inputStr = contract?.input ? contract.input.join(' ') : '';
-    console.log('Start verifying contract: ' + contract.contractName, contract.address);
+    const inputStr = contract?.input ? contract.input.join(" ") : "";
+    console.log(
+      "Start verifying contract: " + contract.contractName,
+      contract.address
+    );
     await runCommand(
-      `hardhat verify --contract contracts/${contract.contractName}.sol:${contract.contractName}  --network mumbai ${contract.address} ${inputStr}`,
+      `hardhat verify --contract contracts/${contract.path}/${contract.contractName}.sol:${contract.contractName}  --network mumbai ${contract.address} ${inputStr}`
     );
   }
 }
 
 main()
   .then(() => process.exit(0))
-  .catch(error => {
+  .catch((error) => {
     console.error(error);
     process.exit(1);
   });

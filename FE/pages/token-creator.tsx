@@ -23,7 +23,7 @@ const TokenCreator: NextPage = () => {
         direction={["column", "column", "column", "column", "column", "row"]}
       >
         <Stack flex={1}>
-          <Stack bg={"white"} borderRadius={5} p={5}>
+          <Stack boxShadow="lg" bg={"white"} borderRadius={5} p={5}>
             <Tabs isFitted colorScheme="green" variant="soft-rounded">
               <TabList mb="1em">
                 <Tab>ERC20</Tab>
@@ -43,11 +43,11 @@ const TokenCreator: NextPage = () => {
               </TabPanels>
             </Tabs>
           </Stack>
-          <Stack bg={"white"} borderRadius={5} p={5} mt={5}>
+          <Stack bg={"white"} boxShadow="lg" borderRadius={5} p={5} mt={5}>
             <ContractDeployed />
           </Stack>
         </Stack>
-        <Stack flex={1} bg={"white"} borderRadius={5} p={5}>
+        <Stack flex={1} boxShadow="lg" bg={"white"} borderRadius={5} p={5}>
           <ContractUsage />
         </Stack>
       </Stack>
