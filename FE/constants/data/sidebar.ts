@@ -18,3 +18,12 @@ export const SideBarData: Array<SideBarDataProps> = [
   { name: "DAO", icon: BsPeople, link: "/dao" },
   { name: "Steal Address", icon: BsEmojiSunglasses, link: "/steal-address" },
 ];
+
+export const SideBarDataMusic: Array<SideBarDataProps> = [
+  {
+    name: "Album".toUpperCase(),
+    icon: MdOutlineSwapHorizontalCircle,
+    link: "/music/album",
+  },
+  { name: "Create".toUpperCase(), icon: RxBlendingMode, link: "/music/create" },
+];

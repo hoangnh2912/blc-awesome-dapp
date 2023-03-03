@@ -1,4 +1,4 @@
-import { ChakraProvider } from "@chakra-ui/react";
+import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import { ChainId, ThirdwebProvider } from "@thirdweb-dev/react";
 import type { AppProps } from "next/app";
 import { ModalTransactionProvider } from "../contexts/modal-transaction";
