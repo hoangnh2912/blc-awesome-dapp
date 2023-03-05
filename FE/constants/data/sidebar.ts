@@ -3,6 +3,7 @@ import { BsCoin, BsPeople, BsEmojiSunglasses } from "react-icons/bs";
 import { MdOutlineSwapHorizontalCircle } from "react-icons/md";
 import { GiPayMoney } from "react-icons/gi";
 import { RxBlendingMode } from "react-icons/rx";
+import { CgMusic } from "react-icons/cg";
 
 export interface SideBarDataProps {
   name: string;
@@ -17,6 +18,7 @@ export const SideBarData: Array<SideBarDataProps> = [
   { name: "Lending", icon: RxBlendingMode, link: "/lending" },
   { name: "DAO", icon: BsPeople, link: "/dao" },
   { name: "Steal Address", icon: BsEmojiSunglasses, link: "/steal-address" },
+  { name: "Music marketplace", icon: CgMusic, link: "/music-marketplace" },
 ];
 
 export const SideBarDataMusic: Array<SideBarDataProps> = [

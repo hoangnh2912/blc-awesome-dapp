@@ -10,7 +10,9 @@ import {
   Icon,
   IconButton,
   Image,
+  Input,
   InputGroup,
+  InputLeftElement,
   Link,
   Popover,
   PopoverArrow,
@@ -27,6 +29,7 @@ import { ConnectWallet, useConnectedWallet } from "@thirdweb-dev/react";
 import { useRouter } from "next/router";
 import React, { ReactNode, useEffect, useMemo } from "react";
 import { IconType } from "react-icons";
+import { BsSearch } from "react-icons/bs";
 import { CgProfile } from "react-icons/cg";
 import { FiMenu } from "react-icons/fi";
 import {
@@ -34,12 +37,13 @@ import {
   SideBarDataMusic,
   SideBarDataProps,
 } from "../constants/data/sidebar";
+import backgroundImage from "../public/background.png";
 import { addNetwork } from "../services/thirdweb";
 const PopoverTrigger = (props: FlexProps) => {
   return <ExPopoverTrigger {...props} />;
 };
 
-export default function Sidebar({
+export default function SidebarMusic({
   data,
   content,
   selectIndex,
@@ -59,7 +63,18 @@ export default function Sidebar({
   }, [connectedWallet]);
 
   return (
-    <Box minH="100vh" pb={20}>
+    <Box
+      style={{
+        backgroundImage: `url(${backgroundImage.src})`,
+        backgroundRepeat: "no-repeat",
+        backgroundSize: "cover",
+        backgroundAttachment: "fixed",
+        backgroundPosition: "center",
+        backgroundColor: "#0D164D",
+      }}
+      minH="100vh"
+      pb={20}
+    >
       <SidebarContent
         data={data}
         onClose={() => onClose}
@@ -96,7 +111,7 @@ const SidebarContent = ({ onClose, data, ...rest }: SidebarProps) => {
   return (
     <Box
       transition="3s ease"
-      bg={"white"}
+      bg={"#0D164D"}
       w={{ base: "full", md: 60 }}
       pos="fixed"
       h="full"
@@ -111,9 +126,7 @@ const SidebarContent = ({ onClose, data, ...rest }: SidebarProps) => {
         mx="4"
         justifyContent="space-between"
       >
-        <Text fontFamily={"mono"} fontWeight="bold" fontSize="2xl">
-          SCIMTA
-        </Text>
+        <Image p={"7"} alt="logo" src="/logo.png" />
         <CloseButton
           display={{ base: "flex", md: "none" }}
           color={"white"}
@@ -160,7 +173,7 @@ const NavItem = ({ icon, children, link, ...rest }: NavItemProps) => {
         borderRadius="lg"
         role="group"
         cursor="pointer"
-        color={isSelect ? "yellow.700" : "black"}
+        color={isSelect ? "yellow.400" : "white"}
         {...rest}
       >
         {icon && <Icon mr="4" fontSize="16" as={icon} />}
@@ -186,7 +199,7 @@ const AppNav = ({ onOpen, title, ...rest }: AppNavProps) => {
       ml={{ base: 0, md: 60 }}
       p={{ base: 1, md: 3 }}
       py={{ base: 2, md: 3 }}
-      bg={"white"}
+      bg={"transparent"}
       direction={"row"}
       borderBottomWidth={2.5}
       borderColor={"yellow.400"}
@@ -201,12 +214,29 @@ const AppNav = ({ onOpen, title, ...rest }: AppNavProps) => {
         aria-label="open menu"
         icon={<FiMenu />}
       />
-      <InputGroup w={["100%", "70%", "65%", "60%", "50%", "35%"]}></InputGroup>
+      <InputGroup w={["100%", "70%", "65%", "60%", "50%", "35%"]}>
+        <InputLeftElement pointerEvents="none">
+          <BsSearch color="white" />
+        </InputLeftElement>
+        <Input
+          borderWidth={0}
+          bg={"rgba(0, 0, 0, 0.3)"}
+          boxShadow={"2xl"}
+          borderRadius={100}
+          color={"white"}
+          fontSize={["xs", "sm", "md"]}
+          placeholder="Search song, artist, ..."
+        />
+      </InputGroup>
 
       <Popover closeOnBlur={false} trigger="hover" placement="bottom-start">
         <PopoverTrigger>
-          <Button colorScheme={"yellow"} boxShadow={"2xl"}>
-            <CgProfile size={30} color={"white"} />
+          <Button
+            bg="transparent"
+            _hover={{ bg: "transparent" }}
+            boxShadow={"2xl"}
+          >
+            <CgProfile size={30} color={"#C2A822"} />
           </Button>
         </PopoverTrigger>
         <PopoverContent>

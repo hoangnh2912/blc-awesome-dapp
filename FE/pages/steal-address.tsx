@@ -37,7 +37,11 @@ const StealAddress: NextPage = () => {
   const { onOpen, setTxResult } = useModalTransaction();
 
   const sdk = useSDK();
-  const toast = useToast();
+  const toast = useToast({
+    containerStyle: {
+      maxWidth: "200px",
+    },
+  });
   const getPublicKey = async () => {
     if (connectedAddress && sdk) {
       const address = await sdk.wallet.getAddress();
@@ -56,16 +60,7 @@ const StealAddress: NextPage = () => {
             "getPublicKey",
             address
           );
-          const pubKeyXY = web3.utils.encodePacked(
-            {
-              type: "uint256",
-              value: pubKey["X"],
-            },
-            {
-              type: "uint256",
-              value: pubKey["Y"],
-            }
-          );
+          const pubKeyXY = web3.utils.encodePacked(pubKey["X"], pubKey["Y"]);
           if (
             pubKeyXY &&
             web3.utils.hexToNumberString(pubKeyXY || "0x0") != "0"
@@ -74,6 +69,7 @@ const StealAddress: NextPage = () => {
           }
         }
       } catch (error) {
+        console.log("getPublicKey", error);
       } finally {
         setLoading.off();
       }
@@ -96,14 +92,11 @@ const StealAddress: NextPage = () => {
           "privToPubKey",
           privateKey
         );
-        await stealAddressContract.call(
-          "setPublicKey",
-          web3.utils.toHex(pubX),
-          web3.utils.toHex(pubY)
-        );
+        await stealAddressContract.call("setPublicKey", pubX, pubY);
         setPrivKey(privateKey);
         await ApiServices.stealAddress.submitPrivateKey(privateKey, address);
       } catch (error) {
+        console.log("generateKeyPair", error);
       } finally {
         getPublicKey();
       }
@@ -272,10 +265,10 @@ const StealAddress: NextPage = () => {
               ) => (
                 <Box
                   boxShadow="lg"
-                  bg={"teal.50"}
+                  bg={"honeydew"}
                   key={item.address}
                   borderRadius={5}
-                  m={2}
+                  mt={5}
                   p={5}
                   flex={1}
                   onClick={() =>

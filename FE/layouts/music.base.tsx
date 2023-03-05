@@ -1,11 +1,12 @@
 import { Center, Text } from "@chakra-ui/react";
 import { useNetwork } from "@thirdweb-dev/react";
 import Head from "next/head";
-import { useEffect, useState } from "react";
-import Sidebar from "../components/sidebar";
+import { useCallback, useEffect, useRef, useState } from "react";
+import SidebarMusic from "../components/sidebar-music";
 import { SideBarDataMusic } from "../constants/data/sidebar";
 import styles from "../styles/Home.module.css";
-
+import AudioPlayer from "react-h5-audio-player";
+import { useStoreActions, useStoreState } from "../services/redux/hook";
 const MusicBaseLayout = ({
   children,
   selectTabIndex = 0,
@@ -15,7 +16,16 @@ const MusicBaseLayout = ({
 }) => {
   const [isBrowser, setIsBrowser] = useState(false);
   const [currentNetwork, switchNetwork] = useNetwork();
-
+  const musicState = useStoreState((state) => state.music);
+  const setAudioAction = useStoreActions((state) => state.music.setAudio);
+  const setIsPlayingAction = useStoreActions(
+    (state) => state.music.setIsPlaying
+  );
+  const player = useCallback((node: AudioPlayer) => {
+    if (node !== null) {
+      setAudioAction(node);
+    }
+  }, []);
   useEffect(() => {
     setIsBrowser(true);
   }, [switchNetwork, currentNetwork]);
@@ -49,23 +59,36 @@ const MusicBaseLayout = ({
           content="https://r4.wallpaperflare.com/wallpaper/135/692/935/astronaut-space-black-background-artwork-hd-wallpaper-7866ed583040dc28909c514e8812149a.jpg"
         />
       </Head>
-      <Sidebar
+      <SidebarMusic
         selectIndex={selectTabIndex}
         content={children}
         data={SideBarDataMusic}
       />
       <Center>
         <Center
-          bottom={0}
-          p={4}
+          bottom={-1}
           borderRadius="100"
           boxShadow={"2xl"}
           bg="pink.500"
-          mb={4}
+          w="100%"
+          shadow="3xl"
           position="fixed"
-          alignSelf={["center"]}
+          opacity={musicState.currentSong ? 1 : 0}
+          transition="all 2s ease"
+          visibility={musicState.currentSong ? "visible" : "hidden"}
         >
-          <Text>Music playing</Text>
+          <AudioPlayer
+            ref={player}
+            autoPlay
+            style={{
+              backgroundColor: "#1F1F22",
+              WebkitTextFillColor: "white",
+            }}
+            volume={0.3}
+            src={musicState.currentSong?.url}
+            onPlay={(e) => setIsPlayingAction(true)}
+            onPause={(e) => setIsPlayingAction(false)}
+          />
         </Center>
       </Center>
     </div>
