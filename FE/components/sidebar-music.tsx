@@ -126,7 +126,14 @@ const SidebarContent = ({ onClose, data, ...rest }: SidebarProps) => {
         mx="4"
         justifyContent="space-between"
       >
-        <Image p={"7"} alt="logo" src="/logo.png" />
+        <Image
+          py={"4"}
+          h={"full"}
+          fit="contain"
+          w={"full"}
+          alt="logo"
+          src="/logo.png"
+        />
         <CloseButton
           display={{ base: "flex", md: "none" }}
           color={"white"}

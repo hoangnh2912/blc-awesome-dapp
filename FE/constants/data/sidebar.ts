@@ -23,9 +23,9 @@ export const SideBarData: Array<SideBarDataProps> = [
 
 export const SideBarDataMusic: Array<SideBarDataProps> = [
   {
-    name: "Album".toUpperCase(),
+    name: "Explore".toUpperCase(),
     icon: MdOutlineSwapHorizontalCircle,
-    link: "/music/album",
+    link: "/music/explore",
   },
   { name: "Create".toUpperCase(), icon: RxBlendingMode, link: "/music/create" },
 ];

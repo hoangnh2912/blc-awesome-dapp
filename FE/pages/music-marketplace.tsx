@@ -1,8 +1,8 @@
 import type { NextPage } from "next";
 import React from "react";
-import Album from "./music/album";
+import Explore from "./music/explore";
 const MusicMarketplace: NextPage = () => {
-  return <Album />;
+  return <Explore />;
 };
 
 export default MusicMarketplace;

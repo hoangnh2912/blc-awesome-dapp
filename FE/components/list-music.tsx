@@ -3,7 +3,7 @@ import SongNFTComponent, { SongNFTProps } from "./song-nft";
 const ListMusicComponent = ({ data }: { data: SongNFTProps[] }) => {
   return (
     <Box>
-      <SimpleGrid columns={[1, 2, 2, 4]} gap={3}>
+      <SimpleGrid columns={[1, 2, 2, 2, 4]} gap={3}>
         {data.map((item, index) => (
           <SongNFTComponent key={index} {...item} />
         ))}

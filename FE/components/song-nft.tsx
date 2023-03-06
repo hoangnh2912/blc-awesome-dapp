@@ -8,6 +8,7 @@ import {
 } from "../services/redux/hook";
 
 export interface SongNFTProps {
+  id: string;
   image: string;
   name: string;
   seller: string;
@@ -21,6 +22,7 @@ const SongNFTComponent = ({
   seller,
   price,
   url,
+  id,
 }: SongNFTProps) => {
   const playMusicAction = useStoreActions((state) => state.music.playMusic);
   const currentSongState = useStoreState((state) => state.music.currentSong);
@@ -34,10 +36,24 @@ const SongNFTComponent = ({
       borderRadius="lg"
       shadow="2xl"
       overflow="hidden"
+      style={{
+        boxShadow: "5px 5px 5px 5px rgba(0,0,0,0.15)",
+      }}
     >
-      <Image w={["full"]} h={["250px"]} fit="cover" src={image} />
+      <Image
+        _hover={{
+          transform: "scale(1.2)",
+        }}
+        transition="all 0.3s ease-in-out"
+        w={["full"]}
+        h={["200px"]}
+        fit="cover"
+        cursor="pointer"
+        onClick={() => (window.location.href = `/music/${id}`)}
+        src={image}
+      />
       <Box
-        backgroundImage={`linear-gradient(rgba(0,0,0,.1), rgba(255,255,255,.1)),url(${image})`}
+        backgroundImage={`url(${image})`}
         backgroundSize="cover"
         backgroundColor="transparent"
       >
@@ -50,7 +66,12 @@ const SongNFTComponent = ({
         >
           <Stack justifyContent="space-between" direction="row">
             <Stack>
-              <Text fontWeight="bold" color="white">
+              <Text
+                cursor="pointer"
+                onClick={() => (window.location.href = `/music/${id}`)}
+                fontWeight="bold"
+                color="white"
+              >
                 {name}
               </Text>
               <Text fontWeight="bold" fontSize="sm" color="white">
@@ -63,7 +84,7 @@ const SongNFTComponent = ({
               fontWeight="bold"
               color="white"
             >
-              {price} $MUC
+              {price} MUC
             </Text>
           </Stack>
           <Stack
@@ -94,6 +115,9 @@ const SongNFTComponent = ({
               alignItems="center"
               display="flex"
               backgroundColor="white"
+              _hover={{
+                backgroundColor: "gray.300",
+              }}
               onClick={() => {
                 if (
                   audioState &&
@@ -107,6 +131,7 @@ const SongNFTComponent = ({
                   }
                 } else
                   playMusicAction({
+                    id,
                     url,
                     name,
                     seller,

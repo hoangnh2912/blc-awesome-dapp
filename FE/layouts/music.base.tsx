@@ -1,4 +1,4 @@
-import { Center, Text } from "@chakra-ui/react";
+import { Box, Center, Flex, Image, Stack, Text } from "@chakra-ui/react";
 import { useNetwork } from "@thirdweb-dev/react";
 import Head from "next/head";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -66,29 +66,75 @@ const MusicBaseLayout = ({
       />
       <Center>
         <Center
-          bottom={-1}
-          borderRadius="100"
+          bottom={0}
           boxShadow={"2xl"}
-          bg="pink.500"
           w="100%"
           shadow="3xl"
           position="fixed"
+          backgroundImage={`url('${musicState.currentSong?.image}')`}
+          backgroundSize="cover"
           opacity={musicState.currentSong ? 1 : 0}
           transition="all 2s ease"
           visibility={musicState.currentSong ? "visible" : "hidden"}
+          style={{
+            boxShadow: "0px 0px 15px 0px rgba(0,0,0,0.75)",
+          }}
         >
-          <AudioPlayer
-            ref={player}
-            autoPlay
-            style={{
-              backgroundColor: "#1F1F22",
-              WebkitTextFillColor: "white",
-            }}
-            volume={0.3}
-            src={musicState.currentSong?.url}
-            onPlay={(e) => setIsPlayingAction(true)}
-            onPause={(e) => setIsPlayingAction(false)}
-          />
+          <Stack
+            direction="row"
+            bgGradient="linear(rgba(0,0,0,0.3), transparent)"
+            backdropFilter="auto"
+            backdropBlur="1rem"
+            flex={1}
+            justifyContent="space-between"
+          >
+            <Stack
+              display={{ base: "none", md: "flex" }}
+              flex={1}
+              justifyContent="center"
+              alignItems="center"
+              direction="row"
+            >
+              <Image
+                alt="music"
+                src={musicState.currentSong?.image}
+                h={"100px"}
+                w={"100px"}
+                borderRadius="lg"
+                fit="cover"
+              />
+            </Stack>
+            <Stack flex={9}>
+              <Text
+                color="white"
+                fontWeight="bold"
+                fontSize="sm"
+                textOverflow="ellipsis"
+                overflow="hidden"
+                whiteSpace="nowrap"
+                alignSelf="center"
+                pt={2}
+              >
+                {musicState.currentSong?.name} -{" "}
+                {musicState.currentSong?.seller}
+              </Text>
+              <AudioPlayer
+                ref={player}
+                autoPlay
+                style={{
+                  backgroundColor: "transparent",
+                  WebkitTextFillColor: "white",
+                  boxShadow: "none",
+                }}
+                volume={0.3}
+                showSkipControls
+                src={musicState.currentSong?.url}
+                onPlay={(e) => setIsPlayingAction(true)}
+                onPause={(e) => setIsPlayingAction(false)}
+              />
+            </Stack>
+            <Stack flex={1} justifyContent="center" alignItems="center"></Stack>
+          </Stack>
         </Center>
       </Center>
     </div>
