@@ -1,11 +1,8 @@
 import { Box, Image, Stack, Text } from "@chakra-ui/react";
+import { Router, useRouter } from "next/router";
 import { FaPlay } from "react-icons/fa";
 import { TiMediaPause } from "react-icons/ti";
-import {
-  useStoreActions,
-  useStoreDispatch,
-  useStoreState,
-} from "../services/redux/hook";
+import { useStoreActions, useStoreState } from "../services/redux/hook";
 
 export interface SongNFTProps {
   id: string;
@@ -29,6 +26,40 @@ const SongNFTComponent = ({
   const audioState = useStoreState((state) => state.music.audio);
   const isPlayingState = useStoreState((state) => state.music.isPlaying);
 
+  const onPlayMusic = () => {
+    if (
+      audioState &&
+      audioState.audio.current &&
+      currentSongState?.url == url
+    ) {
+      if (isPlayingState) {
+        audioState.audio.current.pause();
+      } else {
+        audioState.audio.current.play();
+      }
+    } else
+      playMusicAction({
+        id,
+        url,
+        name,
+        seller,
+        price,
+        image,
+      });
+  };
+
+  const router = useRouter();
+
+  const goToMusic = () => { 
+    router.push(
+      {
+        pathname: `/music/${id}`,
+      },
+      undefined,
+      { shallow: true }
+    );
+  }
+
   return (
     <Box
       w={["full"]}
@@ -49,7 +80,7 @@ const SongNFTComponent = ({
         h={["200px"]}
         fit="cover"
         cursor="pointer"
-        onClick={() => (window.location.href = `/music/${id}`)}
+        onClick={goToMusic}
         src={image}
       />
       <Box
@@ -68,7 +99,7 @@ const SongNFTComponent = ({
             <Stack>
               <Text
                 cursor="pointer"
-                onClick={() => (window.location.href = `/music/${id}`)}
+                onClick={goToMusic}
                 fontWeight="bold"
                 color="white"
               >
@@ -118,27 +149,7 @@ const SongNFTComponent = ({
               _hover={{
                 backgroundColor: "gray.300",
               }}
-              onClick={() => {
-                if (
-                  audioState &&
-                  audioState.audio.current &&
-                  currentSongState?.url == url
-                ) {
-                  if (isPlayingState) {
-                    audioState.audio.current.pause();
-                  } else {
-                    audioState.audio.current.play();
-                  }
-                } else
-                  playMusicAction({
-                    id,
-                    url,
-                    name,
-                    seller,
-                    price,
-                    image,
-                  });
-              }}
+              onClick={onPlayMusic}
             >
               {isPlayingState && currentSongState?.url == url ? (
                 <TiMediaPause size="20px" color="black" />

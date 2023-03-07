@@ -73,10 +73,11 @@ export default function SidebarMusic({
         backgroundColor: "#0D164D",
       }}
       minH="100vh"
-      pb={20}
+      pb={"200px"}
     >
       <SidebarContent
         data={data}
+        selectIndex={selectIndex}
         onClose={() => onClose}
         display={{ base: "none", md: "block" }}
       />
@@ -90,11 +91,15 @@ export default function SidebarMusic({
         size="full"
       >
         <DrawerContent>
-          <SidebarContent data={data} onClose={onClose} />
+          <SidebarContent
+            selectIndex={selectIndex}
+            data={data}
+            onClose={onClose}
+          />
         </DrawerContent>
       </Drawer>
       {/* mobilenav */}
-      <AppNav title={data[selectIndex].name} onOpen={onOpen} />
+      <AppNav onOpen={onOpen} />
       <Box ml={{ base: 0, md: 60 }} p="4" pt={20}>
         {content}
       </Box>
@@ -104,10 +109,16 @@ export default function SidebarMusic({
 
 interface SidebarProps extends BoxProps {
   onClose: () => void;
+  selectIndex: number;
   data: Array<SideBarDataProps>;
 }
 
-const SidebarContent = ({ onClose, data, ...rest }: SidebarProps) => {
+const SidebarContent = ({
+  onClose,
+  data,
+  selectIndex,
+  ...rest
+}: SidebarProps) => {
   return (
     <Box
       transition="3s ease"
@@ -127,7 +138,7 @@ const SidebarContent = ({ onClose, data, ...rest }: SidebarProps) => {
         justifyContent="space-between"
       >
         <Image
-          py={"4"}
+          py={"3"}
           h={"full"}
           fit="contain"
           w={"full"}
@@ -141,8 +152,13 @@ const SidebarContent = ({ onClose, data, ...rest }: SidebarProps) => {
           onClick={onClose}
         />
       </Flex>
-      {data.map((link) => (
-        <NavItem key={link.name} link={link.link} icon={link.icon}>
+      {data.map((link, index) => (
+        <NavItem
+          key={link.name}
+          isSelect={index == selectIndex}
+          link={link.link}
+          icon={link.icon}
+        >
           {link.name}
         </NavItem>
       ))}
@@ -154,22 +170,25 @@ interface NavItemProps extends FlexProps {
   icon: IconType;
   children: ReactNode;
   link: string;
+  isSelect: boolean;
 }
 
-const NavItem = ({ icon, children, link, ...rest }: NavItemProps) => {
-  const { pathname } = useRouter();
-  const isSelect = useMemo(() => {
-    if (
-      (pathname == "/" && link == SideBarData[0].link) ||
-      (pathname == "/music-marketplace" && link == SideBarDataMusic[0].link)
-    ) {
-      return true;
-    }
-    return pathname.replace("/", "") === link.replace("/", "");
-  }, [pathname, link]);
+const NavItem = ({ icon, children, isSelect, link, ...rest }: NavItemProps) => {
+  const { replace } = useRouter();
+
+  const onClickLink = () => {
+    replace(
+      {
+        pathname: link,
+      },
+      undefined,
+      { shallow: true }
+    );
+  };
   return (
     <Link
-      href={isSelect ? "#" : link}
+      href={"#"}
+      onClick={onClickLink}
       style={{ textDecoration: "none" }}
       _focus={{ boxShadow: "none" }}
     >
@@ -194,10 +213,9 @@ const NavItem = ({ icon, children, link, ...rest }: NavItemProps) => {
 
 interface AppNavProps extends FlexProps {
   onOpen: () => void;
-  title: string;
 }
 
-const AppNav = ({ onOpen, title, ...rest }: AppNavProps) => {
+const AppNav = ({ onOpen }: AppNavProps) => {
   return (
     <Stack
       position={"fixed"}
