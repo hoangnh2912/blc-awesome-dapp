@@ -25,7 +25,7 @@ const Music = () => {
     id: "4",
     name: "Song Name 4",
     seller: "0x1234567890223443342ddawweffsa",
-    single: "Snoop Dog",
+    singer: "Snoop Dog",
     attributes: [
       {
         trait_type: "Genre",
@@ -65,14 +65,17 @@ const Music = () => {
     <MusicBaseLayout selectTabIndex={0}>
       <Stack direction={{ base: "column", md: "row" }}>
         <Image
-          width={{ base: "100%", md: "30%" }}
+          width={{
+            base: "100%",
+            md: "30%",
+          }}
           objectFit="cover"
           borderRadius="lg"
           alt={data.name}
           src={data.image}
           style={{
             boxShadow: "5px 5px 5px 5px rgba(0,0,0,0.15)",
-            aspectRatio: 1,
+            aspectRatio: "1/1",
           }}
         />
         <Stack flex={1} px={2}>
@@ -84,7 +87,7 @@ const Music = () => {
               Creator: {data.seller}
             </Text>
             <Text color="#C2A822" fontSize="20" fontWeight="bold">
-              {data.single}
+              {data.singer}
             </Text>
             <Text
               fontFamily="mono"

@@ -119,6 +119,17 @@ const SidebarContent = ({
   selectIndex,
   ...rest
 }: SidebarProps) => {
+  const { replace } = useRouter();
+
+  const onClickLink = () => {
+    replace(
+      {
+        pathname: "/music-marketplace",
+      },
+      undefined,
+      { shallow: true }
+    );
+  };
   return (
     <Box
       transition="3s ease"
@@ -142,6 +153,8 @@ const SidebarContent = ({
           h={"full"}
           fit="contain"
           w={"full"}
+          cursor="pointer"
+          onClick={onClickLink}
           alt="logo"
           src="/logo.png"
         />

@@ -8,7 +8,7 @@ export interface SongNFTProps {
   id: string;
   image: string;
   name: string;
-  seller: string;
+  singer: string;
   price: string;
   url: string;
 }
@@ -16,7 +16,7 @@ export interface SongNFTProps {
 const SongNFTComponent = ({
   image,
   name,
-  seller,
+  singer,
   price,
   url,
   id,
@@ -42,7 +42,7 @@ const SongNFTComponent = ({
         id,
         url,
         name,
-        seller,
+        singer,
         price,
         image,
       });
@@ -50,7 +50,7 @@ const SongNFTComponent = ({
 
   const router = useRouter();
 
-  const goToMusic = () => { 
+  const goToMusic = () => {
     router.push(
       {
         pathname: `/music/${id}`,
@@ -58,7 +58,7 @@ const SongNFTComponent = ({
       undefined,
       { shallow: true }
     );
-  }
+  };
 
   return (
     <Box
@@ -106,7 +106,7 @@ const SongNFTComponent = ({
                 {name}
               </Text>
               <Text fontWeight="bold" fontSize="sm" color="white">
-                {seller}
+                {singer}
               </Text>
             </Stack>
             <Text
