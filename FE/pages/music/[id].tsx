@@ -40,6 +40,7 @@ const Music = () => {
         value: "Guitar",
       },
     ],
+    description: "This is a song description",
     date: new Date(),
     total: 100,
     sold: 10,
@@ -187,6 +188,19 @@ const Music = () => {
           </Stack>
         </Stack>
       </Stack>
+      <Text
+        color="#C2A822"
+        fontSize="24"
+        style={{
+          marginTop: "1.5rem",
+        }}
+        fontWeight="bold"
+      >
+        Description
+      </Text>
+      <Text color="white" fontSize="20">
+        {data.description}
+      </Text>
     </MusicBaseLayout>
   );
 };

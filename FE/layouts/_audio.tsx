@@ -70,7 +70,7 @@ const AudioLayout = ({ children }: { children: React.ReactNode }) => {
                 pt={2}
               >
                 {musicState.currentSong?.name} -{" "}
-                {musicState.currentSong?.seller}
+                {musicState.currentSong?.singer}
               </Text>
               <AudioPlayer
                 ref={player}
