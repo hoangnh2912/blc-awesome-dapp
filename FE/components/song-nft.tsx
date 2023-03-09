@@ -39,11 +39,9 @@ const SongNFTComponent = ({
       }
     } else
       playMusicAction({
-        id,
         url,
         name,
         singer,
-        price,
         image,
       });
   };
