@@ -18,7 +18,6 @@ const Music = () => {
   const { id } = router.query;
   const playMusicAction = useStoreActions((state) => state.music.playMusic);
   const currentSongState = useStoreState((state) => state.music.currentSong);
-  const audioState = useStoreState((state) => state.music.audio);
   const isPlayingState = useStoreState((state) => state.music.isPlaying);
 
   const data = {
@@ -50,17 +49,7 @@ const Music = () => {
       "https://images.unsplash.com/photo-1678002219434-c6738513037e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1472&q=80",
   };
   const onPlayMusic = () => {
-    if (
-      audioState &&
-      audioState.audio.current &&
-      currentSongState?.url == data.url
-    ) {
-      if (isPlayingState) {
-        audioState.audio.current.pause();
-      } else {
-        audioState.audio.current.play();
-      }
-    } else playMusicAction(data);
+    playMusicAction(data);
   };
   return (
     <MusicBaseLayout selectTabIndex={0}>

@@ -2,7 +2,10 @@ import { Action } from "easy-peasy";
 import { SongNFTProps } from "../../components/song-nft";
 import AudioPlayer from "react-h5-audio-player";
 
-type MusicPlaying = Pick<SongNFTProps, "image" | "name" | "singer" | "url">;
+export type MusicPlaying = Pick<
+  SongNFTProps,
+  "image" | "name" | "singer" | "url"
+>;
 
 interface Music {
   currentSong: MusicPlaying | undefined;

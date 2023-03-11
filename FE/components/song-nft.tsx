@@ -23,27 +23,15 @@ const SongNFTComponent = ({
 }: SongNFTProps) => {
   const playMusicAction = useStoreActions((state) => state.music.playMusic);
   const currentSongState = useStoreState((state) => state.music.currentSong);
-  const audioState = useStoreState((state) => state.music.audio);
   const isPlayingState = useStoreState((state) => state.music.isPlaying);
 
   const onPlayMusic = () => {
-    if (
-      audioState &&
-      audioState.audio.current &&
-      currentSongState?.url == url
-    ) {
-      if (isPlayingState) {
-        audioState.audio.current.pause();
-      } else {
-        audioState.audio.current.play();
-      }
-    } else
-      playMusicAction({
-        url,
-        name,
-        singer,
-        image,
-      });
+    playMusicAction({
+      url,
+      name,
+      singer,
+      image,
+    });
   };
 
   const router = useRouter();

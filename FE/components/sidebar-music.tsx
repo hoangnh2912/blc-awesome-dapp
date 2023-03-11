@@ -25,13 +25,20 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { ConnectWallet, useConnectedWallet } from "@thirdweb-dev/react";
+import {
+  ConnectWallet,
+  useAddress,
+  useConnectedWallet,
+  useDisconnect,
+} from "@thirdweb-dev/react";
 import { useRouter } from "next/router";
 import React, { ReactNode, useEffect, useMemo } from "react";
 import { IconType } from "react-icons";
 import { BsSearch } from "react-icons/bs";
 import { CgProfile } from "react-icons/cg";
+import { FaUber, FaUser } from "react-icons/fa";
 import { FiMenu } from "react-icons/fi";
+import { IoLogOut } from "react-icons/io5";
 import {
   SideBarData,
   SideBarDataMusic,
@@ -229,6 +236,9 @@ interface AppNavProps extends FlexProps {
 }
 
 const AppNav = ({ onOpen }: AppNavProps) => {
+  const { replace } = useRouter();
+  const address = useAddress();
+  const disconnect = useDisconnect();
   return (
     <Stack
       position={"fixed"}
@@ -284,6 +294,59 @@ const AppNav = ({ onOpen }: AppNavProps) => {
           <PopoverBody>
             <ConnectWallet />
           </PopoverBody>
+          {address && (
+            <>
+              <Stack
+                cursor="pointer"
+                p="4"
+                borderTopWidth={1}
+                borderTopColor="rgba(0, 0, 0, 0.1)"
+                borderBottomColor="rgba(0, 0, 0, 0.1)"
+                borderBottomWidth={1}
+                _hover={{
+                  bg: "rgba(0, 0, 0, 0.1)",
+                }}
+                alignItems="center"
+                direction="row"
+                onClick={() => {
+                  if (address)
+                    replace(
+                      {
+                        pathname: `/music/address/${address}`,
+                      },
+                      undefined,
+                      {
+                        shallow: true,
+                      }
+                    );
+                }}
+              >
+                <FaUser />
+                <Text fontFamily={"mono"}>My Profile</Text>
+              </Stack>
+              <Stack
+                cursor="pointer"
+                p="4"
+                onClick={() => {
+                  if (address) disconnect();
+                }}
+                borderTopWidth={1}
+                borderTopColor="rgba(0, 0, 0, 0.1)"
+                borderBottomColor="rgba(0, 0, 0, 0.1)"
+                borderBottomWidth={1}
+                _hover={{
+                  bg: "rgba(0, 0, 0, 0.1)",
+                }}
+                alignItems="center"
+                direction="row"
+              >
+                <IoLogOut color="#B12222" />
+                <Text color="#B12222" fontWeight="bold" fontFamily={"mono"}>
+                  Logout
+                </Text>
+              </Stack>
+            </>
+          )}
         </PopoverContent>
       </Popover>
     </Stack>
