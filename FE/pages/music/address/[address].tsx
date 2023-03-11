@@ -1,13 +1,9 @@
 import {
-  Box,
   Button,
   Image,
-  Progress,
-  SimpleGrid,
   Stack,
   Tab,
   Table,
-  TableCaption,
   TableContainer,
   TabList,
   TabPanel,
@@ -16,26 +12,24 @@ import {
   Tbody,
   Td,
   Text,
-  Tfoot,
   Th,
   Thead,
   Tr,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import { BsCart4, BsFillPlayFill, BsPauseFill } from "react-icons/bs";
+import { BsPauseFill } from "react-icons/bs";
 import { FaShareAlt, FaUserEdit } from "react-icons/fa";
 import { MdRemoveShoppingCart, MdSell } from "react-icons/md";
-import { TiMediaPause } from "react-icons/ti";
 import SongNFTComponent, { SongNFTProps } from "../../../components/song-nft";
 import MusicBaseLayout from "../../../layouts/music.base";
-import { useStoreActions, useStoreState } from "../../../services/redux/hook";
+import { useStoreActions } from "../../../services/redux/hook";
 
 const Profile = () => {
   const router = useRouter();
   const { address } = router.query;
   const playMusicAction = useStoreActions((state) => state.music.playMusic);
-  const currentSongState = useStoreState((state) => state.music.currentSong);
-  const isPlayingState = useStoreState((state) => state.music.isPlaying);
+
+  const { replace } = useRouter();
 
   const userInfo = {
     name: "Green guy",
@@ -141,6 +135,11 @@ const Profile = () => {
             color="white"
             justifyContent="space-around"
             width="120px"
+            onClick={() => {
+              replace("/music/edit-profile", undefined, {
+                shallow: true,
+              });
+            }}
             border="2px solid #C2A822"
           >
             <FaUserEdit />
