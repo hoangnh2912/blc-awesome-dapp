@@ -3,28 +3,18 @@ import { useRouter } from "next/router";
 import { FaPlay } from "react-icons/fa";
 import { TiMediaPause } from "react-icons/ti";
 import { useStoreActions, useStoreState } from "../services/redux/hook";
+import { SongNFTProps } from "./song-nft";
 
-export interface SongNFTProps {
-  id: string;
-  image: string;
-  name: string;
-  singer: string;
-  price: string;
-  url: string;
-}
-
-const SongNFTComponent = ({
+const SongNFTSmallComponent = ({
   image,
   name,
   singer,
-  price,
   url,
   id,
 }: SongNFTProps) => {
   const playMusicAction = useStoreActions((state) => state.music.playMusic);
   const currentSongState = useStoreState((state) => state.music.currentSong);
   const isPlayingState = useStoreState((state) => state.music.isPlaying);
-
   const onPlayMusic = () => {
     playMusicAction({
       url,
@@ -49,26 +39,12 @@ const SongNFTComponent = ({
   return (
     <Box
       w={["full"]}
-      boxShadow="lg"
-      borderRadius="lg"
       shadow="2xl"
       overflow="hidden"
       style={{
         boxShadow: "5px 5px 5px 5px rgba(0,0,0,0.15)",
       }}
     >
-      <Image
-        _hover={{
-          transform: "scale(1.2)",
-        }}
-        transition="all 0.3s ease-in-out"
-        w={["full"]}
-        h={["200px"]}
-        fit="cover"
-        cursor="pointer"
-        onClick={goToMusic}
-        src={image}
-      />
       <Box
         backgroundImage={`url(${image})`}
         backgroundSize="cover"
@@ -80,57 +56,61 @@ const SongNFTComponent = ({
           bgGradient="linear(rgba(0,0,0,0.6), transparent)"
           backdropFilter="auto"
           backdropBlur="1rem"
+          direction="row"
         >
-          <Stack justifyContent="space-between" direction="row">
-            <Stack>
+          <Image
+            _hover={{
+              transform: "scale(1.2)",
+            }}
+            transition="all 0.3s ease-in-out"
+            w={["50px"]}
+            fit="cover"
+            style={{
+              aspectRatio: "1/1",
+            }}
+            borderRadius="lg"
+            cursor="pointer"
+            onClick={goToMusic}
+            src={image}
+          />
+          <Stack flex={1} justifyContent="space-between" direction="row">
+            <Stack flex={4}>
               <Text
                 cursor="pointer"
                 onClick={goToMusic}
                 fontWeight="bold"
                 color="white"
+                textOverflow="ellipsis"
+                overflow="hidden"
+                whiteSpace="nowrap"
+                maxWidth="240px"
+                fontSize="sm"
               >
                 {name}
               </Text>
-              <Text fontWeight="bold" fontSize="sm" color="white">
+              <Text
+                fontWeight="bold"
+                textOverflow="ellipsis"
+                overflow="hidden"
+                whiteSpace="nowrap"
+                maxWidth="240px"
+                fontSize="smaller"
+                color="white"
+              >
                 {singer}
               </Text>
             </Stack>
-            <Text
-              fontSize="md"
-              alignSelf="center"
-              fontWeight="bold"
-              color="white"
-            >
-              {price} MUC
-            </Text>
-          </Stack>
-          <Stack
-            alignItems="center"
-            justifyContent="space-between"
-            direction="row"
-          >
-            <Text
+            <Stack
               cursor="pointer"
-              fontWeight="bold"
-              color="white"
-              borderRadius="3xl"
-              backgroundColor="#0D164D"
-              p="1"
-              px="2"
-              fontSize="sm"
-              borderWidth="2px"
-              letterSpacing="widest"
-            >
-              Buy now
-            </Text>
-            <Box
+              borderRadius="50%"
               w="40px"
-              cursor="pointer"
               h="40px"
-              borderRadius="full"
+              style={{
+                aspectRatio: "1/1",
+              }}
               justifyContent="center"
               alignItems="center"
-              display="flex"
+              alignSelf="center"
               backgroundColor="white"
               _hover={{
                 backgroundColor: "gray.300",
@@ -142,7 +122,7 @@ const SongNFTComponent = ({
               ) : (
                 <FaPlay size="10px" color="black" />
               )}
-            </Box>
+            </Stack>
           </Stack>
         </Stack>
       </Box>
@@ -150,4 +130,4 @@ const SongNFTComponent = ({
   );
 };
 
-export default SongNFTComponent;
+export default SongNFTSmallComponent;

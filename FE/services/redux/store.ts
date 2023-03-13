@@ -26,6 +26,19 @@ const store = createStore<StoreModel>({
     setIsPlaying: action((state, payload) => {
       state.isPlaying = payload;
     }),
+    playList: [],
+    addToPlayList: action((state, payload) => {
+      state.playList.push(payload);
+    }),
+    removeFromPlayList: action((state, payload) => {
+      state.playList = state.playList.filter(
+        (item) => item.url !== payload.url
+      );
+    }),
+    isShowPlayList: false,
+    setIsShowPlayList: action((state, payload) => {
+      state.isShowPlayList = payload;
+    }),
   },
 });
 

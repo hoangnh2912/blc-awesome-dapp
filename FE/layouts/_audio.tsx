@@ -1,14 +1,25 @@
-import { Center, Image, Stack, Text } from "@chakra-ui/react";
+import { Box, Center, Image, Stack, Text } from "@chakra-ui/react";
 import { useCallback } from "react";
 import AudioPlayer from "react-h5-audio-player";
+import { MdOutlineQueueMusic } from "react-icons/md";
 import { useStoreActions, useStoreState } from "../services/redux/hook";
 const AudioLayout = ({ children }: { children: React.ReactNode }) => {
   const audioState = useStoreState((state) => state.music.audio);
-  const musicState = useStoreState((state) => state.music);
+  const currentSongState = useStoreState((state) => state.music.currentSong);
+  const isShowPlayListState = useStoreState(
+    (state) => state.music.isShowPlayList
+  );
+  const setIsShowPlayListAction = useStoreActions(
+    (state) => state.music.setIsShowPlayList
+  );
   const setAudioAction = useStoreActions((state) => state.music.setAudio);
   const setIsPlayingAction = useStoreActions(
     (state) => state.music.setIsPlaying
   );
+  const togglePlaylist = () => {
+    setIsShowPlayListAction(!isShowPlayListState);
+  };
+
   const player = useCallback((node: AudioPlayer) => {
     if (node && !audioState) {
       setAudioAction(node);
@@ -25,10 +36,10 @@ const AudioLayout = ({ children }: { children: React.ReactNode }) => {
           w="100%"
           shadow="3xl"
           position="fixed"
-          backgroundImage={`url('${musicState.currentSong?.image}')`}
+          backgroundImage={`url('${currentSongState?.image}')`}
           backgroundSize="cover"
-          opacity={musicState.currentSong ? 1 : 0}
-          display={musicState.currentSong ? "flex" : "none"}
+          opacity={currentSongState ? 1 : 0}
+          display={currentSongState ? "flex" : "none"}
           transition="all 2s ease"
           style={{
             boxShadow: "0px 0px 15px 0px rgba(0,0,0,0.75)",
@@ -36,7 +47,7 @@ const AudioLayout = ({ children }: { children: React.ReactNode }) => {
         >
           <Stack
             direction="row"
-            bgGradient="linear(rgba(0,0,0,0.3), transparent)"
+            bgGradient="linear(rgba(0,0,0,0.6), transparent)"
             backdropFilter="auto"
             backdropBlur="1rem"
             flex={1}
@@ -51,7 +62,7 @@ const AudioLayout = ({ children }: { children: React.ReactNode }) => {
             >
               <Image
                 alt="music"
-                src={musicState.currentSong?.image}
+                src={currentSongState?.image}
                 h={"100px"}
                 w={"100px"}
                 borderRadius="lg"
@@ -69,8 +80,7 @@ const AudioLayout = ({ children }: { children: React.ReactNode }) => {
                 alignSelf="center"
                 pt={2}
               >
-                {musicState.currentSong?.name} -{" "}
-                {musicState.currentSong?.singer}
+                {currentSongState?.name} - {currentSongState?.singer}
               </Text>
               <AudioPlayer
                 ref={player}
@@ -82,12 +92,16 @@ const AudioLayout = ({ children }: { children: React.ReactNode }) => {
                 }}
                 volume={0.3}
                 showSkipControls
-                src={musicState.currentSong?.url}
+                src={currentSongState?.url}
                 onPlay={(e) => setIsPlayingAction(true)}
                 onPause={(e) => setIsPlayingAction(false)}
               />
             </Stack>
-            <Stack flex={1} justifyContent="center" alignItems="center"></Stack>
+            <Stack flex={0.7} justifyContent="center" alignItems="center">
+              <Box onClick={togglePlaylist} cursor="pointer">
+                <MdOutlineQueueMusic color={"white"} size={"2rem"} />
+              </Box>
+            </Stack>
           </Stack>
         </Center>
       </Center>

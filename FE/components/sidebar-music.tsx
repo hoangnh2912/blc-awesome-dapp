@@ -32,20 +32,19 @@ import {
   useDisconnect,
 } from "@thirdweb-dev/react";
 import { useRouter } from "next/router";
-import React, { ReactNode, useEffect, useMemo } from "react";
+import React, { ReactNode, useEffect } from "react";
 import { IconType } from "react-icons";
 import { BsSearch } from "react-icons/bs";
 import { CgProfile } from "react-icons/cg";
-import { FaUber, FaUser } from "react-icons/fa";
+import { FaUser } from "react-icons/fa";
 import { FiMenu } from "react-icons/fi";
 import { IoLogOut } from "react-icons/io5";
-import {
-  SideBarData,
-  SideBarDataMusic,
-  SideBarDataProps,
-} from "../constants/data/sidebar";
+import { SideBarDataProps } from "../constants/data/sidebar";
 import backgroundImage from "../public/background.png";
 import { addNetwork } from "../services/thirdweb";
+import { useStoreActions, useStoreState } from "../services/redux/hook";
+import SongNFTSmallComponent from "./song-nft-small";
+
 const PopoverTrigger = (props: FlexProps) => {
   return <ExPopoverTrigger {...props} />;
 };
@@ -60,6 +59,17 @@ export default function SidebarMusic({
   selectIndex: number;
 }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const setIsShowPlayListAction = useStoreActions(
+    (state) => state.music.setIsShowPlayList
+  );
+  const isOpenPlaylistState = useStoreState(
+    (state) => state.music.isShowPlayList
+  );
+  const playListState = useStoreState((state) => state.music.playList);
+  const currentSongState = useStoreState((state) => state.music.currentSong);
+  const onClosePlaylist = () => {
+    setIsShowPlayListAction(false);
+  };
 
   const connectedWallet = useConnectedWallet();
 
@@ -85,7 +95,7 @@ export default function SidebarMusic({
       <SidebarContent
         data={data}
         selectIndex={selectIndex}
-        onClose={() => onClose}
+        onClose={onClose}
         display={{ base: "none", md: "block" }}
       />
       <Drawer
@@ -103,6 +113,54 @@ export default function SidebarMusic({
             data={data}
             onClose={onClose}
           />
+        </DrawerContent>
+      </Drawer>
+
+      <Drawer
+        autoFocus={false}
+        isOpen={isOpenPlaylistState}
+        placement="right"
+        onClose={onClosePlaylist}
+        returnFocusOnClose={false}
+        onOverlayClick={onClosePlaylist}
+        size={"sm"}
+      >
+        <DrawerContent
+          style={{
+            backgroundColor: "#0D164DEE",
+            boxShadow: "0px 0px 15px 0px rgba(0,0,0,0.75)",
+          }}
+          h={"calc(100vh - 7.9rem)"}
+        >
+          <Flex
+            h="66px"
+            borderBottomWidth={1}
+            borderBottomColor="yellow.400"
+            alignItems="center"
+            px="4"
+            justifyContent="space-between"
+          >
+            <Text
+              color={"yellow.400"}
+              fontSize={"xl"}
+              fontWeight={"bold"}
+              fontFamily={"mono"}
+            >
+              Playlist
+            </Text>
+            <CloseButton
+              color={"white"}
+              bg={"yellow.400"}
+              onClick={onClosePlaylist}
+            />
+          </Flex>
+          {currentSongState && (
+            <SongNFTSmallComponent
+              id={"1"}
+              price={"0.1"}
+              {...currentSongState}
+            />
+          )}
         </DrawerContent>
       </Drawer>
       {/* mobilenav */}
@@ -247,7 +305,7 @@ const AppNav = ({ onOpen }: AppNavProps) => {
       ml={{ base: 0, md: 60 }}
       p={{ base: 1, md: 3 }}
       py={{ base: 2, md: 3 }}
-      bg={"transparent"}
+      bg={"#0D164DEE"}
       direction={"row"}
       borderBottomWidth={2.5}
       borderColor={"yellow.400"}
@@ -259,6 +317,7 @@ const AppNav = ({ onOpen }: AppNavProps) => {
         onClick={onOpen}
         variant="outline"
         color={"white"}
+        bg={"transparent"}
         aria-label="open menu"
         icon={<FiMenu />}
       />

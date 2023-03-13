@@ -14,6 +14,11 @@ interface Music {
   audio: AudioPlayer | undefined;
   setAudio: Action<Music, AudioPlayer>;
   setIsPlaying: Action<Music, boolean>;
+  playList: MusicPlaying[];
+  addToPlayList: Action<Music, MusicPlaying>;
+  removeFromPlayList: Action<Music, MusicPlaying>;
+  isShowPlayList: boolean;
+  setIsShowPlayList: Action<Music, boolean>;
 }
 
 interface StoreModel {

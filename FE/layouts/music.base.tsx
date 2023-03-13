@@ -1,12 +1,9 @@
-import { Box, Center, Flex, Image, Stack, Text } from "@chakra-ui/react";
 import { useNetwork } from "@thirdweb-dev/react";
 import Head from "next/head";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import SidebarMusic from "../components/sidebar-music";
 import { SideBarDataMusic } from "../constants/data/sidebar";
 import styles from "../styles/Home.module.css";
-import AudioPlayer from "react-h5-audio-player";
-import { useStoreActions, useStoreState } from "../services/redux/hook";
 const MusicBaseLayout = ({
   children,
   selectTabIndex = 0,
@@ -16,16 +13,7 @@ const MusicBaseLayout = ({
 }) => {
   const [isBrowser, setIsBrowser] = useState(false);
   const [currentNetwork, switchNetwork] = useNetwork();
-  const musicState = useStoreState((state) => state.music);
-  const setAudioAction = useStoreActions((state) => state.music.setAudio);
-  const setIsPlayingAction = useStoreActions(
-    (state) => state.music.setIsPlaying
-  );
-  const player = useCallback((node: AudioPlayer) => {
-    if (node !== null) {
-      setAudioAction(node);
-    }
-  }, []);
+
   useEffect(() => {
     setIsBrowser(true);
   }, [switchNetwork, currentNetwork]);
