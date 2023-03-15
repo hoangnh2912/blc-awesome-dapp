@@ -1,22 +1,53 @@
 // SPDX-License-Identifier: MIT
 
 pragma solidity ^0.8.0;
+import "./IMusic.sol";
 
 interface IMusicMarket {
-    /**
-     * @dev Returns the URI for token type `id`.
-     *
-     * If the `\{id\}` substring is present in the URI, it must be replaced by
-     * clients with the actual token type ID.
-     */
-    function uri(uint256 id) external view returns (string memory);
+    struct Song {
+        uint id;
+        uint price;
+        uint amount;
+        string uri;
+        address seller;
+    }
 
-    event ListAlbum(
-        bytes32 indexed root,
-        uint256 indexed price,
-        address indexed owner
+    /**
+     * @dev Get song
+     * @param id Song id
+     * @return Song
+     */
+    function song(uint256 id) external view returns (Song memory);
+
+    /**
+     * @dev List a song
+     * @param id Song id
+     * @param price Song price
+     * @param amount Song amount
+     * @param uri Song URI
+     */
+    function listSong(
+        uint256 id,
+        uint256 price,
+        uint256 amount,
+        string calldata uri
+    ) external;
+
+    /**
+     * @dev Buy a song
+     * @param token IMusic token
+     * @param id Song id
+     * Approved amount of MUC must be transferred to the contract before calling this function
+     */
+    function buySong(IMusic token, uint256 id) external;
+
+    event ListSong(
+        uint256 indexed id,
+        address indexed seller,
+        uint256 price,
+        uint256 amount,
+        string uri
     );
 
-    event BuyAlbum(bytes32 indexed root, address indexed buyer);
     event BuySong(uint256 indexed id, address indexed buyer);
 }

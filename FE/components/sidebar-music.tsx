@@ -2,6 +2,7 @@ import {
   Box,
   BoxProps,
   Button,
+  Center,
   CloseButton,
   Drawer,
   DrawerContent,
@@ -14,6 +15,12 @@ import {
   InputGroup,
   InputLeftElement,
   Link,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   Popover,
   PopoverArrow,
   PopoverBody,
@@ -21,15 +28,18 @@ import {
   PopoverContent,
   PopoverHeader,
   PopoverTrigger as ExPopoverTrigger,
+  Spinner,
   Stack,
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
 import {
+  ChainId,
   ConnectWallet,
   useAddress,
-  useConnectedWallet,
   useDisconnect,
+  useNetwork,
+  useSDK,
 } from "@thirdweb-dev/react";
 import { useRouter } from "next/router";
 import React, { ReactNode, useEffect } from "react";
@@ -41,7 +51,6 @@ import { FiMenu } from "react-icons/fi";
 import { IoLogOut } from "react-icons/io5";
 import { SideBarDataProps } from "../constants/data/sidebar";
 import backgroundImage from "../public/background.png";
-import { addNetwork } from "../services/thirdweb";
 import { useStoreActions, useStoreState } from "../services/redux/hook";
 import SongNFTSmallComponent from "./song-nft-small";
 
@@ -49,14 +58,127 @@ const PopoverTrigger = (props: FlexProps) => {
   return <ExPopoverTrigger {...props} />;
 };
 
+const ModalSwitchNetwork = () => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [network, setNetwork] = useNetwork();
+  const switchNetwork = async () => {
+    if (network.data.chain?.id == ChainId.Mumbai && isOpen) {
+      onClose();
+    } else if (setNetwork) {
+      await setNetwork(ChainId.Mumbai);
+    }
+  };
+
+  useEffect(() => {
+    if (network.data.chain) {
+      const currentChainId = network.data.chain.id;
+      if (currentChainId !== ChainId.Mumbai && !isOpen) {
+        onOpen();
+      } else if (currentChainId == ChainId.Mumbai && isOpen) {
+        onClose();
+      }
+    }
+  }, [network.data.chain?.id]);
+
+  return (
+    <Modal
+      isCentered
+      isOpen={isOpen}
+      closeOnOverlayClick={false}
+      onClose={onClose}
+      scrollBehavior="inside"
+    >
+      <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(10px) " />
+      <ModalContent>
+        <ModalHeader>Wrong network</ModalHeader>
+        <ModalBody>
+          <Text>Current network not support</Text>
+          <Center mt={4}>
+            <Button
+              onClick={switchNetwork}
+              _hover={{ bg: "#3443DD" }}
+              color="white"
+              bg="#3443A0"
+            >
+              Switch to Mumbai network
+            </Button>
+          </Center>
+        </ModalBody>
+
+        <ModalFooter />
+      </ModalContent>
+    </Modal>
+  );
+};
+
+const ModalSignMessage = () => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const sdk = useSDK();
+  const [network] = useNetwork();
+
+  const signMessage = async () => {
+    if (sdk) {
+      const signature = await sdk.wallet.sign("Music protocol");
+      localStorage.setItem("signature", signature);
+      onClose();
+    }
+  };
+
+  useEffect(() => {
+    if (network.data.chain && sdk) {
+      const currentChainId = network.data.chain.id;
+      if (
+        currentChainId == ChainId.Mumbai &&
+        !localStorage.getItem("signature")
+      ) {
+        onOpen();
+      } else if (isOpen) {
+        onClose();
+      }
+    }
+  }, [sdk, network.data.chain?.id]);
+
+  return (
+    <Modal
+      isCentered
+      isOpen={isOpen}
+      closeOnOverlayClick={false}
+      onClose={onClose}
+      scrollBehavior="inside"
+    >
+      <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(10px) " />
+      <ModalContent>
+        <ModalHeader>Sign message for verify your wallet</ModalHeader>
+        <ModalBody>
+          <Center>
+            <Button
+              onClick={signMessage}
+              _hover={{ bg: "#3443DD" }}
+              color="white"
+              bg="#3443A0"
+            >
+              Sign message
+            </Button>
+          </Center>
+        </ModalBody>
+
+        <ModalFooter />
+      </ModalContent>
+    </Modal>
+  );
+};
+
 export default function SidebarMusic({
   data,
   content,
   selectIndex,
+  isLoading,
 }: {
   data: Array<SideBarDataProps>;
   content: React.ReactNode;
   selectIndex: number;
+  isLoading: boolean;
 }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const setIsShowPlayListAction = useStoreActions(
@@ -65,19 +187,10 @@ export default function SidebarMusic({
   const isOpenPlaylistState = useStoreState(
     (state) => state.music.isShowPlayList
   );
-  const playListState = useStoreState((state) => state.music.playList);
   const currentSongState = useStoreState((state) => state.music.currentSong);
   const onClosePlaylist = () => {
     setIsShowPlayListAction(false);
   };
-
-  const connectedWallet = useConnectedWallet();
-
-  useEffect(() => {
-    if (connectedWallet) {
-      addNetwork();
-    }
-  }, [connectedWallet]);
 
   return (
     <Box
@@ -92,6 +205,8 @@ export default function SidebarMusic({
       minH="100vh"
       pb={"200px"}
     >
+      <ModalSwitchNetwork />
+      <ModalSignMessage />
       <SidebarContent
         data={data}
         selectIndex={selectIndex}
@@ -166,7 +281,24 @@ export default function SidebarMusic({
       {/* mobilenav */}
       <AppNav onOpen={onOpen} />
       <Box ml={{ base: 0, md: 60 }} p="4" pt={20}>
-        {content}
+        {isLoading ? (
+          <Stack
+            justifyContent="center"
+            alignItems="center"
+            w={"100%"}
+            h={"70vh"}
+          >
+            <Spinner
+              thickness="7px"
+              speed="1s"
+              emptyColor="gray.200"
+              color="yellow.400"
+              size="xl"
+            />
+          </Stack>
+        ) : (
+          content
+        )}
       </Box>
     </Box>
   );

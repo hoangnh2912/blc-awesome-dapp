@@ -187,14 +187,14 @@ const EditProfile: NextPage = () => {
             bg="#3443A0"
             w={{
               base: "100%",
-              md: "20%",
+              md: "max(20%, 150px)",
             }}
             alignSelf="flex-end"
             style={{
               marginTop: "2rem",
             }}
           >
-            Create
+            Update
           </Button>
         </Stack>
         <Stack

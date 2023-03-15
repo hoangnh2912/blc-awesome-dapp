@@ -1,5 +1,6 @@
 import { Box, Center, Image, Stack, Text } from "@chakra-ui/react";
-import { useCallback } from "react";
+import { useRouter } from "next/router";
+import { useCallback, useEffect, useState } from "react";
 import AudioPlayer from "react-h5-audio-player";
 import { MdOutlineQueueMusic } from "react-icons/md";
 import { useStoreActions, useStoreState } from "../services/redux/hook";
@@ -16,6 +17,7 @@ const AudioLayout = ({ children }: { children: React.ReactNode }) => {
   const setIsPlayingAction = useStoreActions(
     (state) => state.music.setIsPlaying
   );
+
   const togglePlaylist = () => {
     setIsShowPlayListAction(!isShowPlayListState);
   };

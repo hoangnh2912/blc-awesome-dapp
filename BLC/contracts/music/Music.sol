@@ -8,37 +8,38 @@ import "./interfaces/IMusicMarket.sol";
 
 contract Music is ERC1155, AccessControl, IMusic {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+    mapping(uint256 => string) private _uris;
 
-    IMusicMarket private immutable _musicMarket;
-
-    constructor(address _market) ERC1155("") {
+    constructor() ERC1155("") {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _grantRole(MINTER_ROLE, _market);
-        _musicMarket = IMusicMarket(_market);
     }
 
     function mint(
         address account,
         uint256 id,
         uint256 amount,
-        bytes calldata data
+        string calldata uri_
     ) external override onlyRole(MINTER_ROLE) {
-        _mint(account, id, amount, data);
+        _mint(account, id, amount, "");
+        _uris[id] = uri_;
     }
 
     function mintBatch(
         address to,
         uint256[] calldata ids,
         uint256[] calldata amounts,
-        bytes calldata data
+        string[] calldata uris_
     ) external override onlyRole(MINTER_ROLE) {
-        _mintBatch(to, ids, amounts, data);
+        _mintBatch(to, ids, amounts, "");
+        for (uint256 i = 0; i < ids.length; ++i) {
+            _uris[ids[i]] = uris_[i];
+        }
     }
 
     function uri(
         uint256 id
     ) public view virtual override(ERC1155) returns (string memory) {
-        return _musicMarket.uri(id);
+        return _uris[id];
     }
 
     function supportsInterface(

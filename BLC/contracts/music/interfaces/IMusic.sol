@@ -8,13 +8,13 @@ interface IMusic is IERC1155 {
         address account,
         uint256 id,
         uint256 amount,
-        bytes calldata data
+        string calldata uri
     ) external;
 
     function mintBatch(
         address to,
         uint256[] calldata ids,
         uint256[] calldata amounts,
-        bytes calldata data
+        string[] calldata uris
     ) external;
 }

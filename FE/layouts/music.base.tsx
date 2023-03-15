@@ -1,8 +1,11 @@
+import { Skeleton } from "@chakra-ui/react";
 import { useNetwork } from "@thirdweb-dev/react";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import SidebarMusic from "../components/sidebar-music";
 import { SideBarDataMusic } from "../constants/data/sidebar";
+import { useStoreActions } from "../services/redux/hook";
 import styles from "../styles/Home.module.css";
 const MusicBaseLayout = ({
   children,
@@ -12,11 +15,30 @@ const MusicBaseLayout = ({
   selectTabIndex?: number;
 }) => {
   const [isBrowser, setIsBrowser] = useState(false);
-  const [currentNetwork, switchNetwork] = useNetwork();
+  const router = useRouter();
 
   useEffect(() => {
     setIsBrowser(true);
-  }, [switchNetwork, currentNetwork]);
+  }, []);
+
+  const [isLoading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const handleStart = (url: string) =>
+      url !== router.asPath && setLoading(true);
+    const handleComplete = (url: string) =>
+      url === router.asPath && setLoading(false);
+
+    router.events.on("routeChangeStart", handleStart);
+    router.events.on("routeChangeComplete", handleComplete);
+    router.events.on("routeChangeError", handleComplete);
+
+    return () => {
+      router.events.off("routeChangeStart", handleStart);
+      router.events.off("routeChangeComplete", handleComplete);
+      router.events.off("routeChangeError", handleComplete);
+    };
+  }, []);
 
   if (typeof window === "undefined" || !isBrowser) {
     return <></>;
@@ -48,6 +70,7 @@ const MusicBaseLayout = ({
         />
       </Head>
       <SidebarMusic
+        isLoading={isLoading}
         selectIndex={selectTabIndex}
         content={children}
         data={SideBarDataMusic}

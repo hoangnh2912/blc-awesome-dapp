@@ -17,10 +17,6 @@ const BaseLayout = ({
 
   useEffect(() => {
     setIsBrowser(true);
-    // if (currentNetwork.data.chain && switchNetwork)
-    //   if (currentNetwork.data.chain.id != ChainId.Mumbai) {
-    //     switchNetwork(ChainId.Mumbai);
-    //   }
   }, [switchNetwork, currentNetwork]);
 
   if (typeof window === "undefined" || !isBrowser) {
