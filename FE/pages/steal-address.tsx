@@ -14,7 +14,7 @@ import _ from "lodash";
 import type { NextPage } from "next";
 import { useEffect, useState } from "react";
 import { useModalTransaction } from "../components/modal-transaction";
-import { ABI } from "../constants/abi";
+import { ABI_STEAL_ADDRESS } from "../constants/abi";
 import BaseLayout from "../layouts/base";
 import ApiServices from "../services/api";
 import { GetStealAddressOutput } from "../services/api/types";
@@ -53,8 +53,8 @@ const StealAddress: NextPage = () => {
         if (res.data.data.privateKey) {
           setPrivKey(res.data.data.privateKey);
           const stealAddressContract = await sdk.getContractFromAbi(
-            ABI.StealAddress.address,
-            ABI.StealAddress.abi
+            ABI_STEAL_ADDRESS.StealAddress.address,
+            ABI_STEAL_ADDRESS.StealAddress.abi
           );
           const pubKey = await stealAddressContract.call(
             "getPublicKey",
@@ -83,8 +83,8 @@ const StealAddress: NextPage = () => {
 
         setLoading.on();
         const stealAddressContract = await sdk.getContractFromAbi(
-          ABI.StealAddress.address,
-          ABI.StealAddress.abi
+          ABI_STEAL_ADDRESS.StealAddress.address,
+          ABI_STEAL_ADDRESS.StealAddress.abi
         );
 
         const { privateKey } = web3.eth.accounts.create();
@@ -114,8 +114,8 @@ const StealAddress: NextPage = () => {
     ) {
       try {
         const stealAddressContract = await sdk.getContractFromAbi(
-          ABI.StealAddress.address,
-          ABI.StealAddress.abi
+          ABI_STEAL_ADDRESS.StealAddress.address,
+          ABI_STEAL_ADDRESS.StealAddress.abi
         );
         const [stAddress, hashS] = await stealAddressContract.call(
           "getStealAddress",
@@ -199,8 +199,8 @@ const StealAddress: NextPage = () => {
     if (sdk && privKey) {
       try {
         const stealAddressContract = await sdk.getContractFromAbi(
-          ABI.StealAddress.address,
-          ABI.StealAddress.abi
+          ABI_STEAL_ADDRESS.StealAddress.address,
+          ABI_STEAL_ADDRESS.StealAddress.abi
         );
         const [__, hashS] = await stealAddressContract.call(
           "getStealAddress",

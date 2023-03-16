@@ -90,6 +90,10 @@ const Constant = {
   },
   CONFIG_CONTRACT,
   ROOT_PATH: __dirname.replace('build/src/constants', ''),
+  MUSIC_MARKET_EVENT: {
+    ListSong: 'ListSong',
+    BuySong: 'BuySong',
+  },
 };
 
 export { Constant, uuid };
