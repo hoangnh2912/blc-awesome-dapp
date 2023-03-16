@@ -1,4 +1,5 @@
 const exec = require("child_process").exec;
+const fs = require("fs");
 
 const runCommand = (command) => {
   return new Promise((resolve, reject) => {
@@ -18,7 +19,8 @@ const runCommand = (command) => {
 };
 
 async function main() {
-  const config = require("../config.json");
+  const pathConfig = process.argv[2];
+  const config = require(`../${pathConfig}`);
   for (let i = 0; i < Object.values(config).length; i++) {
     const contract = Object.values(config)[i];
     const inputStr = contract?.input ? contract.input.join(" ") : "";
