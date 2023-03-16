@@ -33,13 +33,15 @@ const Erc20 = () => {
       Mintable: "Mintable",
       Burnable: "Burnable",
       Pausable: "Pausable",
+      Votes: "Votes",
     }),
     []
   );
   useEffect(() => {
     if (
       features.includes(featuresMap.Mintable) ||
-      features.includes(featuresMap.Pausable)
+      features.includes(featuresMap.Pausable) ||
+      features.includes(featuresMap.Votes)
     ) {
       setAccessControlState.on();
     }
@@ -56,6 +58,7 @@ const Erc20 = () => {
         is_burnable: features.includes(featuresMap.Burnable),
         is_mintable: features.includes(featuresMap.Mintable),
         is_pausable: features.includes(featuresMap.Pausable),
+        is_vote: features.includes(featuresMap.Votes),
       });
       const { bytecode, name: contractName, uuid, abi } = res.data.data;
       try {
@@ -70,7 +73,7 @@ const Erc20 = () => {
                 <a
                   target="_blank"
                   rel="noopener noreferrer"
-                  href={`https://goerli.etherscan.io/tx/${contractDeployed.transactionHash}`}
+                  href={`https://mumbai.polygonscan.com/tx/${contractDeployed.transactionHash}`}
                 >
                   {contractDeployed.transactionHash}
                 </a>
@@ -93,7 +96,7 @@ const Erc20 = () => {
                 <a
                   target="_blank"
                   rel="noopener noreferrer"
-                  href={`https://goerli.etherscan.io/tx/${contractDeployed.transactionHash}`}
+                  href={`https://mumbai.polygonscan.com/tx/${contractDeployed.transactionHash}`}
                 >
                   {contractDeployed.transactionHash}
                 </a>
@@ -105,7 +108,7 @@ const Erc20 = () => {
                 <a
                   target="_blank"
                   rel="noopener noreferrer"
-                  href={`https://goerli.etherscan.io/address/${contractAddress}`}
+                  href={`https://mumbai.polygonscan.com/address/${contractAddress}`}
                 >
                   {contractAddress}
                 </a>
@@ -134,7 +137,8 @@ const Erc20 = () => {
   const onChangeCheckBoxAccessControl = () => {
     if (
       features.includes(featuresMap.Mintable) ||
-      features.includes(featuresMap.Pausable)
+      features.includes(featuresMap.Pausable) ||
+      features.includes(featuresMap.Votes)
     ) {
       return toast({
         title: `You can't disable Access Control when Mintable or Pausable is enabled`,
@@ -190,6 +194,7 @@ const Erc20 = () => {
           <Checkbox value={featuresMap.Mintable}>Mintable</Checkbox>
           <Checkbox value={featuresMap.Burnable}>Burnable</Checkbox>
           <Checkbox value={featuresMap.Pausable}>Pausable</Checkbox>
+          <Checkbox value={featuresMap.Votes}>Votes</Checkbox>
         </Stack>
       </CheckboxGroup>
       <Stack direction={["column", "row"]}>

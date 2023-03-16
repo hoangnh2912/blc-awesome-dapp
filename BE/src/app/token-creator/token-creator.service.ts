@@ -1,13 +1,28 @@
-import { Constant, uuid } from '@constants';
+import { Constant, logger, uuid } from '@constants';
 import { AxiosGet, compile, verify } from '@providers';
 import fs from 'fs';
 import { GetAbiInput, ERC1155Input, ERC20Input, ERC721Input, VerifyInput } from './token-creator';
 
 export class TokenCreatorService {
-  async erc20({ name, initial_supply, is_burnable, is_mintable, is_pausable, symbol }: ERC20Input) {
+  async erc20({
+    name,
+    initial_supply,
+    is_burnable,
+    is_mintable,
+    is_pausable,
+    symbol,
+    is_vote,
+  }: ERC20Input) {
     const topContract = `// SPDX-License-Identifier: MIT\npragma solidity ^0.8.9;\n`;
 
     let importLibraries: Array<string> | string = [`@openzeppelin/contracts/token/ERC20/ERC20.sol`];
+    if (is_vote) {
+      importLibraries.push(`@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Permit.sol`);
+      importLibraries.push(`@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol`);
+      is_burnable = false;
+      is_mintable = false;
+      is_pausable = false;
+    }
     if (is_burnable) {
       importLibraries.push(`@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol`);
     }
@@ -22,6 +37,7 @@ export class TokenCreatorService {
     importLibraries = [...new Set(importLibraries)].map(e => `import "${e}";`).join('\n');
 
     let constructorContent = ``;
+    let extendedConstructorContent = ``;
 
     if (initial_supply) {
       constructorContent += `_mint(msg.sender, ${initial_supply} * 10 ** decimals());`;
@@ -51,6 +67,31 @@ export class TokenCreatorService {
   }`);
     }
 
+    if (is_vote) {
+      contractBody.push(`// The functions below are overrides required by Solidity.`);
+
+      contractBody.push(`function _afterTokenTransfer(address from, address to, uint256 amount)
+          internal
+          override(ERC20, ERC20Votes)
+      {
+          super._afterTokenTransfer(from, to, amount);
+      }`);
+
+      contractBody.push(`function _mint(address to, uint256 amount)
+          internal
+          override(ERC20, ERC20Votes)
+      {
+          super._mint(to, amount);
+      }`);
+
+      contractBody.push(`function _burn(address account, uint256 amount)
+          internal
+          override(ERC20, ERC20Votes)
+      {
+          super._burn(account, amount);
+      }`);
+    }
+
     contractBody = [...new Set(contractBody)].map(e => e.trim()).join('\n');
 
     let extendContract: Array<string> | string = ['ERC20'];
@@ -60,8 +101,19 @@ export class TokenCreatorService {
       extendContract.push('Ownable');
     }
     if (is_mintable) extendContract.push('Ownable');
+    if (is_vote) {
+      extendContract.push('ERC20Permit');
+      extendContract.push('ERC20Votes');
+    }
 
     extendContract = [...new Set(extendContract)].join(', ');
+
+    let extendedOveride: Array<string> | string = [];
+    if (is_vote) {
+      extendedOveride.push(`ERC20Permit("${name.trim()}")`);
+    }
+
+    extendedConstructorContent = [...new Set(extendedOveride)].join(', ');
 
     const contractName = name
       .trim()
@@ -70,12 +122,13 @@ export class TokenCreatorService {
       .join('');
 
     let contractBase = `\ncontract ${contractName} is ${extendContract} {
-        constructor() ERC20("${name.trim()}", "${symbol.trim()}") {
+        constructor() ERC20("${name.trim()}", "${symbol.trim()}") ${extendedConstructorContent} {
             ${constructorContent}
         }
         ${contractBody}
     }`;
     const finalContract = topContract + importLibraries + contractBase;
+
     const { bytecode, nameUnique, abi } = await this.compileContract(contractName, finalContract);
 
     return {
@@ -94,11 +147,20 @@ export class TokenCreatorService {
     is_pausable,
     symbol,
     is_uri_storage,
+    is_vote,
   }: ERC721Input) {
     const topContract = `// SPDX-License-Identifier: MIT\npragma solidity ^0.8.9;\n`;
     let importLibraries: Array<string> | string = [
       `@openzeppelin/contracts/token/ERC721/ERC721.sol`,
     ];
+
+    if (is_vote) {
+      importLibraries.push(`@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol`);
+      importLibraries.push(`@openzeppelin/contracts/token/ERC721/extensions/draft-ERC721Votes.sol`);
+      is_burnable = false;
+      is_mintable = false;
+      is_pausable = false;
+    }
 
     if (is_uri_storage)
       importLibraries.push(`@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol`);
@@ -169,6 +231,15 @@ export class TokenCreatorService {
   }`);
     }
 
+    if (is_vote) {
+      contractBody.push(`function _afterTokenTransfer(address from, address to, uint256 tokenId, uint256 batchSize)
+          internal
+          override(ERC721, ERC721Votes)
+      {
+          super._afterTokenTransfer(from, to, tokenId, batchSize);
+      }`);
+    }
+
     contractBody = [...new Set(contractBody)].map(e => e.trim()).join('\n');
 
     let extendContract: Array<string> | string = ['ERC721'];
@@ -179,7 +250,21 @@ export class TokenCreatorService {
     }
     if (is_mintable) extendContract.push('Ownable');
     if (is_burnable) extendContract.push('ERC721Burnable');
+    if (is_vote) {
+      extendContract.push('EIP712');
+      extendContract.push('ERC721Votes');
+    }
     extendContract = [...new Set(extendContract)].join(', ');
+
+    let extendedConstructorContent = ``;
+    let extendedOveride: Array<string> | string = [];
+
+    //TODO: dynamic version EIP712
+    if (is_vote) {
+      extendedOveride.push(`EIP712("${name.trim()}", "1")`);
+    }
+
+    extendedConstructorContent = [...new Set(extendedOveride)].join(', ');
 
     const contractName = name
       .trim()
@@ -188,10 +273,13 @@ export class TokenCreatorService {
       .join('');
 
     let contractBase = `\ncontract ${contractName} is ${extendContract} {
-        constructor() ERC721("${name.trim()}", "${symbol.trim()}") {}
+        constructor() ERC721("${name.trim()}", "${symbol.trim()}") ${extendedConstructorContent} {}
         ${contractBody}
     }`;
     const finalContract = topContract + importLibraries + contractBase;
+
+    console.log(finalContract);
+
     const { bytecode, nameUnique, abi } = await this.compileContract(contractName, finalContract);
 
     return {
@@ -302,7 +390,30 @@ export class TokenCreatorService {
     const nameUnique = uuid();
     fs.mkdirSync(`${Constant.ROOT_PATH}/contracts`, { recursive: true });
     fs.writeFileSync(`${Constant.ROOT_PATH}/contracts/${nameUnique}.sol`, contractContent, 'utf8');
-    await compile();
+    try {
+      await compile();
+    } catch (e) {
+      logger.error(e);
+      logger.info('Cleaning contract and recompile...');
+      fs.readdir(`${Constant.ROOT_PATH}/contracts/`, function (err, files) {
+        //handling error
+        if (err) {
+          return console.log('Unable to scan directory: ' + err);
+        }
+        //listing all files using forEach
+        files.forEach(function (file) {
+          // Do whatever you want to do with the file
+          logger.info(file);
+          try {
+            fs.unlinkSync(`${Constant.ROOT_PATH}/contracts/` + file);
+            //file removed
+          } catch (err) {
+            logger.error(err);
+          }
+        });
+      });
+    }
+
     const jsonCompiled = JSON.parse(
       fs.readFileSync(
         `${Constant.ROOT_PATH}/artifacts/contracts/${nameUnique}.sol/${contractName}.json`,
