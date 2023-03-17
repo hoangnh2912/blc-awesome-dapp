@@ -7,6 +7,7 @@ interface ERC20Input {
   is_mintable: boolean;
   is_burnable: boolean;
   is_pausable: boolean;
+  is_vote: boolean;
 }
 interface ERC721Input {
   name: string;
@@ -16,6 +17,7 @@ interface ERC721Input {
   is_burnable: boolean;
   is_pausable: boolean;
   is_uri_storage: boolean;
+  is_vote: boolean;
 }
 interface ERC1155Input {
   name: string;

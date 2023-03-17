@@ -71,7 +71,7 @@ const Erc1155 = () => {
                 <a
                   target="_blank"
                   rel="noopener noreferrer"
-                  href={`https://goerli.etherscan.io/tx/${contractDeployed.transactionHash}`}
+                  href={`https://mumbai.polygonscan.com/tx/${contractDeployed.transactionHash}`}
                 >
                   {contractDeployed.transactionHash}
                 </a>
@@ -94,7 +94,7 @@ const Erc1155 = () => {
                 <a
                   target="_blank"
                   rel="noopener noreferrer"
-                  href={`https://goerli.etherscan.io/tx/${contractDeployed.transactionHash}`}
+                  href={`https://mumbai.polygonscan.com/tx/${contractDeployed.transactionHash}`}
                 >
                   {contractDeployed.transactionHash}
                 </a>
@@ -106,7 +106,7 @@ const Erc1155 = () => {
                 <a
                   target="_blank"
                   rel="noopener noreferrer"
-                  href={`https://goerli.etherscan.io/address/${contractAddress}`}
+                  href={`https://mumbai.polygonscan.com/address/${contractAddress}`}
                 >
                   {contractAddress}
                 </a>

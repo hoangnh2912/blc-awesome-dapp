@@ -20,7 +20,9 @@ const runCommand = (command: string): Promise<string> => {
     });
   });
 };
+
 const compile = async () => {
+  await run('clean');
   await run('compile');
 };
 
