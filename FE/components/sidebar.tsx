@@ -54,7 +54,7 @@ export default function Sidebar({
 
   useEffect(() => {
     if (connectedWallet) {
-      addNetwork();
+      // addNetwork();
     }
   }, [connectedWallet]);
 

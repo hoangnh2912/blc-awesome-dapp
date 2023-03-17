@@ -17,6 +17,7 @@ import {
   Link,
   Modal,
   ModalBody,
+  ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
@@ -61,6 +62,7 @@ const PopoverTrigger = (props: FlexProps) => {
 const ModalSwitchNetwork = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [network, setNetwork] = useNetwork();
+  const disconnect = useDisconnect();
   const switchNetwork = async () => {
     if (network.data.chain?.id == ChainId.Mumbai && isOpen) {
       onClose();
@@ -84,13 +86,17 @@ const ModalSwitchNetwork = () => {
     <Modal
       isCentered
       isOpen={isOpen}
-      closeOnOverlayClick={false}
-      onClose={onClose}
+      closeOnOverlayClick
+      onClose={() => {
+        disconnect();
+        onClose();
+      }}
       scrollBehavior="inside"
     >
       <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(10px) " />
       <ModalContent>
         <ModalHeader>Wrong network</ModalHeader>
+        <ModalCloseButton />
         <ModalBody>
           <Text>Current network not support</Text>
           <Center mt={4}>
@@ -115,11 +121,14 @@ const ModalSignMessage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const sdk = useSDK();
+  const address = useAddress();
   const [network] = useNetwork();
+  const disconnect = useDisconnect();
 
   const signMessage = async () => {
-    if (sdk) {
+    if (sdk && address) {
       const signature = await sdk.wallet.sign("Music protocol");
+      localStorage.setItem("address", address.toLowerCase());
       localStorage.setItem("signature", signature);
       onClose();
     }
@@ -128,23 +137,27 @@ const ModalSignMessage = () => {
   useEffect(() => {
     if (network.data.chain && sdk) {
       const currentChainId = network.data.chain.id;
-      if (
-        currentChainId == ChainId.Mumbai &&
-        !localStorage.getItem("signature")
-      ) {
-        onOpen();
+      if (currentChainId == ChainId.Mumbai && address) {
+        if (
+          localStorage.getItem("address") != address.toLowerCase() ||
+          !localStorage.getItem("signature")
+        )
+          onOpen();
       } else if (isOpen) {
         onClose();
       }
     }
-  }, [sdk, network.data.chain?.id]);
+  }, [sdk, network.data.chain?.id, address]);
 
   return (
     <Modal
       isCentered
       isOpen={isOpen}
-      closeOnOverlayClick={false}
-      onClose={onClose}
+      closeOnOverlayClick
+      onClose={() => {
+        disconnect();
+        onClose();
+      }}
       scrollBehavior="inside"
     >
       <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(10px) " />

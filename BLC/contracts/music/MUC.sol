@@ -6,7 +6,9 @@ import "@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Permit.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 contract MUC is ERC20Permit {
-    constructor() ERC20("Music", "MUC") ERC20Permit("Music") {
-        _mint(msg.sender, 1000000000 ether);
+    constructor() ERC20("Music", "MUC") ERC20Permit("Music") {}
+
+    function faucet() external {
+        _mint(msg.sender, 10000 ether);
     }
 }

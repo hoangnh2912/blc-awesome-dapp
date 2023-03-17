@@ -50,7 +50,7 @@ const MusicBaseLayout = ({
         <title>Music Protocol</title>
         <link rel="shortcut icon" href="/favicon.ico" />
         <meta name="description" content="Music" />
-        <meta property="og:url" content="http://Music.com" />
+        <meta property="og:url" content="http://scimta.com" />
         <meta property="og:type" content="website" />
         <meta property="og:title" content="Music Dapp" />
         <meta property="og:description" content="Music" />
