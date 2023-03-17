@@ -20,7 +20,6 @@ import { useRouter } from "next/router";
 import { BsPauseFill } from "react-icons/bs";
 import { FaShareAlt, FaUserEdit } from "react-icons/fa";
 import { MdRemoveShoppingCart, MdSell } from "react-icons/md";
-import SongNFTComponent, { SongNFTProps } from "../../../components/song-nft";
 import MusicBaseLayout from "../../../layouts/music.base";
 import { useStoreActions } from "../../../services/redux/hook";
 
@@ -40,42 +39,42 @@ const Profile = () => {
     exercitation ullamco laboris nisi ut aliquip ex ea commodo`,
   };
 
-  const data = {
-    id: "4",
-    name: "Song Name 4",
-    seller: "0x1234567890223443342ddawweffsa",
-    singer: "Snoop Dog",
-    attributes: [
-      {
-        trait_type: "Genre",
-        value: "Pop",
-      },
-      {
-        trait_type: "Mood",
-        value: "Happy",
-      },
-      {
-        trait_type: "Instrument",
-        value: "Guitar",
-      },
-    ],
-    description: "This is a song description",
-    date: new Date(),
-    total: 100,
-    sold: 10,
-    price: "5",
-    url: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/9d/75/53/9d755300-a1c2-7a01-51d5-8ffc4b4ba642/mzaf_12119942434649250117.plus.aac.ep.m4a",
-    image:
-      "https://images.unsplash.com/photo-1678002219434-c6738513037e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1472&q=80",
-  };
+  // const data = {
+  //   id: "4",
+  //   name: "Song Name 4",
+  //   seller: "0x1234567890223443342ddawweffsa",
+  //   singer: "Snoop Dog",
+  //   attributes: [
+  //     {
+  //       trait_type: "Genre",
+  //       value: "Pop",
+  //     },
+  //     {
+  //       trait_type: "Mood",
+  //       value: "Happy",
+  //     },
+  //     {
+  //       trait_type: "Instrument",
+  //       value: "Guitar",
+  //     },
+  //   ],
+  //   description: "This is a song description",
+  //   date: new Date(),
+  //   total: 100,
+  //   sold: 10,
+  //   price: "5",
+  //   url: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/9d/75/53/9d755300-a1c2-7a01-51d5-8ffc4b4ba642/mzaf_12119942434649250117.plus.aac.ep.m4a",
+  //   image:
+  //     "https://images.unsplash.com/photo-1678002219434-c6738513037e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1472&q=80",
+  // };
 
-  const studio = [data];
+  // const studio = [data];
 
-  const collection = [data];
+  // const collection = [data];
 
-  const onPlayMusic = (music: SongNFTProps) => {
-    playMusicAction(music);
-  };
+  // const onPlayMusic = (music) => {
+  //   playMusicAction(music);
+  // };
   return (
     <MusicBaseLayout selectTabIndex={-1}>
       <Stack justifyContent="space-between" direction={"row"}>
@@ -321,7 +320,7 @@ const Profile = () => {
                 md: "none",
               }}
             >
-              <SongNFTComponent {...data} />
+              {/* <SongNFTComponent {...data} /> */}
             </Stack>
           </TabPanel>
           <TabPanel>
@@ -401,7 +400,7 @@ const Profile = () => {
                 md: "none",
               }}
             >
-              <SongNFTComponent {...data} />
+              {/* <SongNFTComponent {...data} /> */}
             </Stack>
           </TabPanel>
         </TabPanels>
