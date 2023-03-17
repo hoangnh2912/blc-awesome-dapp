@@ -1,7 +1,6 @@
 import { Constant, logger, onError, onSuccess, OptionResponse } from '@constants';
-import { SignatureMiddleware } from '@middlewares';
 import { Singleton } from '@providers';
-import { Body, Controller, Get, Middlewares, Post, Query, Route, Security, Tags } from 'tsoa';
+import { Body, Controller, Get, Post, Query, Route, Security, Tags } from 'tsoa';
 import {
   GetPrivateKeyOutput,
   SubmitPrivateKeyInput,
@@ -12,7 +11,6 @@ const { NETWORK_STATUS_CODE, NETWORK_STATUS_MESSAGE } = Constant;
 @Tags('steal-address')
 @Route('steal-address')
 @Security('authorize')
-@Middlewares([SignatureMiddleware])
 export class StealAddressController extends Controller {
   @Post('submit-private-key')
   public async submitPrivateKey(

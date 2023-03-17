@@ -1,7 +1,8 @@
 import { Constant, logger, onError, onSuccess, OptionResponse } from '@constants';
 import { SignatureMiddleware } from '@middlewares';
+import { Singleton } from '@providers';
 import { IMarket } from '@schemas';
-import { Controller, Get, Middlewares, Route, Security, Tags } from 'tsoa';
+import { Controller, Get, Middlewares, Request, Route, Security, Tags } from 'tsoa';
 
 const { NETWORK_STATUS_CODE, NETWORK_STATUS_MESSAGE } = Constant;
 @Tags('music')
@@ -10,9 +11,10 @@ const { NETWORK_STATUS_CODE, NETWORK_STATUS_MESSAGE } = Constant;
 @Middlewares([SignatureMiddleware])
 export class MusicController extends Controller {
   @Get('list-song')
-  public async getListSong(): Promise<OptionResponse<IMarket[]>> {
+  public async getListSong(@Request() request: any): Promise<OptionResponse<IMarket[]>> {
     try {
-      return onSuccess();
+      const address = request.headers['address'];
+      return onSuccess(await Singleton.getMusicInstance().getListSong(`${address}`));
     } catch (error) {
       logger.error(error);
       this.setStatus(NETWORK_STATUS_CODE.INTERNAL_SERVER_ERROR);

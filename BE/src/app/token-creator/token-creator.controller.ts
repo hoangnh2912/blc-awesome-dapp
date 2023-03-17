@@ -1,12 +1,11 @@
 import { Constant, logger, onError, onSuccess, OptionResponse } from '@constants';
-import { SignatureMiddleware } from '@middlewares';
 import { Singleton } from '@providers';
-import { Body, Controller, Get, Middlewares, Post, Query, Route, Security, Tags } from 'tsoa';
+import { Body, Controller, Get, Post, Query, Route, Security, Tags } from 'tsoa';
 import {
-  GetAbiOutput,
   ERC1155Input,
   ERC20Input,
   ERC721Input,
+  GetAbiOutput,
   TokenCreatorOutput,
   VerifyInput,
 } from './token-creator';
@@ -15,7 +14,6 @@ const { NETWORK_STATUS_CODE, NETWORK_STATUS_MESSAGE } = Constant;
 @Tags('token-creator')
 @Route('token-creator')
 @Security('authorize')
-@Middlewares([SignatureMiddleware])
 export class TokenCreatorController extends Controller {
   @Post('erc20')
   public async erc20(

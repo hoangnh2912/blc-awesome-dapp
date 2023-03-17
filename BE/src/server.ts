@@ -6,8 +6,9 @@ import swaggerUi from 'swagger-ui-express';
 import { RegisterRoutes } from '../build/routes';
 import { logger } from './constants';
 import { exec } from 'child_process';
-import { connectToMongoDB } from '@providers';
+import { connectToMongoDB, startSynchronizeDataFromSmartContract } from '@providers';
 
+startSynchronizeDataFromSmartContract();
 connectToMongoDB();
 const app = express();
 app.use(express.json());

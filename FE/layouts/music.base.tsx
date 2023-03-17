@@ -26,8 +26,14 @@ const MusicBaseLayout = ({
   useEffect(() => {
     const handleStart = (url: string) =>
       url !== router.asPath && setLoading(true);
-    const handleComplete = (url: string) =>
-      url === router.asPath && setLoading(false);
+    const handleComplete = (url: string) => {
+      if (
+        url &&
+        typeof url == "string" &&
+        url.split("?")[0] === router.asPath.split("?")[0]
+      )
+        setLoading(false);
+    };
 
     router.events.on("routeChangeStart", handleStart);
     router.events.on("routeChangeComplete", handleComplete);

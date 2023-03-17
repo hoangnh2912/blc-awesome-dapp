@@ -63,6 +63,24 @@ const uuid = () => {
   return `x${u}`.split('-').join('');
 };
 
+const GENRE = [
+  'Acoustic',
+  'Alternative',
+  'Blues',
+  'Classical',
+  'Country',
+  'Dance',
+  'Electronic',
+  'Hip Hop',
+  'Indie',
+  'Pop',
+  'R&B',
+];
+
+const MOOD = ['Happy', 'Sad', 'Romantic', 'Angry', 'Relax', 'Party'];
+
+const INSTRUMENT = ['Piano', 'Guitar', 'Violin', 'Drum', 'Bass', 'Saxophone'];
+
 const Constant = {
   ZERO_ADDRESS,
   ZERO_BYTES32,
@@ -93,6 +111,11 @@ const Constant = {
   MUSIC_MARKET_EVENT: {
     ListSong: 'ListSong',
     BuySong: 'BuySong',
+  },
+  ATTRIBUTES: {
+    GENRE,
+    MOOD,
+    INSTRUMENT,
   },
 };
 

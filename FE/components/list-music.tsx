@@ -1,15 +1,35 @@
 import { Box, Center, SimpleGrid, Text } from "@chakra-ui/react";
-import SongNFTComponent, { SongNFTProps } from "./song-nft";
-const ListMusicComponent = ({ data }: { data: SongNFTProps[] }) => {
+import { useRouter } from "next/router";
+import { GetMarketOutput } from "../services/api/types";
+import SongNFTComponent from "./song-nft";
+const ListMusicComponent = ({
+  data,
+}: {
+  data: {
+    data: GetMarketOutput[];
+    genre: string;
+  };
+}) => {
+  const router = useRouter();
+
+  const onClickMore = () => {
+    router.push(`/music/list?genre=${data.genre}`);
+  };
+
   return (
     <Box>
+      <Text py={"5"} color="white" fontSize={["xl", "2xl"]} fontWeight="black">
+        {data.genre.toUpperCase()}
+      </Text>
       <SimpleGrid columns={[1, 2, 2, 2, 4]} gap={3}>
-        {data.map((item, index) => (
+        {data.data.map((item, index) => (
           <SongNFTComponent key={index} {...item} />
         ))}
       </SimpleGrid>
       <Center>
         <Text
+          onClick={onClickMore}
+          _hover={{ bg: "white", color: "black" }}
           cursor="pointer"
           borderWidth="1px"
           borderRadius="2xl"

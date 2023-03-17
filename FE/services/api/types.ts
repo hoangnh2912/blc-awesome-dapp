@@ -60,6 +60,29 @@ interface GetStealAddressOutput {
   address: string;
   from: string;
 }
+
+interface GetMarketOutput {
+  name: string;
+  amount: string;
+  price: string;
+  description: string;
+  id: string;
+  left: string;
+  audio: string;
+  image: string;
+  singer: string;
+  seller: string;
+  attributes: {
+    trait_type: string;
+    value: string;
+  }[];
+  duration: number;
+  bitrate: number;
+  created_at: Date;
+  updated_at?: Date;
+  deleted_at?: Date;
+}
+
 export type {
   ERC20Input,
   TokenCreatorOutput,
@@ -72,4 +95,5 @@ export type {
   GetPrivateKeyInput,
   GetPrivateKeyOutput,
   GetStealAddressOutput,
+  GetMarketOutput,
 };

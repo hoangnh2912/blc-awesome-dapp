@@ -9,6 +9,7 @@ import {
   GetAbiOutput,
   GetPrivateKeyOutput,
   GetStealAddressOutput,
+  GetMarketOutput,
 } from "./types";
 type SuccessResponse<T> = {
   data: T;
@@ -81,6 +82,29 @@ const ApiServices = {
           params: { address },
         }
       ),
+  },
+  music: {
+    getHomeMarket: () =>
+      AxiosGet<
+        {
+          data: GetMarketOutput[];
+          genre: string;
+        }[]
+      >("/market/home-market"),
+    getListMarket: (
+      search: string = "",
+      page: number = 1,
+      limit: number = 24,
+      genre: string = ""
+    ) =>
+      AxiosGet<GetMarketOutput[]>("/market/list-market", {
+        params: {
+          search,
+          page,
+          limit,
+          genre,
+        },
+      }),
   },
 };
 

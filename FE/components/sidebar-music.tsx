@@ -14,6 +14,7 @@ import {
   Input,
   InputGroup,
   InputLeftElement,
+  InputRightElement,
   Link,
   Modal,
   ModalBody,
@@ -43,7 +44,7 @@ import {
   useSDK,
 } from "@thirdweb-dev/react";
 import { useRouter } from "next/router";
-import React, { ReactNode, useEffect } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import { IconType } from "react-icons";
 import { BsSearch } from "react-icons/bs";
 import { CgProfile } from "react-icons/cg";
@@ -439,9 +440,19 @@ interface AppNavProps extends FlexProps {
 }
 
 const AppNav = ({ onOpen }: AppNavProps) => {
-  const { replace } = useRouter();
+  const { replace, push, query } = useRouter();
+
   const address = useAddress();
   const disconnect = useDisconnect();
+
+  const [search, setSearch] = useState(query.search || "");
+
+  const onEnterPress = (e: any) => {
+    if (e.key === "Enter") {
+      push(`/music/list?search=${search}`, undefined, { shallow: true });
+    }
+  };
+
   return (
     <Stack
       position={"fixed"}
@@ -467,18 +478,23 @@ const AppNav = ({ onOpen }: AppNavProps) => {
         icon={<FiMenu />}
       />
       <InputGroup w={["100%", "70%", "65%", "60%", "50%", "35%"]}>
-        <InputLeftElement pointerEvents="none">
-          <BsSearch color="white" />
-        </InputLeftElement>
         <Input
           borderWidth={0}
           bg={"rgba(0, 0, 0, 0.3)"}
           boxShadow={"2xl"}
           borderRadius={100}
           color={"white"}
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          onKeyPress={onEnterPress}
           fontSize={["xs", "sm", "md"]}
           placeholder="Search song, artist, ..."
         />
+        {search && (
+          <InputRightElement cursor="pointer" pointerEvents="none">
+            <BsSearch color="white" />
+          </InputRightElement>
+        )}
       </InputGroup>
 
       <Popover closeOnBlur={false} trigger="hover" placement="bottom-start">

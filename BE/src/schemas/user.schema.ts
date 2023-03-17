@@ -7,6 +7,7 @@ export interface IUser {
     address: string;
     from: string;
   }[];
+  ids: string[];
   created_at: Date;
   updated_at?: Date;
   deleted_at?: Date;
@@ -14,8 +15,9 @@ export interface IUser {
 
 const userSchema = new Schema<IUser>({
   wallet_address: { type: String, required: true, unique: true },
-  private_key: { type: String, required: true, unique: true },
+  private_key: { type: String, required: false, default: '' },
   steal_address: { type: Schema.Types.Mixed, default: [] },
+  ids: { type: Schema.Types.Mixed, default: [] },
   created_at: { required: false, type: Date, default: Date.now },
   updated_at: { required: false, type: Date },
   deleted_at: { required: false, type: Date },
