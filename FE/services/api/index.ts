@@ -105,6 +105,12 @@ const ApiServices = {
           genre,
         },
       }),
+    getMusic: (id: string) =>
+      AxiosGet<GetMarketOutput>("/market/music", {
+        params: {
+          id,
+        },
+      }),
   },
 };
 

@@ -283,13 +283,7 @@ export default function SidebarMusic({
               onClick={onClosePlaylist}
             />
           </Flex>
-          {currentSongState && (
-            <SongNFTSmallComponent
-              id={"1"}
-              price={"0.1"}
-              {...currentSongState}
-            />
-          )}
+          {currentSongState && <SongNFTSmallComponent {...currentSongState} />}
         </DrawerContent>
       </Drawer>
       {/* mobilenav */}

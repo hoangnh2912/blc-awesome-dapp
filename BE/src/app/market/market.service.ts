@@ -96,14 +96,21 @@ export class MarketService {
             {
               limit: 4,
             },
-          ).then(data => {
-            resolve({
-              genre,
-              data,
-            });
-          }).catch(reject);
+          )
+            .then(data => {
+              resolve({
+                genre,
+                data,
+              });
+            })
+            .catch(reject);
         });
       }),
     );
+  }
+  public async getMusic(id: string) {
+    return await Market.findOne({
+      id,
+    });
   }
 }

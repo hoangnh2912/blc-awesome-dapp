@@ -1,6 +1,5 @@
 import { Box, Center, Image, Stack, Text } from "@chakra-ui/react";
-import { useRouter } from "next/router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback } from "react";
 import AudioPlayer from "react-h5-audio-player";
 import { MdOutlineQueueMusic } from "react-icons/md";
 import { useStoreActions, useStoreState } from "../services/redux/hook";
@@ -94,7 +93,7 @@ const AudioLayout = ({ children }: { children: React.ReactNode }) => {
                 }}
                 volume={0.3}
                 showSkipControls
-                src={currentSongState?.url}
+                src={currentSongState?.audio}
                 onPlay={(e) => setIsPlayingAction(true)}
                 onPause={(e) => setIsPlayingAction(false)}
               />

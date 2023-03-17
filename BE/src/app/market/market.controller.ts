@@ -36,4 +36,15 @@ export class MarketController extends Controller {
       return onError(NETWORK_STATUS_MESSAGE.INTERNAL_SERVER_ERROR);
     }
   }
+
+  @Get('music')
+  public async getMusic(@Query() id: string): Promise<OptionResponse<IMarket>> {
+    try {
+      return onSuccess(await Singleton.getMarketInstance().getMusic(id));
+    } catch (error) {
+      logger.error(error);
+      this.setStatus(NETWORK_STATUS_CODE.INTERNAL_SERVER_ERROR);
+      return onError(NETWORK_STATUS_MESSAGE.INTERNAL_SERVER_ERROR);
+    }
+  }
 }

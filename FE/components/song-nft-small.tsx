@@ -2,25 +2,29 @@ import { Box, Image, Stack, Text } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { FaPlay } from "react-icons/fa";
 import { TiMediaPause } from "react-icons/ti";
+import { ipfsToGateway } from "../constants/utils";
+import { GetMarketOutput } from "../services/api/types";
 import { useStoreActions, useStoreState } from "../services/redux/hook";
-import { SongNFTProps } from "./song-nft";
 
 const SongNFTSmallComponent = ({
   image,
   name,
   singer,
-  url,
+  audio,
   id,
-}: SongNFTProps) => {
+  ...rest
+}: GetMarketOutput) => {
   const playMusicAction = useStoreActions((state) => state.music.playMusic);
   const currentSongState = useStoreState((state) => state.music.currentSong);
   const isPlayingState = useStoreState((state) => state.music.isPlaying);
   const onPlayMusic = () => {
     playMusicAction({
-      url,
+      audio: ipfsToGateway(audio),
       name,
       singer,
-      image,
+      id,
+      image: ipfsToGateway(image),
+      ...rest,
     });
   };
 
@@ -46,7 +50,7 @@ const SongNFTSmallComponent = ({
       }}
     >
       <Box
-        backgroundImage={`url(${image})`}
+        backgroundImage={`url(${ipfsToGateway(image)})`}
         backgroundSize="cover"
         backgroundColor="transparent"
       >
@@ -71,7 +75,7 @@ const SongNFTSmallComponent = ({
             borderRadius="lg"
             cursor="pointer"
             onClick={goToMusic}
-            src={image}
+            src={ipfsToGateway(image)}
           />
           <Stack flex={1} justifyContent="space-between" direction="row">
             <Stack flex={4}>
@@ -117,7 +121,8 @@ const SongNFTSmallComponent = ({
               }}
               onClick={onPlayMusic}
             >
-              {isPlayingState && currentSongState?.url == url ? (
+              {isPlayingState &&
+              currentSongState?.audio == ipfsToGateway(audio) ? (
                 <TiMediaPause size="20px" color="black" />
               ) : (
                 <FaPlay size="10px" color="black" />

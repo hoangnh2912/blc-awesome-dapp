@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   Image,
   Progress,
@@ -8,9 +7,13 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 import { BsCart4, BsFillPlayFill } from "react-icons/bs";
 import { TiMediaPause } from "react-icons/ti";
+import { ipfsToGateway } from "../../constants/utils";
 import MusicBaseLayout from "../../layouts/music.base";
+import ApiServices from "../../services/api";
+import { GetMarketOutput } from "../../services/api/types";
 import { useStoreActions, useStoreState } from "../../services/redux/hook";
 
 const Music = () => {
@@ -20,37 +23,30 @@ const Music = () => {
   const currentSongState = useStoreState((state) => state.music.currentSong);
   const isPlayingState = useStoreState((state) => state.music.isPlaying);
 
-  const data = {
-    id: "4",
-    name: "Song Name 4",
-    seller: "0x1234567890223443342ddawweffsa",
-    singer: "Snoop Dog",
-    attributes: [
-      {
-        trait_type: "Genre",
-        value: "Pop",
-      },
-      {
-        trait_type: "Mood",
-        value: "Happy",
-      },
-      {
-        trait_type: "Instrument",
-        value: "Guitar",
-      },
-    ],
-    description: "This is a song description",
-    date: new Date(),
-    total: 100,
-    sold: 10,
-    price: "5",
-    url: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/9d/75/53/9d755300-a1c2-7a01-51d5-8ffc4b4ba642/mzaf_12119942434649250117.plus.aac.ep.m4a",
-    image:
-      "https://images.unsplash.com/photo-1678002219434-c6738513037e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1472&q=80",
+  const [data, setData] = useState<GetMarketOutput>();
+
+  const getData = async () => {
+    try {
+      const res = await ApiServices.music.getMusic(id as string);
+      setData(res.data.data);
+    } catch (error) {}
   };
+
+  useEffect(() => {
+    getData();
+  }, [id]);
+
   const onPlayMusic = () => {
-    playMusicAction(data);
+    if (data) playMusicAction(data);
   };
+
+  if (!data)
+    return (
+      <MusicBaseLayout selectTabIndex={0}>
+        <></>
+      </MusicBaseLayout>
+    );
+
   return (
     <MusicBaseLayout selectTabIndex={0}>
       <Stack direction={{ base: "column", md: "row" }}>
@@ -62,7 +58,7 @@ const Music = () => {
           objectFit="cover"
           borderRadius="lg"
           alt={data.name}
-          src={data.image}
+          src={ipfsToGateway(data.image)}
           style={{
             boxShadow: "5px 5px 5px 5px rgba(0,0,0,0.15)",
             aspectRatio: "1/1",
@@ -95,14 +91,14 @@ const Music = () => {
             boxShadow="5px 5px 5px 5px rgba(0,0,0,0.15)"
           >
             <Text color="white" fontSize="20" fontWeight="bold">
-              {data.sold} / {data.total} sold
+              {data.left} / {data.amount} sold
             </Text>
             <Progress
               colorScheme="yellow"
               isAnimated
               hasStripe
               borderRadius="md"
-              value={(data.sold * 100) / data.total}
+              value={(parseInt(data.left) * 100) / parseInt(data.amount)}
             />
           </Stack>
           <Stack justifyContent="space-evenly" gap={1} direction={"row"}>
@@ -118,7 +114,8 @@ const Music = () => {
               onClick={onPlayMusic}
               gap={2}
             >
-              {isPlayingState && currentSongState?.url == data.url ? (
+              {isPlayingState &&
+              currentSongState?.audio == ipfsToGateway(data.audio) ? (
                 <>
                   <TiMediaPause size="35px" />
                   Pause

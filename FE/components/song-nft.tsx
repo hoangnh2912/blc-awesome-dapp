@@ -12,7 +12,8 @@ const SongNFTComponent = ({
   singer,
   price,
   id,
-  audio: url,
+  audio,
+  ...rest
 }: GetMarketOutput) => {
   const playMusicAction = useStoreActions((state) => state.music.playMusic);
   const currentSongState = useStoreState((state) => state.music.currentSong);
@@ -20,10 +21,13 @@ const SongNFTComponent = ({
 
   const onPlayMusic = () => {
     playMusicAction({
-      url: ipfsToGateway(url),
+      audio: ipfsToGateway(audio),
       name,
       singer,
       image: ipfsToGateway(image),
+      id,
+      price,
+      ...rest,
     });
   };
 
@@ -130,7 +134,8 @@ const SongNFTComponent = ({
               }}
               onClick={onPlayMusic}
             >
-              {isPlayingState && currentSongState?.url == ipfsToGateway(url) ? (
+              {isPlayingState &&
+              currentSongState?.audio == ipfsToGateway(audio) ? (
                 <TiMediaPause size="20px" color="black" />
               ) : (
                 <FaPlay size="10px" color="black" />
