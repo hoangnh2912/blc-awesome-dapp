@@ -9,14 +9,61 @@ import {
 } from "@chakra-ui/react";
 import { useAddress } from "@thirdweb-dev/react";
 import type { NextPage } from "next";
-import { useState } from "react";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 import { AiFillEdit } from "react-icons/ai";
+import { ipfsToGateway } from "../../constants/utils";
 import MusicBaseLayout from "../../layouts/music.base";
+import ApiServices from "../../services/api";
+import { GetUserOutput } from "../../services/api/types";
 const EditProfile: NextPage = () => {
-  const [image, setImage] = useState<string | null>(null);
-  const [username, setUsername] = useState<string>("");
-  const [description, setDescription] = useState<string>("");
   const address = useAddress();
+
+  const { replace,push } = useRouter();
+
+  const [userInfo, setUserInfo] = useState<GetUserOutput>();
+  const image = userInfo?.avatar || null;
+  const [file, setFile] = useState<File | null>(null);
+  const [username, setUsername] = useState<string>(userInfo?.name || "");
+  const [description, setDescription] = useState<string>(
+    userInfo?.description || ""
+  );
+  const getUserData = async () => {
+    if (address) {
+      try {
+        const res = await ApiServices.user.getUser();
+        setUserInfo(res.data.data);
+        setUsername(res.data.data.name == "Unnamed" ? "" : res.data.data.name);
+        setDescription(res.data.data.description);
+      } catch (error) {}
+    }
+  };
+
+  const updateUserData = async () => {
+    if (address) {
+      try {
+        let avatarUpload = null;
+        if (file) {
+          const formData = new FormData();
+          formData.append("imageFile", file);
+          const res = await ApiServices.ipfs.uploadImage(formData);
+          avatarUpload = res.data.data;
+        }
+        await ApiServices.user.createUser({
+          name: username,
+          description,
+          avatar: avatarUpload || image,
+        });
+        await replace(`/music/address/${address}`, undefined, {
+          shallow: true,
+        });
+      } catch (error) {}
+    }
+  };
+
+  useEffect(() => {
+    getUserData();
+  }, [address]);
 
   const onDragEnter = (e: any) => {
     e.preventDefault();
@@ -74,8 +121,7 @@ const EditProfile: NextPage = () => {
               input.accept = "image/*";
               input.onchange = (e: any) => {
                 let file = e.target?.files?.item(0);
-                if (file && file.type.includes("image"))
-                  setImage(URL.createObjectURL(file));
+                if (file && file.type.includes("image")) setFile(file);
                 input.remove();
               };
               input.click();
@@ -104,15 +150,16 @@ const EditProfile: NextPage = () => {
               e.preventDefault();
               e.stopPropagation();
               let file = e.dataTransfer.files.item(0);
-              if (file && file.type.includes("image"))
-                setImage(URL.createObjectURL(file));
+              if (file && file.type.includes("image")) setFile(file);
             }}
           >
-            {image ? (
+            {file || image ? (
               <>
                 <Image
-                  src={image}
-                  objectFit="contain"
+                  src={
+                    file ? URL.createObjectURL(file) : ipfsToGateway(`${image}`)
+                  }
+                  objectFit="cover"
                   width="100%"
                   height="100%"
                   fit="cover"
@@ -182,6 +229,7 @@ const EditProfile: NextPage = () => {
           <Button
             fontSize={"24"}
             fontFamily="mono"
+            onClick={updateUserData}
             fontWeight="bold"
             color="#C2A822"
             bg="#3443A0"

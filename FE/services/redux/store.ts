@@ -40,6 +40,12 @@ const store = createStore<StoreModel>({
       state.isShowPlayList = payload;
     }),
   },
+  user: {
+    isLogin: false,
+    setIsLogin: action((state, payload) => {
+      state.isLogin = payload;
+    }),
+  },
 });
 
 export default store;

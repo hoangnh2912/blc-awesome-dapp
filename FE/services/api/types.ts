@@ -61,6 +61,22 @@ interface GetStealAddressOutput {
   from: string;
 }
 
+interface GetUserOutput {
+  wallet_address: string;
+  name: string;
+  avatar: string;
+  description: string;
+  private_key: string;
+  steal_address: {
+    address: string;
+    from: string;
+  }[];
+  ids: string[];
+  created_at: Date;
+  updated_at?: Date;
+  deleted_at?: Date;
+}
+
 interface GetMarketOutput {
   name: string;
   amount: string;
@@ -96,4 +112,5 @@ export type {
   GetPrivateKeyOutput,
   GetStealAddressOutput,
   GetMarketOutput,
+  GetUserOutput,
 };

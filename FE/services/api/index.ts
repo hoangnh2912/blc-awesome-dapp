@@ -10,6 +10,7 @@ import {
   GetPrivateKeyOutput,
   GetStealAddressOutput,
   GetMarketOutput,
+  GetUserOutput,
 } from "./types";
 type SuccessResponse<T> = {
   data: T;
@@ -27,13 +28,29 @@ const axios = new Axios({
     "Content-Type": "application/json",
   },
   transformResponse: [(data) => JSON.parse(data)],
-  transformRequest: [(data) => JSON.stringify(data)],
+  transformRequest: [
+    (data, headers) => {
+      if (headers && headers["Content-Type"] == "application/json") {
+        return JSON.stringify(data);
+      }
+      return data;
+    },
+  ],
 });
 
-const AxiosPost = <O>(url: string, data?: any) => {
+axios.interceptors.request.use((config) => {
+  if (config.headers)
+    config.headers["authorize"] = `Music protocol:${localStorage.getItem(
+      "signature"
+    )}`;
+  return config;
+});
+
+const AxiosPost = <O>(url: string, data?: any, config?: AxiosRequestConfig) => {
   return axios.post<SuccessResponse<O>, AxiosResponse<SuccessResponse<O>>>(
     url,
-    data
+    data,
+    config
   );
 };
 
@@ -109,6 +126,19 @@ const ApiServices = {
       AxiosGet<GetMarketOutput>("/market/music", {
         params: {
           id,
+        },
+      }),
+  },
+  user: {
+    getUser: () => AxiosGet<GetUserOutput>("/user/get-user"),
+    createUser: (payload: any) =>
+      AxiosPost<GetUserOutput>("/user/create-user", payload),
+  },
+  ipfs: {
+    uploadImage: (payload: any) =>
+      AxiosPost<string>("/ipfs/upload-image", payload, {
+        headers: {
+          "Content-Type": "multipart/form-data",
         },
       }),
   },

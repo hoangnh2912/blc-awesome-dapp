@@ -16,8 +16,14 @@ interface Music {
   setIsShowPlayList: Action<Music, boolean>;
 }
 
+interface User {
+  isLogin: boolean;
+  setIsLogin: Action<User, boolean>;
+}
+
 interface StoreModel {
   music: Music;
+  user: User;
 }
 
 export type { Music };

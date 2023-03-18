@@ -1,11 +1,13 @@
 import {
   Button,
   Image,
+  Link,
   Progress,
   SimpleGrid,
   Stack,
   Text,
 } from "@chakra-ui/react";
+import { useAddress } from "@thirdweb-dev/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { BsCart4, BsFillPlayFill } from "react-icons/bs";
@@ -37,7 +39,12 @@ const Music = () => {
   }, [id]);
 
   const onPlayMusic = () => {
-    if (data) playMusicAction(data);
+    if (data)
+      playMusicAction({
+        audio: ipfsToGateway(data.audio),
+        image: ipfsToGateway(data.image),
+        ...(({ audio, image, ...o }) => o)(data),
+      });
   };
 
   if (!data)
@@ -46,6 +53,11 @@ const Music = () => {
         <></>
       </MusicBaseLayout>
     );
+  const currentAddress = useAddress();
+  const isMyProfile =
+    data.seller &&
+    currentAddress &&
+    currentAddress.toLowerCase() == `${data.seller}`.toLowerCase();
 
   return (
     <MusicBaseLayout selectTabIndex={0}>
@@ -69,7 +81,17 @@ const Music = () => {
             <Text color="white" fontSize="40" fontWeight="bold">
               {data.name}
             </Text>
-            <Text color="white" fontSize="20" fontWeight="bold">
+            <Text
+              color="white"
+              onClick={() =>
+                router.push(`/music/address/${data.seller}`, undefined, {
+                  shallow: true,
+                })
+              }
+              fontSize="20"
+              fontWeight="bold"
+              cursor="pointer"
+            >
               Creator: {data.seller}
             </Text>
             <Text color="#C2A822" fontSize="20" fontWeight="bold">
@@ -91,14 +113,17 @@ const Music = () => {
             boxShadow="5px 5px 5px 5px rgba(0,0,0,0.15)"
           >
             <Text color="white" fontSize="20" fontWeight="bold">
-              {(parseInt(data.amount) - parseInt(data.left))} / {data.amount} sold
+              {parseInt(data.amount) - parseInt(data.left)} / {data.amount} sold
             </Text>
             <Progress
               colorScheme="yellow"
               isAnimated
               hasStripe
               borderRadius="md"
-              value={((parseInt(data.amount) - parseInt(data.left)) * 100) / parseInt(data.amount)}
+              value={
+                ((parseInt(data.amount) - parseInt(data.left)) * 100) /
+                parseInt(data.amount)
+              }
             />
           </Stack>
           <Stack justifyContent="space-evenly" gap={1} direction={"row"}>
@@ -127,20 +152,22 @@ const Music = () => {
                 </>
               )}
             </Button>
-            <Button
-              color="#3443A0"
-              bg="#C2A822BB"
-              boxShadow="5px 5px 5px 5px rgba(0,0,0,0.15)"
-              flex={1}
-              height="80px"
-              fontWeight="bold"
-              alignItems="center"
-              fontSize="3xl"
-              gap={2}
-            >
-              <BsCart4 size="0.8em" />
-              Buy now
-            </Button>
+            {!isMyProfile && (
+              <Button
+                color="#3443A0"
+                bg="#C2A822BB"
+                boxShadow="5px 5px 5px 5px rgba(0,0,0,0.15)"
+                flex={1}
+                height="80px"
+                fontWeight="bold"
+                alignItems="center"
+                fontSize="3xl"
+                gap={2}
+              >
+                <BsCart4 size="0.8em" />
+                Buy now
+              </Button>
+            )}
           </Stack>
           <Stack
             borderRadius="lg"

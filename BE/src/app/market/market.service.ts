@@ -1,4 +1,4 @@
-import { Constant } from '@constants';
+import { Constant, removeAccent } from '@constants';
 import { MarketContract, readCID } from '@providers';
 import { Market, User } from '@schemas';
 
@@ -22,6 +22,9 @@ export class MarketService {
         duration: data.duration,
         bitrate: data.bitrate,
         description: data.description,
+        search_key: `${removeAccent(data.name)} ${removeAccent(data.singer)} ${removeAccent(
+          data.description,
+        )}`,
       },
       {
         upsert: true,
@@ -68,7 +71,7 @@ export class MarketService {
       {
         $and: [
           {
-            name: {
+            search_key: {
               $regex: search,
               $options: 'i',
             },
