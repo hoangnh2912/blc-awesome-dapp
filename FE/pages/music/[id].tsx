@@ -91,14 +91,14 @@ const Music = () => {
             boxShadow="5px 5px 5px 5px rgba(0,0,0,0.15)"
           >
             <Text color="white" fontSize="20" fontWeight="bold">
-              {data.left} / {data.amount} sold
+              {(parseInt(data.amount) - parseInt(data.left))} / {data.amount} sold
             </Text>
             <Progress
               colorScheme="yellow"
               isAnimated
               hasStripe
               borderRadius="md"
-              value={(parseInt(data.left) * 100) / parseInt(data.amount)}
+              value={((parseInt(data.amount) - parseInt(data.left)) * 100) / parseInt(data.amount)}
             />
           </Stack>
           <Stack justifyContent="space-evenly" gap={1} direction={"row"}>
