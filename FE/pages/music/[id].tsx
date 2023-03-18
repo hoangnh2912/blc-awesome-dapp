@@ -24,6 +24,7 @@ const Music = () => {
   const playMusicAction = useStoreActions((state) => state.music.playMusic);
   const currentSongState = useStoreState((state) => state.music.currentSong);
   const isPlayingState = useStoreState((state) => state.music.isPlaying);
+  const currentAddress = useAddress();
 
   const [data, setData] = useState<GetMarketOutput>();
 
@@ -53,7 +54,6 @@ const Music = () => {
         <></>
       </MusicBaseLayout>
     );
-  const currentAddress = useAddress();
   const isMyProfile =
     data.seller &&
     currentAddress &&
