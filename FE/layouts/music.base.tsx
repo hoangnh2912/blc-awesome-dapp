@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import SidebarMusic from "../components/sidebar-music";
 import { SideBarDataMusic } from "../constants/data/sidebar";
-import { useStoreActions } from "../services/redux/hook";
+import { useStoreActions, useStoreState } from "../services/redux/hook";
 import styles from "../styles/Home.module.css";
 const MusicBaseLayout = ({
   children,
@@ -16,6 +16,9 @@ const MusicBaseLayout = ({
 }) => {
   const [isBrowser, setIsBrowser] = useState(false);
   const router = useRouter();
+  const currentSongState = useStoreState(
+    (actions) => actions.music.currentSong
+  );
 
   useEffect(() => {
     setIsBrowser(true);
@@ -53,7 +56,11 @@ const MusicBaseLayout = ({
   return (
     <div className={styles.App}>
       <Head>
-        <title>Music Protocol</title>
+        <title>
+          {currentSongState
+            ? `${currentSongState.name} - ${currentSongState.singer}`
+            : "Music Protocol"}
+        </title>
         <link rel="shortcut icon" href="/favicon.ico" />
         <meta name="description" content="Music" />
         <meta property="og:url" content="http://scimta.com" />
