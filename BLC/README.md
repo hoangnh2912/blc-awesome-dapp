@@ -11,6 +11,14 @@
 - Install dependencies: `yarn install`
 - Create `.env` file from `.env.example` and fill in the values
 
+`.env` file:
+
+```bash
+NETWORK_RPC=YOUR_RPC_URL
+API_KEY=YOUR_ETHERSCAN_API_KEY
+PRIVATE_KEY=PRIVATE_KEY_OF_DEPLOYER
+```
+
 # Deploy smart contracts
 
 ## Music contract
