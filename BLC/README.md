@@ -6,13 +6,14 @@
 
 # Setup environment
 
-- Setup MongoDB
 - Install Node.js
-- Install Yarn
+- Install Yarn: `npm install -g yarn`
 - Install dependencies: `yarn install`
 - Create `.env` file from `.env.example` and fill in the values
 
-# Run the project
+# Deploy smart contracts
 
-- Run the project: `yarn start`
-- Run the project in development mode: `yarn dev`
+## Music contract
+
+- Deploy contract: `yarn contract:deploy:music`
+- Verify contract on scan: `yarn contract:verify ./abi-music.json`
