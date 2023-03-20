@@ -1,28 +1,29 @@
 import { Action } from "easy-peasy";
-import { SongNFTProps } from "../../components/song-nft";
 import AudioPlayer from "react-h5-audio-player";
-
-export type MusicPlaying = Pick<
-  SongNFTProps,
-  "image" | "name" | "singer" | "url"
->;
+import { GetMarketOutput } from "../api/types";
 
 interface Music {
-  currentSong: MusicPlaying | undefined;
+  currentSong: GetMarketOutput | undefined;
   isPlaying: boolean;
-  playMusic: Action<Music, MusicPlaying>;
+  playMusic: Action<Music, GetMarketOutput>;
   audio: AudioPlayer | undefined;
   setAudio: Action<Music, AudioPlayer>;
   setIsPlaying: Action<Music, boolean>;
-  playList: MusicPlaying[];
-  addToPlayList: Action<Music, MusicPlaying>;
-  removeFromPlayList: Action<Music, MusicPlaying>;
+  playList: GetMarketOutput[];
+  addToPlayList: Action<Music, GetMarketOutput>;
+  removeFromPlayList: Action<Music, GetMarketOutput>;
   isShowPlayList: boolean;
   setIsShowPlayList: Action<Music, boolean>;
 }
 
+interface User {
+  isLogin: boolean;
+  setIsLogin: Action<User, boolean>;
+}
+
 interface StoreModel {
   music: Music;
+  user: User;
 }
 
 export type { Music };

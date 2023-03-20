@@ -23,8 +23,8 @@ const onJobGetDataFromSmartContract = async () => {
     const listTxHash: string[] = [];
     const last_block_number_onchain = await web3.eth.getBlockNumber();
 
-    await synchronizeSticker(last_block_number, last_block_number_onchain, listTxHash);
     await synchronizeMarket(last_block_number, last_block_number_onchain, listTxHash);
+    await synchronizeMusic(last_block_number, last_block_number_onchain, listTxHash);
     if (listTxHash.length > 0) {
       await Synchronize.create({
         last_block_number: last_block_number_onchain,
@@ -45,7 +45,7 @@ const onJobGetDataFromSmartContract = async () => {
   globalVariable.isSyncingGetDataFromSmartContract = false;
 };
 
-const synchronizeSticker = async (
+const synchronizeMusic = async (
   last_block_number_sync: number,
   last_block_number_onchain: number,
   listTxHash: string[],
@@ -61,7 +61,7 @@ const synchronizeSticker = async (
     toBlock: last_block_number_onchain,
   });
 
-  transferSingleEvents.forEach(async value => {
+  for (const value of transferSingleEvents) {
     if (value.returnValues.from == Constant.ZERO_ADDRESS) {
       await musicService.mintEvent(value.returnValues.to.toLowerCase(), value.returnValues.id);
     } else {
@@ -72,9 +72,9 @@ const synchronizeSticker = async (
       );
     }
     listTxHash.push(value.transactionHash);
-  });
+  }
 
-  transferBatchEvents.forEach(async value => {
+  for (const value of transferBatchEvents) {
     if (value.returnValues.from == Constant.ZERO_ADDRESS) {
       await musicService.mintBatchEvent(
         value.returnValues.to.toLowerCase(),
@@ -88,7 +88,7 @@ const synchronizeSticker = async (
       );
     }
     listTxHash.push(value.transactionHash);
-  });
+  }
 };
 
 const sortByTransactionIndex = (a: EventData, b: EventData) =>
@@ -129,15 +129,13 @@ const synchronizeMarket = async (
     try {
       await marketService.listSong(
         priceUpdate.id,
-        priceUpdate.seller,
+        priceUpdate.seller.toLowerCase(),
         priceUpdate.price,
         priceUpdate.amount,
         priceUpdate.uri,
       );
     } catch (error: any) {
-      logger.error(
-        `Can not update market for music: ${priceUpdate.id}, error: ${error.message}`,
-      );
+      logger.error(`Can not update market for music: ${priceUpdate.id}, error: ${error.message}`);
     }
   }
 

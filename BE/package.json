@@ -9,7 +9,7 @@
     "format": "yarn prettier --write .",
     "db": "ssh -L 27017:localhost:27017 -i ~/.ssh/scimta.pem ubuntu@165.232.170.40",
     "dev": "ENV_MODE=development && concurrently \"nodemon\" \"nodemon -x tsoa spec-and-routes\"",
-    "deploy": "scp -i ~/.ssh/scimta.pem -r ./build ubuntu@165.232.170.40:/home/ubuntu/blc-awesome-dapp/BE",
+    "deploy": "ssh scimta \"bash -i -c 'cd /home/ubuntu/blc-awesome-dapp/BE && git pull && pm2 stop all && yarn && yarn build && pm2 restart all'\"",
     "postinstall": "patch-package",
     "compile": "truffle compile",
     "contract:verify": "node ./scripts/verify.js",

@@ -1,6 +1,4 @@
 import {
-  AspectRatio,
-  Box,
   Button,
   Image,
   Input,
@@ -12,7 +10,6 @@ import {
 import type { NextPage } from "next";
 import { useEffect, useState } from "react";
 import { MdLibraryMusic, MdPhotoLibrary } from "react-icons/md";
-import { TbUpload } from "react-icons/tb";
 import MusicBaseLayout from "../../layouts/music.base";
 import { useStoreActions } from "../../services/redux/hook";
 const Create: NextPage = () => {
@@ -28,12 +25,12 @@ const Create: NextPage = () => {
 
   useEffect(() => {
     if (audio && url) {
-      playMusicAction({
-        name: title,
-        image: image || "",
-        singer,
-        url,
-      });
+      // playMusicAction({
+      //   name: title,
+      //   image: image || "",
+      //   singer,
+      //   audio: url,
+      // });
     }
   }, [audio, image, title, singer]);
 

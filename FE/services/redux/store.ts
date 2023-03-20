@@ -9,7 +9,7 @@ const store = createStore<StoreModel>({
         state.audio &&
         state.audio.audio.current &&
         state.currentSong &&
-        state.currentSong.url == payload.url
+        state.currentSong.audio == payload.audio
       ) {
         if (state.isPlaying) {
           state.audio.audio.current.pause();
@@ -32,12 +32,18 @@ const store = createStore<StoreModel>({
     }),
     removeFromPlayList: action((state, payload) => {
       state.playList = state.playList.filter(
-        (item) => item.url !== payload.url
+        (item) => item.audio !== payload.audio
       );
     }),
     isShowPlayList: false,
     setIsShowPlayList: action((state, payload) => {
       state.isShowPlayList = payload;
+    }),
+  },
+  user: {
+    isLogin: false,
+    setIsLogin: action((state, payload) => {
+      state.isLogin = payload;
     }),
   },
 });

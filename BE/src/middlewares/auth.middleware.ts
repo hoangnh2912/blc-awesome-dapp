@@ -13,31 +13,11 @@ const SignatureMiddleware = async (req: Request, res: Response, next: NextFuncti
     }
     authorize = authorize as string;
     const [message, signature] = authorize.split(':');
-
     const address = web3.eth.accounts.recover(message, signature);
-    const [addressFromMessage, expire] = message.split('-');
-
-    if (addressFromMessage.toLowerCase() != address.toLowerCase()) {
-      // return res
-      //   .status(NETWORK_STATUS_CODE.BAD_REQUEST)
-      //   .json(onError(NETWORK_STATUS_MESSAGE.BAD_REQUEST));
-    }
-    if (!web3.utils.isAddress(address)) {
-      // return res
-      //   .status(NETWORK_STATUS_CODE.BAD_REQUEST)
-      //   .json(onError(NETWORK_STATUS_MESSAGE.BAD_REQUEST));
-    }
-
-    if (Date.now() > parseInt(expire)) {
-      // return res.status(NETWORK_STATUS_CODE.EXPIRE).json(onError(NETWORK_STATUS_MESSAGE.EXPIRE));
-    }
-
     req.headers.address = address.toLowerCase();
     req.headers.signature = signature;
     return next();
   } catch (error) {
-    // DEBUG
-    return next();
     logger.error(error);
     return res
       .status(NETWORK_STATUS_CODE.UNAUTHORIZED)

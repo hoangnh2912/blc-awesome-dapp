@@ -2,35 +2,32 @@ import { Box, Image, Stack, Text } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { FaPlay } from "react-icons/fa";
 import { TiMediaPause } from "react-icons/ti";
+import { ipfsToGateway } from "../constants/utils";
+import { GetMarketOutput } from "../services/api/types";
 import { useStoreActions, useStoreState } from "../services/redux/hook";
-
-export interface SongNFTProps {
-  id: string;
-  image: string;
-  name: string;
-  singer: string;
-  price: string;
-  url: string;
-}
 
 const SongNFTComponent = ({
   image,
   name,
   singer,
   price,
-  url,
   id,
-}: SongNFTProps) => {
+  audio,
+  ...rest
+}: GetMarketOutput) => {
   const playMusicAction = useStoreActions((state) => state.music.playMusic);
   const currentSongState = useStoreState((state) => state.music.currentSong);
   const isPlayingState = useStoreState((state) => state.music.isPlaying);
 
   const onPlayMusic = () => {
     playMusicAction({
-      url,
+      audio: ipfsToGateway(audio),
       name,
       singer,
-      image,
+      image: ipfsToGateway(image),
+      id,
+      price,
+      ...rest,
     });
   };
 
@@ -67,10 +64,10 @@ const SongNFTComponent = ({
         fit="cover"
         cursor="pointer"
         onClick={goToMusic}
-        src={image}
+        src={ipfsToGateway(image)}
       />
       <Box
-        backgroundImage={`url(${image})`}
+        backgroundImage={`url(${ipfsToGateway(image)})`}
         backgroundSize="cover"
         backgroundColor="transparent"
       >
@@ -137,7 +134,8 @@ const SongNFTComponent = ({
               }}
               onClick={onPlayMusic}
             >
-              {isPlayingState && currentSongState?.url == url ? (
+              {isPlayingState &&
+              currentSongState?.audio == ipfsToGateway(audio) ? (
                 <TiMediaPause size="20px" color="black" />
               ) : (
                 <FaPlay size="10px" color="black" />

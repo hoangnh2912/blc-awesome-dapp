@@ -4,10 +4,26 @@
 - NPM version: v8.15.0
 - Yarn version: v1.22.17
 
-# Road map
+# Setup environment
 
-| Status |    Note    |
-| :----: | :--------: |
-|   ❌   |    todo    |
-|   🚀   | processing |
-|   ✔    |    done    |
+- Setup MongoDB
+- Install Node.js
+- Install Yarn
+- Install dependencies: `yarn install`
+- Create `.env` file from `.env.example` and fill in the values
+
+`.env` file:
+
+```bash
+NETWORK_RPC=YOUR_RPC_URL
+PORT=3001
+MONGODB_URL=mongodb://localhost:27017
+IPFS_PROVIDER_URI=YOUR_IPFS_PROVIDER_URI
+IPFS_GATEWAY_URI=YOUR_IPFS_GATEWAY_URI
+CONTRACT_DEPLOY_BLOCK=YOUR_CONTRACT_DEPLOY_BLOCK_NUMBER
+```
+
+# Run the project
+
+- Run the project: `yarn start`
+- Run the project in development mode: `yarn dev`

@@ -1,4 +1,5 @@
 import { create } from 'ipfs-http-client';
+import { AxiosGet } from './axios.provider';
 
 const getClient = () => {
   const ipfsUrl: any = new URL(process.env.IPFS_PROVIDER_URI as string);
@@ -62,7 +63,8 @@ const uploadFolder = async (contents: Buffer[]): Promise<any> => {
 };
 
 const readCID = async (cid: string) => {
-  return `${process.env.IPFS_GATEWAY_URI as string}/ipfs/${cid}`;
+  const data = await AxiosGet(`${process.env.IPFS_GATEWAY_URI}${cid.replace('ipfs://', '')}`);
+  return data.data;
 };
 
 export { uploadJson, uploadFile, readCID, uploadFolder, getFile };

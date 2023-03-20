@@ -63,6 +63,40 @@ const uuid = () => {
   return `x${u}`.split('-').join('');
 };
 
+const removeAccent = (str: string) => {
+  var from = 'àáãảạăằắẳẵặâầấẩẫậèéẻẽẹêềếểễệđùúủũụưừứửữựòóỏõọôồốổỗộơờớởỡợìíỉĩịäëïîöüûñçýỳỹỵỷ',
+    to = 'aaaaaaaaaaaaaaaaaeeeeeeeeeeeduuuuuuuuuuuoooooooooooooooooiiiiiaeiiouuncyyyyy';
+  for (let i = 0; i < from.length; i++) {
+    str = str.replace(RegExp(from[i], 'gi'), to[i]);
+  }
+
+  str = str
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\-]/g, ' ')
+    .replace(/-+/g, ' ');
+
+  return str;
+};
+
+const GENRE = [
+  'Acoustic',
+  'Alternative',
+  'Blues',
+  'Classical',
+  'Country',
+  'Dance',
+  'Electronic',
+  'Hip Hop',
+  'Indie',
+  'Pop',
+  'R&B',
+];
+
+const MOOD = ['Happy', 'Sad', 'Romantic', 'Angry', 'Relax', 'Party'];
+
+const INSTRUMENT = ['Piano', 'Guitar', 'Violin', 'Drum', 'Bass', 'Saxophone'];
+
 const Constant = {
   ZERO_ADDRESS,
   ZERO_BYTES32,
@@ -94,6 +128,11 @@ const Constant = {
     ListSong: 'ListSong',
     BuySong: 'BuySong',
   },
+  ATTRIBUTES: {
+    GENRE,
+    MOOD,
+    INSTRUMENT,
+  },
 };
 
-export { Constant, uuid };
+export { Constant, uuid, removeAccent };
