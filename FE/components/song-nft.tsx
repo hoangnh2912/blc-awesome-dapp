@@ -1,10 +1,16 @@
-import { Box, Image, Stack, Text } from "@chakra-ui/react";
+import { Box, Image, Spinner, Stack, Text } from "@chakra-ui/react";
+import { useSDK } from "@thirdweb-dev/react";
 import { useRouter } from "next/router";
 import { FaPlay } from "react-icons/fa";
 import { TiMediaPause } from "react-icons/ti";
+import { ABI_MUSIC } from "../constants/abi";
 import { ipfsToGateway } from "../constants/utils";
 import { GetMarketOutput } from "../services/api/types";
 import { useStoreActions, useStoreState } from "../services/redux/hook";
+import { useModalTransaction } from "./modal-transaction";
+import { signERC2612Permit } from "eth-permit";
+import { ethers } from "ethers";
+import LinkScan from "./link-scan";
 
 const SongNFTComponent = ({
   image,
@@ -41,6 +47,109 @@ const SongNFTComponent = ({
       undefined,
       { shallow: true }
     );
+  };
+
+  const sdk = useSDK();
+  const { onOpen: onOpenModalTx, setTxResult } = useModalTransaction();
+
+  const permitMuc = async (priceMuc: string) => {
+    if (!sdk) return;
+    if (!onOpenModalTx) return;
+    onOpenModalTx();
+    const mucContract = await sdk.getContractFromAbi(
+      ABI_MUSIC.MUC.address,
+      ABI_MUSIC.MUC.abi
+    );
+    const allowance = await mucContract.erc20.allowance(
+      ABI_MUSIC.MusicMarket.address
+    );
+
+    if (allowance.value.gte(priceMuc)) return;
+
+    // const result = await signERC2612Permit(
+    //   sdk.getProvider(),
+    //   ABI_MUSIC.MUC.address,
+    //   await sdk.wallet.getAddress(),
+    //   ABI_MUSIC.MusicMarket.address,
+    //   ethers.utils.formatUnits(price, 18)
+    // );
+    // await mucContract.call(
+    //   "permit",
+    //   result.owner,
+    //   result.spender,
+    //   result.value,
+    //   result.deadline,
+    //   result.v,
+    //   result.r,
+    //   result.s
+    // );
+    const res = await mucContract.call(
+      "approve",
+      ABI_MUSIC.MusicMarket.address,
+      priceMuc
+    );
+    setTxResult({
+      reason: "",
+      content: [
+        {
+          title: "Approve Transaction Hash",
+          value: <LinkScan transactionHash={res.receipt.transactionHash} />,
+        },
+        {
+          title: "Buy Transaction Hash",
+          value: <Spinner colorScheme="green.500" />,
+        },
+      ],
+      txState: "success",
+    });
+    return res;
+  };
+
+  const onBuy = async () => {
+    if (sdk && onOpenModalTx) {
+      try {
+        const musicMarketContract = await sdk.getContractFromAbi(
+          ABI_MUSIC.MusicMarket.address,
+          ABI_MUSIC.MusicMarket.abi
+        );
+
+        onOpenModalTx();
+        const approveMuc = await permitMuc(
+          ethers.utils.parseEther(price).toString()
+        );
+        const res = await musicMarketContract.call(
+          "buySong",
+          ABI_MUSIC.Music.address,
+          id
+        );
+        setTxResult({
+          reason: "",
+          content: [
+            ...[
+              approveMuc && {
+                title: "Approve Transaction Hash",
+                value: (
+                  <LinkScan
+                    transactionHash={approveMuc.receipt.transactionHash}
+                  />
+                ),
+              },
+            ],
+            {
+              title: "Transaction Hash",
+              value: <LinkScan transactionHash={res.receipt.transactionHash} />,
+            },
+          ],
+          txState: "success",
+        });
+      } catch (error: any) {
+        setTxResult({
+          reason: error.message,
+          content: [],
+          txState: "error",
+        });
+      }
+    }
   };
 
   return (
@@ -107,6 +216,7 @@ const SongNFTComponent = ({
             direction="row"
           >
             <Text
+              onClick={onBuy}
               cursor="pointer"
               fontWeight="bold"
               color="white"

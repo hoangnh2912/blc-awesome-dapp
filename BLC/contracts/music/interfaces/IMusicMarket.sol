@@ -10,6 +10,7 @@ interface IMusicMarket {
         uint amount;
         string uri;
         address seller;
+        bool paused;
     }
 
     /**
@@ -33,6 +34,13 @@ interface IMusicMarket {
         string calldata uri
     ) external;
 
+    function listSongs(
+        uint256[] calldata id,
+        uint256[] calldata price,
+        uint256[] calldata amount,
+        string[] calldata uri
+    ) external;
+
     /**
      * @dev Buy a song
      * @param token IMusic token
@@ -40,6 +48,8 @@ interface IMusicMarket {
      * Approved amount of MUC must be transferred to the contract before calling this function
      */
     function buySong(IMusic token, uint256 id) external;
+
+    function buySongs(IMusic token, uint256[] calldata ids) external;
 
     event ListSong(
         uint256 indexed id,
@@ -50,4 +60,6 @@ interface IMusicMarket {
     );
 
     event BuySong(uint256 indexed id, address indexed buyer);
+    event PauseListSong(uint256 indexed id);
+    event UnpauseListSong(uint256 indexed id);
 }

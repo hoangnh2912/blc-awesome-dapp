@@ -42,6 +42,14 @@ contract Music is ERC1155, AccessControl, IMusic {
         return _uris[id];
     }
 
+    function name() public pure returns (string memory) {
+        return "Music";
+    }
+
+    function symbol() public pure returns (string memory) {
+        return "MUCNFT";
+    }
+
     function supportsInterface(
         bytes4 interfaceId
     ) public view override(ERC1155, AccessControl, IERC165) returns (bool) {

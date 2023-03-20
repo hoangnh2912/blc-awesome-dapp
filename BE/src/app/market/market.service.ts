@@ -40,7 +40,7 @@ export class MarketService {
         id,
       },
       {
-        left: await MarketContract.methods.song(id).call()['amount'],
+        left: (await MarketContract.methods.song(id).call())['amount'],
       },
     );
 

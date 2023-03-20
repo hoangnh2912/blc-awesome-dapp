@@ -11,16 +11,15 @@ async function main() {
   const contractInteractInstance = await contractFactory.attach(
     abiMusic.MusicMarket.address
   );
-  for (let i = 0; i < musicData.length; i++) {
-    const music = musicData[i];
 
-    await contractInteractInstance.listSong(
-      music.id,
-      music.price,
-      music.amount,
-      music.uri
+  for (let i = 0; i < musicData.length; i++) {
+    await contractInteractInstance.listSongs(
+      [musicData[i].id],
+      [musicData[i].price],
+      [musicData[i].amount],
+      [musicData[i].uri]
     );
-    console.log("Listed song", music.id);
+    console.log("Listed song", i + 1);
   }
 }
 

@@ -7,11 +7,20 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
-import { useAddress } from "@thirdweb-dev/react";
+import {
+  useAddress,
+  useContract,
+  useContractRead,
+  useNFT,
+  useNFTBalance,
+  useSDK,
+} from "@thirdweb-dev/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { BsCart4, BsFillPlayFill } from "react-icons/bs";
+import { MdOutlineSell } from "react-icons/md";
 import { TiMediaPause } from "react-icons/ti";
+import { ABI_MUSIC } from "../../constants/abi";
 import { ipfsToGateway } from "../../constants/utils";
 import MusicBaseLayout from "../../layouts/music.base";
 import ApiServices from "../../services/api";
@@ -28,12 +37,41 @@ const Music = () => {
 
   const [data, setData] = useState<GetMarketOutput>();
 
+  const [isOwnNft, setIsOwnNft] = useState(false);
+
+  const sdk = useSDK();
+
   const getData = async () => {
     try {
+      if (!id) return;
       const res = await ApiServices.music.getMusic(id as string);
       setData(res.data.data);
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   };
+
+  const getBalance = async () => {
+    if (!id) return;
+    if (!sdk) return;
+    if (!currentAddress) return;
+    const musicNFTContract = await sdk.getContractFromAbi(
+      ABI_MUSIC.Music.address,
+      ABI_MUSIC.Music.abi
+    );
+    const balance = await musicNFTContract.call(
+      "balanceOf",
+      currentAddress,
+      id
+    );
+    if (balance.toString() != "0") {
+      setIsOwnNft(true);
+    }
+  };
+
+  useEffect(() => {
+    getBalance();
+  }, [id, sdk, currentAddress]);
 
   useEffect(() => {
     getData();
@@ -54,7 +92,8 @@ const Music = () => {
         <></>
       </MusicBaseLayout>
     );
-  const isMyProfile =
+
+  const isSameSeller =
     data.seller &&
     currentAddress &&
     currentAddress.toLowerCase() == `${data.seller}`.toLowerCase();
@@ -152,7 +191,7 @@ const Music = () => {
                 </>
               )}
             </Button>
-            {!isMyProfile && (
+            {!isSameSeller && !isOwnNft && (
               <Button
                 color="#3443A0"
                 bg="#C2A822BB"
@@ -166,6 +205,28 @@ const Music = () => {
               >
                 <BsCart4 size="0.8em" />
                 Buy now
+              </Button>
+            )}
+            {isOwnNft && !isSameSeller && (
+              <Button
+                color="#3443A0"
+                bg="#C2A822BB"
+                boxShadow="5px 5px 5px 5px rgba(0,0,0,0.15)"
+                flex={1}
+                height="80px"
+                fontWeight="bold"
+                alignItems="center"
+                fontSize="3xl"
+                onClick={() => {
+                  window.open(
+                    `https://testnets.opensea.io/assets/mumbai/${ABI_MUSIC.Music.address}/${id}`,
+                    `_blank`
+                  );
+                }}
+                gap={2}
+              >
+                <MdOutlineSell size="0.9em" />
+                Sell on OpenSea
               </Button>
             )}
           </Stack>
