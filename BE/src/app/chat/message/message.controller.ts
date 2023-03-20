@@ -1,4 +1,4 @@
-import { IMessage } from '@schemas';
+import { IMessage } from '@chat-schemas';
 import { Request as exRequest } from 'express';
 import {
   Body,
@@ -14,14 +14,14 @@ import {
   Patch,
   Delete,
 } from 'tsoa';
-import { Constant, logger, onError, onSuccess, onSuccessArray, Option } from '@constants';
-import { AuthMiddleware } from '@middlewares';
+import { Constant, logger, onError, onSuccess, onSuccessArray, OptionResponse } from '@constants';
+import { SignatureMiddleware } from '@middlewares';
 import { Singleton } from '@providers';
 
 const { NETWORK_STATUS_CODE, NETWORK_STATUS_MESSAGE } = Constant;
 
 @Tags('Message')
-@Middlewares([AuthMiddleware])
+@Middlewares([SignatureMiddleware])
 @Route('message')
 @Security({
   authorize: [],
@@ -39,7 +39,7 @@ export class MessageController extends Controller {
     @Query() isDescending: boolean = false,
     @Query() is_promotion?: boolean,
   ): Promise<
-    Option<{
+    OptionResponse<{
       messages: IMessage[];
       is_friend: boolean;
     }>
@@ -71,7 +71,7 @@ export class MessageController extends Controller {
       message_id: string;
       message_data: string;
     },
-  ): Promise<Option<IMessage>> {
+  ): Promise<OptionResponse<IMessage>> {
     try {
       const address = req.headers.address as string;
       const { message_data, message_id } = data;
@@ -88,7 +88,7 @@ export class MessageController extends Controller {
   public async reactMessage(
     @Request() req: exRequest,
     @Body() inputParam: { message_id: string; emoji: string },
-  ): Promise<Option<IMessage>> {
+  ): Promise<OptionResponse<IMessage>> {
     try {
       const { message_id, emoji } = inputParam;
       const address = req.headers.address as string;
@@ -137,7 +137,7 @@ export class MessageController extends Controller {
     data: {
       message_id: string;
     },
-  ): Promise<Option<IMessage>> {
+  ): Promise<OptionResponse<IMessage>> {
     try {
       const address = req.headers.address as string;
       const { message_id } = data;

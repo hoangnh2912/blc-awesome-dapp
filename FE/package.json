@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "ENV_MODE=development && next dev",
+    "devwindow": "SET ENV_MODE=development && next dev",
     "build": "next build",
     "deploy": "scp -i ~/.ssh/scimta.pem -r .next ubuntu@165.232.170.40:/home/ubuntu/blc-awesome-dapp/FE",
     "start": "next start -H 0.0.0.0 -p 8080",

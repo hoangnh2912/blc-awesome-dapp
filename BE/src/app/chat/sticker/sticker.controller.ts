@@ -167,17 +167,17 @@ export class StickerController extends Controller {
     }
   }
 
-  @Get('get-tokens')
-  public async getTokens(): Promise<Option<IToken[]>> {
-    try {
-      const tokens = this.stickerService.getTokens();
-      return onSuccess(tokens);
-    } catch (error) {
-      logger.error(error);
-      this.setStatus(NETWORK_STATUS_CODE.INTERNAL_SERVER_ERROR);
-      return onError(error);
-    }
-  }
+  // @Get('get-tokens')
+  // public async getTokens(): Promise<Option<IToken[]>> {
+  //   try {
+  //     const tokens = this.stickerService.getTokens();
+  //     return onSuccess(tokens);
+  //   } catch (error) {
+  //     logger.error(error);
+  //     this.setStatus(NETWORK_STATUS_CODE.INTERNAL_SERVER_ERROR);
+  //     return onError(error);
+  //   }
+  // }
 
   @Get('get-nft-information')
   public async getNftInformation(

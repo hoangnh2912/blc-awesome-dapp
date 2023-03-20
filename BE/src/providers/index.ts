@@ -5,3 +5,4 @@ export * from './axios.provider';
 export * from './database.provider';
 export * from './ipfs.provider';
 export * from './synchronize.provider';
+export * from './socket.provider';

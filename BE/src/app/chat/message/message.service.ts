@@ -1,6 +1,6 @@
-import { Constant, logger } from '@constants';
+import { ChatConstant, logger, Constant } from '@constants';
 import {
-  botSendMessageToWallets,
+  // botSendMessageToWallets,
   emitAddReaction,
   emitCreateRoom,
   emitDeleteMessage,
@@ -11,11 +11,11 @@ import {
   Singleton,
   uploadJson,
 } from '@providers';
-import { Cid, IMessage, Message, Room, User } from '@schemas';
+import { Cid, IMessage, Message, Room, User } from '@chat-schemas';
 import { createECDH } from 'crypto';
 import { AES, enc } from 'crypto-js';
 import keccak256 from 'keccak256';
-import { dmtp_priv_key, dmtp_pub_key } from '../../../dmtp_key_pair.json';
+import { dmtp_priv_key, dmtp_pub_key } from '../key_pair.json';
 class MessageService {
   public async getMessageOfRoomV2(
     address: string,
@@ -120,7 +120,7 @@ class MessageService {
       if (!sender_user.friends?.includes(findRoom?.users?.find(user => user != address) || ''))
         return null;
 
-      if (!findRoom || findRoom.room_type !== Constant.ROOM_TYPE.PRIVATE) {
+      if (!findRoom || findRoom.room_type !== ChatConstant.ROOM_TYPE.PRIVATE) {
         return null;
       }
 
@@ -141,7 +141,7 @@ class MessageService {
         is_forwarded,
         is_promotion,
         is_notification,
-        message_status: Constant.MESSAGE_STATUS.SENT,
+        message_status: ChatConstant.MESSAGE_STATUS.SENT,
         created_at: now.toISOString(),
       };
 
@@ -217,28 +217,28 @@ class MessageService {
 
       await emitMessageV2(messageEmit);
 
-      if (!findRoom.is_disable.includes(to_address))
-        botSendMessageToWallets([to_address], {
-          embeds: [
-            {
-              title: `New message on DMTP`,
-              color: 0x9900ff,
-              url: `https://dmtp.tech/messages/${room_id}`,
-            },
-          ],
-          content: `Message from ${
-            !!sender_user.name ? sender_user.name : sender_user.wallet_address
-          } to ${to_address}`,
-          data: {
-            user: {
-              name: sender_user.name,
-              avatar: sender_user.avatar,
-              wallet_address: sender_user.wallet_address,
-            },
-            room_id,
-          },
-          type: Constant.NOTIFICATION_TYPE.NEW_MESSAGE,
-        });
+      // if (!findRoom.is_disable.includes(to_address))
+      //   botSendMessageToWallets([to_address], {
+      //     embeds: [
+      //       {
+      //         title: `New message on DMTP`,
+      //         color: 0x9900ff,
+      //         url: `https://dmtp.tech/messages/${room_id}`,
+      //       },
+      //     ],
+      //     content: `Message from ${
+      //       !!sender_user.name ? sender_user.name : sender_user.wallet_address
+      //     } to ${to_address}`,
+      //     data: {
+      //       user: {
+      //         name: sender_user.name,
+      //         avatar: sender_user.avatar,
+      //         wallet_address: sender_user.wallet_address,
+      //       },
+      //       room_id,
+      //     },
+      //     type: Constant.NOTIFICATION_TYPE.NEW_MESSAGE,
+      //   });
 
       const sessionOfRoom = await Singleton.getRoomInstance().getSessionOfRoom(
         findRoom._id.toString(),
@@ -275,7 +275,7 @@ class MessageService {
       users: address,
     });
 
-    if (!findRoom || findRoom.room_type !== Constant.ROOM_TYPE.PRIVATE) {
+    if (!findRoom || findRoom.room_type !== ChatConstant.ROOM_TYPE.PRIVATE) {
       return null;
     }
 
@@ -371,14 +371,14 @@ class MessageService {
     const latestMessage = await this.lastMessageOfRoom(messages.room_id);
 
     if (findRoom) {
-      if (findRoom.room_type == Constant.ROOM_TYPE.LIMITED) {
+      if (findRoom.room_type == ChatConstant.ROOM_TYPE.LIMITED) {
         findRoom.last_message.shared_key = latestMessage.shared_key;
       }
       findRoom.last_message.message_data = latestMessage?.message_data;
       findRoom.user_read = findRoom.user_read?.map(userRead => {
         if (
           userRead.user.wallet_address != address &&
-          messages.message_status != Constant.MESSAGE_STATUS.READ
+          messages.message_status != ChatConstant.MESSAGE_STATUS.READ
         ) {
           return {
             ...userRead,

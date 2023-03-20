@@ -1,6 +1,6 @@
-import { Constant } from '@constants';
-import { DMTPMarketContract } from '@providers';
-import { Buy, IMarket, IStickerPriceType, Market, Token } from '@schemas';
+// import { Constant } from '@constants';
+import { ChatMarketContract } from '@providers';
+import { Buy, IMarket, IStickerPriceType, Market, Token } from '@chat-schemas';
 class MarketService {
   public async getMarkets(address: string): Promise<IMarket[]> {
     const marketList = await Market.find({
@@ -18,17 +18,17 @@ class MarketService {
     return marketList;
   }
 
-  public getToken(tokenAddress: string): Token {
-    const { DMTP, WETH, NONE } = Constant.TOKEN_ERC20;
-    switch (tokenAddress.toLowerCase()) {
-      case DMTP.contract_address.toLowerCase():
-        return DMTP;
-      case WETH.contract_address.toLowerCase():
-        return WETH;
-      default:
-        return NONE;
-    }
-  }
+  // public getToken(tokenAddress: string): Token {
+  //   const { DMTP, WETH, NONE } = Constant.TOKEN_ERC20;
+  //   switch (tokenAddress.toLowerCase()) {
+  //     case DMTP.contract_address.toLowerCase():
+  //       return DMTP;
+  //     case WETH.contract_address.toLowerCase():
+  //       return WETH;
+  //     default:
+  //       return NONE;
+  //   }
+  // }
 
   public async setPriceSticker(
     stickerId: string,
@@ -44,9 +44,9 @@ class MarketService {
     amount: string,
   ): Promise<IMarket | null> {
     try {
-      const stickerCID = await DMTPMarketContract.methods.stickerURI(stickerId).call();
+      const stickerCID = await ChatMarketContract.methods.stickerURI(stickerId).call();
 
-      const amount_left = await DMTPMarketContract.methods.stickerLeft(stickerId).call();
+      const amount_left = await ChatMarketContract.methods.stickerLeft(stickerId).call();
 
       const updated = await Market.findOneAndUpdate(
         {
@@ -111,7 +111,7 @@ class MarketService {
         txHash,
       });
 
-      const amount_left = await DMTPMarketContract.methods.stickerLeft(stickerId).call();
+      const amount_left = await ChatMarketContract.methods.stickerLeft(stickerId).call();
 
       const updated = await Market.findOneAndUpdate(
         {
