@@ -129,7 +129,12 @@ const ApiServices = {
         },
       }),
     getMyCollection: () => AxiosGet<GetMarketOutput[]>("/music/list-song"),
-    getMyMarket: () => AxiosGet<GetMarketOutput[]>("/market/list-my-market"),
+    getMyMarket: (address: string) =>
+      AxiosGet<GetMarketOutput[]>("/market/list-my-market", {
+        params: {
+          address,
+        },
+      }),
   },
   user: {
     getUser: () => AxiosGet<GetUserOutput>("/user/get-user"),

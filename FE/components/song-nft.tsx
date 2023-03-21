@@ -86,11 +86,11 @@ const SongNFTComponent = ({
     if (allowance.value.gte(priceMuc)) return;
 
     const result = await signERC2612Permit(
-      sdk.getProvider(),
+      window.ethereum,
       ABI_MUSIC.MUC.address,
-      await sdk.wallet.getAddress(),
+      address,
       ABI_MUSIC.MusicMarket.address,
-      ethers.utils.formatUnits(price, 18)
+      priceMuc
     );
     setTxResult({
       reason: "",

@@ -56,7 +56,7 @@ const Profile = () => {
           const resMyCollection = await ApiServices.music.getMyCollection();
           setCollection(resMyCollection.data.data);
         }
-        const resStudio = await ApiServices.music.getMyMarket();
+        const resStudio = await ApiServices.music.getMyMarket(`${address}`);
         setStudio(resStudio.data.data);
       } catch (error) {}
     }
@@ -400,7 +400,7 @@ const Profile = () => {
                           {Math.round(item.duration % 60)}
                         </Td>
                         <Td>{item.price} MUC</Td>
-                        <Td>{item.created_at.toDateString()}</Td>
+                        <Td>{new Date(item.created_at).toDateString()}</Td>
                         <Td>
                           <Stack
                             direction="row"

@@ -1,7 +1,7 @@
 import { Constant, logger, onError, onSuccess, OptionResponse } from '@constants';
 import { Singleton } from '@providers';
 import { IMarket } from '@schemas';
-import { Controller, Get, Query, Request, Route, Security, Tags } from 'tsoa';
+import { Controller, Get, Query, Route, Security, Tags } from 'tsoa';
 
 const { NETWORK_STATUS_CODE, NETWORK_STATUS_MESSAGE } = Constant;
 @Tags('market')
@@ -48,10 +48,9 @@ export class MarketController extends Controller {
     }
   }
   @Get('list-my-market')
-  public async getMyMarket(@Request() request: any): Promise<OptionResponse<IMarket[]>> {
+  public async getMyMarket(@Query() address: string): Promise<OptionResponse<IMarket[]>> {
     try {
-      const address = request.headers['address'];
-      return onSuccess(await Singleton.getMarketInstance().getMyMarket(`${address}`));
+      return onSuccess(await Singleton.getMarketInstance().getMyMarket(`${address.toLowerCase()}`));
     } catch (error) {
       logger.error(error);
       this.setStatus(NETWORK_STATUS_CODE.INTERNAL_SERVER_ERROR);
