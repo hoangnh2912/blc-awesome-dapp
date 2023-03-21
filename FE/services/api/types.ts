@@ -88,6 +88,9 @@ interface GetMarketOutput {
   image: string;
   singer: string;
   seller: string;
+  owners: {
+    wallet_address: string;
+  }[];
   attributes: {
     trait_type: string;
     value: string;

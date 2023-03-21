@@ -26,7 +26,7 @@ import { NO_AVATAR } from "../../../constants/constants";
 import { ipfsToGateway } from "../../../constants/utils";
 import MusicBaseLayout from "../../../layouts/music.base";
 import ApiServices from "../../../services/api";
-import { GetUserOutput } from "../../../services/api/types";
+import { GetMarketOutput, GetUserOutput } from "../../../services/api/types";
 import { useStoreActions, useStoreState } from "../../../services/redux/hook";
 
 const Profile = () => {
@@ -44,14 +44,28 @@ const Profile = () => {
   const isLogin = useStoreState((state) => state.user.isLogin);
 
   const [userInfo, setUserInfo] = useState<GetUserOutput>();
+  const [collection, setCollection] = useState<GetMarketOutput[]>([]);
+  const [studio, setStudio] = useState<GetMarketOutput[]>([]);
 
   const getUserData = async () => {
     if (address && currentAddress) {
       try {
-        const res = await ApiServices.user.getUser();
-        setUserInfo(res.data.data);
+        const resUser = await ApiServices.user.getUser();
+        setUserInfo(resUser.data.data);
+        if (isMyProfile) {
+          const resMyCollection = await ApiServices.music.getMyCollection();
+          setCollection(resMyCollection.data.data);
+        }
+        const resStudio = await ApiServices.music.getMyMarket();
+        setStudio(resStudio.data.data);
       } catch (error) {}
     }
+  };
+
+  const onClickEdit = () => {
+    push("/music/edit-profile", undefined, {
+      shallow: true,
+    });
   };
 
   useEffect(() => {
@@ -127,11 +141,7 @@ const Profile = () => {
               color="white"
               justifyContent="space-around"
               width="120px"
-              onClick={() => {
-                push("/music/edit-profile", undefined, {
-                  shallow: true,
-                });
-              }}
+              onClick={onClickEdit}
               border="2px solid #C2A822"
             >
               <FaUserEdit />
@@ -186,6 +196,7 @@ const Profile = () => {
           color="white"
           border="2px solid #C2A822"
           flex={1}
+          onClick={onClickEdit}
           gap={5}
         >
           <FaUserEdit />
@@ -286,27 +297,35 @@ const Profile = () => {
                   </Tr>
                 </Thead>
                 <Tbody>
-                  <Tr
-                    fontFamily="mono"
-                    fontWeight="bold"
-                    fontSize="16"
-                    color="white"
-                  >
-                    <Td>Tôi thấy hoa vàng trên cỏ xanh</Td>
-                    <Td>1:03</Td>
-                    <Td>2.74 MUC</Td>
-                    <Td>10/100</Td>
-                    <Td>
-                      <Stack
-                        direction="row"
-                        alignItems="center"
-                        justifyContent="space-evenly"
-                      >
-                        <BsPauseFill size={"30px"} />
-                        <MdRemoveShoppingCart size={"25px"} />
-                      </Stack>
-                    </Td>
-                  </Tr>
+                  {studio.map((item, idx) => (
+                    <Tr
+                      fontFamily="mono"
+                      fontWeight="bold"
+                      key={idx}
+                      fontSize="16"
+                      color="white"
+                    >
+                      <Td>{item.name}</Td>
+                      <Td>
+                        {Math.floor(item.duration / 60)}:
+                        {Math.round(item.duration % 60)}
+                      </Td>
+                      <Td>{item.price} MUC</Td>
+                      <Td>
+                        {item.left}/{item.amount}
+                      </Td>
+                      <Td>
+                        <Stack
+                          direction="row"
+                          alignItems="center"
+                          justifyContent="space-evenly"
+                        >
+                          <BsPauseFill size={"30px"} />
+                          <MdSell size={"25px"} />
+                        </Stack>
+                      </Td>
+                    </Tr>
+                  ))}
                 </Tbody>
               </Table>
             </TableContainer>
@@ -367,27 +386,33 @@ const Profile = () => {
                     </Tr>
                   </Thead>
                   <Tbody>
-                    <Tr
-                      fontFamily="mono"
-                      fontWeight="bold"
-                      fontSize="16"
-                      color="white"
-                    >
-                      <Td>Tôi thấy hoa vàng trên cỏ xanh</Td>
-                      <Td>1:03</Td>
-                      <Td>2.74 MUC</Td>
-                      <Td>22/12/2023</Td>
-                      <Td>
-                        <Stack
-                          direction="row"
-                          alignItems="center"
-                          justifyContent="space-evenly"
-                        >
-                          <BsPauseFill size={"30px"} />
-                          <MdSell size={"25px"} />
-                        </Stack>
-                      </Td>
-                    </Tr>
+                    {collection.map((item, idx) => (
+                      <Tr
+                        fontFamily="mono"
+                        fontWeight="bold"
+                        key={idx}
+                        fontSize="16"
+                        color="white"
+                      >
+                        <Td>{item.name}</Td>
+                        <Td>
+                          {Math.floor(item.duration / 60)}:
+                          {Math.round(item.duration % 60)}
+                        </Td>
+                        <Td>{item.price} MUC</Td>
+                        <Td>{item.created_at.toDateString()}</Td>
+                        <Td>
+                          <Stack
+                            direction="row"
+                            alignItems="center"
+                            justifyContent="space-evenly"
+                          >
+                            <BsPauseFill size={"30px"} />
+                            <MdSell size={"25px"} />
+                          </Stack>
+                        </Td>
+                      </Tr>
+                    ))}
                   </Tbody>
                 </Table>
               </TableContainer>

@@ -128,6 +128,8 @@ const ApiServices = {
           id,
         },
       }),
+    getMyCollection: () => AxiosGet<GetMarketOutput[]>("/music/list-song"),
+    getMyMarket: () => AxiosGet<GetMarketOutput[]>("/market/list-my-market"),
   },
   user: {
     getUser: () => AxiosGet<GetUserOutput>("/user/get-user"),

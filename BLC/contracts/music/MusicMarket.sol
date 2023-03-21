@@ -2,16 +2,16 @@
 pragma solidity 0.8.17;
 
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./interfaces/IMusicMarket.sol";
+import "./interfaces/IMuc.sol";
 
 contract MusicMarket is Ownable, IMusicMarket {
     uint256 public constant FEE = 3;
-    IERC20 private immutable _muc;
+    IMuc private immutable _muc;
     mapping(uint256 => Song) _song;
 
-    constructor(IERC20 muc) {
+    constructor(IMuc muc) {
         _muc = muc;
     }
 
@@ -45,12 +45,22 @@ contract MusicMarket is Ownable, IMusicMarket {
         uint256 price,
         uint256 amount,
         string calldata uri
-    ) external override notListed(id) {
+    ) external override {
+        _listSong(id, price, amount, uri, msg.sender);
+    }
+
+    function _listSong(
+        uint256 id,
+        uint256 price,
+        uint256 amount,
+        string calldata uri,
+        address seller
+    ) internal notListed(id) {
         require(price > 0, "Price must be greater than 0");
         require(amount > 0, "Amount must be greater than 0");
 
-        _song[id] = Song(id, price, amount, uri, msg.sender, false);
-        emit ListSong(id, msg.sender, price, amount, uri);
+        _song[id] = Song(id, price, amount, uri, seller, false);
+        emit ListSong(id, seller, price, amount, uri);
     }
 
     function listSongs(
@@ -63,32 +73,42 @@ contract MusicMarket is Ownable, IMusicMarket {
         require(id.length == amount.length, "Invalid input");
         require(id.length == uri.length, "Invalid input");
         for (uint256 i = 0; i < id.length; ++i) {
-            this.listSong(id[i], price[i], amount[i], uri[i]);
+            _listSong(id[i], price[i], amount[i], uri[i], msg.sender);
         }
     }
 
     function buySong(
         IMusic token,
-        uint256 id
-    ) external override buyable(id) notPaused(id) {
-        require(
-            token.balanceOf(msg.sender, id) == 0,
-            "You already own this song"
-        );
-        uint256 price = _song[id].price;
-        require(price > 0, "Song not listed");
-        --_song[id].amount;
-        uint256 fee = (price * FEE) / 100;
-        _muc.transferFrom(msg.sender, address(this), fee);
-        _muc.transferFrom(msg.sender, _song[id].seller, price - fee);
-        token.mint(msg.sender, id, 1, _song[id].uri);
-        emit BuySong(id, msg.sender);
+        uint256 id,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) external override {
+        _buySong(token, id, msg.sender, deadline, v, r, s);
     }
 
-    function buySongs(IMusic token, uint256[] calldata ids) external override {
-        for (uint256 i = 0; i < ids.length; ++i) {
-            this.buySong(token, ids[i]);
+    function _buySong(
+        IMusic token,
+        uint256 id,
+        address buyer,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) internal buyable(id) notPaused(id) {
+        require(token.balanceOf(buyer, id) == 0, "You already own this song");
+        uint256 price = _song[id].price;
+        --_song[id].amount;
+        _muc.permit(buyer, address(this), price, deadline, v, r, s);
+        {
+            Song memory song_ = _song[id];
+            uint256 fee = (price * FEE) / 100;
+            _muc.transferFrom(buyer, address(this), fee);
+            _muc.transferFrom(buyer, song_.seller, price - fee);
+            token.mint(buyer, id, 1, song_.uri);
         }
+        emit BuySong(id, buyer);
     }
 
     function pauseListSong(uint256 id) external notPaused(id) buyable(id) {

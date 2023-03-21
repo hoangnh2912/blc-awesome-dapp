@@ -132,7 +132,7 @@ export const ABI_STEAL_ADDRESS = {
 
 export const ABI_MUSIC = {
   MUC: {
-    address: "0xA2c6564cae5108E768AC076B2ad901050410d4BA",
+    address: "0x4b137a387D2b4734013D6F78B4bC01aa25BD48bf",
     abi: [
       { inputs: [], stateMutability: "nonpayable", type: "constructor" },
       {
@@ -184,6 +184,13 @@ export const ABI_MUSIC = {
         ],
         name: "Transfer",
         type: "event",
+      },
+      {
+        inputs: [],
+        name: "DOMAIN_SEPARATOR",
+        outputs: [{ internalType: "bytes32", name: "", type: "bytes32" }],
+        stateMutability: "view",
+        type: "function",
       },
       {
         inputs: [
@@ -247,6 +254,28 @@ export const ABI_MUSIC = {
         type: "function",
       },
       {
+        inputs: [{ internalType: "address", name: "owner", type: "address" }],
+        name: "nonces",
+        outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+        stateMutability: "view",
+        type: "function",
+      },
+      {
+        inputs: [
+          { internalType: "address", name: "owner", type: "address" },
+          { internalType: "address", name: "spender", type: "address" },
+          { internalType: "uint256", name: "value", type: "uint256" },
+          { internalType: "uint256", name: "deadline", type: "uint256" },
+          { internalType: "uint8", name: "v", type: "uint8" },
+          { internalType: "bytes32", name: "r", type: "bytes32" },
+          { internalType: "bytes32", name: "s", type: "bytes32" },
+        ],
+        name: "permit",
+        outputs: [],
+        stateMutability: "nonpayable",
+        type: "function",
+      },
+      {
         inputs: [],
         name: "symbol",
         outputs: [{ internalType: "string", name: "", type: "string" }],
@@ -294,7 +323,7 @@ export const ABI_MUSIC = {
     path: "music",
   },
   Music: {
-    address: "0x08Ce50041666b40D4D6399d0818f764D0F5aFfe9",
+    address: "0x3d37f86Cc018DD42112fc952B9866adE2aABfcaC",
     abi: [
       { inputs: [], stateMutability: "nonpayable", type: "constructor" },
       {
@@ -677,11 +706,11 @@ export const ABI_MUSIC = {
     path: "music",
   },
   MusicMarket: {
-    address: "0xA12661C03EC68674F0Eaf42D3b790bf72fA12A3B",
+    address: "0x5F0Bf78E618702aB00d2503ee792fDa2d28Fd143",
     abi: [
       {
         inputs: [
-          { internalType: "contract IERC20", name: "muc", type: "address" },
+          { internalType: "contract IMuc", name: "muc", type: "address" },
         ],
         stateMutability: "nonpayable",
         type: "constructor",
@@ -866,18 +895,12 @@ export const ABI_MUSIC = {
         inputs: [
           { internalType: "contract IMusic", name: "token", type: "address" },
           { internalType: "uint256", name: "id", type: "uint256" },
+          { internalType: "uint256", name: "deadline", type: "uint256" },
+          { internalType: "uint8", name: "v", type: "uint8" },
+          { internalType: "bytes32", name: "r", type: "bytes32" },
+          { internalType: "bytes32", name: "s", type: "bytes32" },
         ],
         name: "buySong",
-        outputs: [],
-        stateMutability: "nonpayable",
-        type: "function",
-      },
-      {
-        inputs: [
-          { internalType: "contract IMusic", name: "token", type: "address" },
-          { internalType: "uint256[]", name: "ids", type: "uint256[]" },
-        ],
-        name: "buySongs",
         outputs: [],
         stateMutability: "nonpayable",
         type: "function",
@@ -905,7 +928,7 @@ export const ABI_MUSIC = {
       },
     ],
     contractName: "MusicMarket",
-    input: ["0xA2c6564cae5108E768AC076B2ad901050410d4BA"],
+    input: ["0x4b137a387D2b4734013D6F78B4bC01aa25BD48bf"],
     path: "music",
   },
 };

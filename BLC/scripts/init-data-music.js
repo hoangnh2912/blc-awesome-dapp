@@ -12,15 +12,27 @@ async function main() {
     abiMusic.MusicMarket.address
   );
 
-  for (let i = 0; i < musicData.length; i++) {
+  const chunkSize = 50;
+  for (let i = 0; i < musicData.length; i += chunkSize) {
+    const chunk = musicData.slice(i, i + chunkSize);
     await contractInteractInstance.listSongs(
-      [musicData[i].id],
-      [musicData[i].price],
-      [musicData[i].amount],
-      [musicData[i].uri]
+      chunk.map((item) => item.id),
+      chunk.map((item) => item.price),
+      chunk.map((item) => item.amount),
+      chunk.map((item) => item.uri)
     );
-    console.log("Listed song", i + 1);
+    console.log("Listed song", chunk.length);
   }
+
+  // for (let i = 0; i < musicData.length; i++) {
+  //   await contractInteractInstance.listSongs(
+  //     [musicData[i].id],
+  //     [musicData[i].price],
+  //     [musicData[i].amount],
+  //     [musicData[i].uri]
+  //   );
+  //   console.log("Listed song", i + 1);
+  // }
 }
 
 main()

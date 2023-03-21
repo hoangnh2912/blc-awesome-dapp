@@ -47,9 +47,14 @@ interface IMusicMarket {
      * @param id Song id
      * Approved amount of MUC must be transferred to the contract before calling this function
      */
-    function buySong(IMusic token, uint256 id) external;
-
-    function buySongs(IMusic token, uint256[] calldata ids) external;
+    function buySong(
+        IMusic token,
+        uint256 id,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) external;
 
     event ListSong(
         uint256 indexed id,

@@ -1,8 +1,5 @@
 const ipfsToGateway = (ipfsUrl: string) => {
-  return `https://ipfs.dmtp.tech/ipfs/${ipfsUrl
-    .split("ipfs")
-    .pop()
-    ?.replace("://", "")}`;
+  return ipfsUrl;
 };
 
 export { ipfsToGateway };

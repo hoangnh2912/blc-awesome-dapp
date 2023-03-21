@@ -1,5 +1,6 @@
-import { Box, Image, Spinner, Stack, Text } from "@chakra-ui/react";
-import { useSDK } from "@thirdweb-dev/react";
+import { Box, Image, Spinner, Stack, Text, useToast } from "@chakra-ui/react";
+import { useAddress, useSDK } from "@thirdweb-dev/react";
+import { ethers } from "ethers";
 import { useRouter } from "next/router";
 import { FaPlay } from "react-icons/fa";
 import { TiMediaPause } from "react-icons/ti";
@@ -7,10 +8,9 @@ import { ABI_MUSIC } from "../constants/abi";
 import { ipfsToGateway } from "../constants/utils";
 import { GetMarketOutput } from "../services/api/types";
 import { useStoreActions, useStoreState } from "../services/redux/hook";
-import { useModalTransaction } from "./modal-transaction";
-import { signERC2612Permit } from "eth-permit";
-import { ethers } from "ethers";
 import LinkScan from "./link-scan";
+import { signERC2612Permit } from "eth-permit";
+import { useModalTransaction } from "./modal-transaction";
 
 const SongNFTComponent = ({
   image,
@@ -50,29 +50,63 @@ const SongNFTComponent = ({
   };
 
   const sdk = useSDK();
+  const address = useAddress();
   const { onOpen: onOpenModalTx, setTxResult } = useModalTransaction();
+
+  const toast = useToast();
 
   const permitMuc = async (priceMuc: string) => {
     if (!sdk) return;
     if (!onOpenModalTx) return;
-    onOpenModalTx();
+    if (!address) return;
     const mucContract = await sdk.getContractFromAbi(
       ABI_MUSIC.MUC.address,
       ABI_MUSIC.MUC.abi
     );
+    const { value } = await mucContract.erc20.balanceOf(address);
+
+    if (value.lt(priceMuc)) {
+      toast({
+        title: "Insufficient balance",
+        description: "Please top up your MUC balance",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+        position: "top-right",
+      });
+      return;
+    }
+
+    onOpenModalTx();
+
     const allowance = await mucContract.erc20.allowance(
       ABI_MUSIC.MusicMarket.address
     );
 
     if (allowance.value.gte(priceMuc)) return;
 
-    // const result = await signERC2612Permit(
-    //   sdk.getProvider(),
-    //   ABI_MUSIC.MUC.address,
-    //   await sdk.wallet.getAddress(),
-    //   ABI_MUSIC.MusicMarket.address,
-    //   ethers.utils.formatUnits(price, 18)
-    // );
+    const result = await signERC2612Permit(
+      sdk.getProvider(),
+      ABI_MUSIC.MUC.address,
+      await sdk.wallet.getAddress(),
+      ABI_MUSIC.MusicMarket.address,
+      ethers.utils.formatUnits(price, 18)
+    );
+    setTxResult({
+      reason: "",
+      content: [
+        {
+          title: "Approve Signature",
+          value: result.r + result.s + result.v,
+        },
+        {
+          title: "Buy Transaction Hash",
+          value: <Spinner colorScheme="green.500" />,
+        },
+      ],
+      txState: "success",
+    });
+    return result;
     // await mucContract.call(
     //   "permit",
     //   result.owner,
@@ -83,44 +117,34 @@ const SongNFTComponent = ({
     //   result.r,
     //   result.s
     // );
-    const res = await mucContract.call(
-      "approve",
-      ABI_MUSIC.MusicMarket.address,
-      priceMuc
-    );
-    setTxResult({
-      reason: "",
-      content: [
-        {
-          title: "Approve Transaction Hash",
-          value: <LinkScan transactionHash={res.receipt.transactionHash} />,
-        },
-        {
-          title: "Buy Transaction Hash",
-          value: <Spinner colorScheme="green.500" />,
-        },
-      ],
-      txState: "success",
-    });
-    return res;
+    // const res = await mucContract.call(
+    //   "approve",
+    //   ABI_MUSIC.MusicMarket.address,
+    //   priceMuc
+    // );
   };
 
   const onBuy = async () => {
-    if (sdk && onOpenModalTx) {
+    if (sdk && onOpenModalTx && address) {
       try {
         const musicMarketContract = await sdk.getContractFromAbi(
           ABI_MUSIC.MusicMarket.address,
           ABI_MUSIC.MusicMarket.abi
         );
 
-        onOpenModalTx();
         const approveMuc = await permitMuc(
           ethers.utils.parseEther(price).toString()
         );
+        if (!approveMuc) return;
+        onOpenModalTx();
         const res = await musicMarketContract.call(
           "buySong",
           ABI_MUSIC.Music.address,
-          id
+          id,
+          approveMuc.deadline,
+          approveMuc.v,
+          approveMuc.r,
+          approveMuc.s
         );
         setTxResult({
           reason: "",
@@ -128,11 +152,7 @@ const SongNFTComponent = ({
             ...[
               approveMuc && {
                 title: "Approve Transaction Hash",
-                value: (
-                  <LinkScan
-                    transactionHash={approveMuc.receipt.transactionHash}
-                  />
-                ),
+                value: approveMuc.r + approveMuc.s + approveMuc.v,
               },
             ],
             {
