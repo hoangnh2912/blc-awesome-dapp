@@ -1,5 +1,5 @@
-import { IPool, Pool } from '@schemas';
-import { Constant } from '@constants';
+import { IPool, Pool } from '@chat-schemas';
+import { ChatConstant } from '@constants';
 class PoolService {
   public async addToPool(
     tokenAddress: string,
@@ -13,9 +13,9 @@ class PoolService {
   ): Promise<IPool | null> {
     try {
       const token =
-        Object.values(Constant.TOKEN_ERC20).find(
+        Object.values(ChatConstant.TOKEN_ERC20).find(
           e => e.contract_address.toLowerCase() == tokenAddress.toLowerCase(),
-        ) || Constant.TOKEN_ERC20.NONE;
+        ) || ChatConstant.TOKEN_ERC20.NONE;
 
       const payload = {
         token,

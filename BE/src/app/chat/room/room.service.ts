@@ -1,5 +1,5 @@
 import { FilterQuery, Types } from 'mongoose';
-import { Constant, logger, Some } from '@constants';
+import { ChatConstant, logger, Some } from '@constants';
 import {
   emitCreateRoom,
   emitJoinRoom,
@@ -12,10 +12,18 @@ import {
   Singleton,
   uploadJson,
 } from '@providers';
-import { Notification, IRoom, Room, Session, IUser, Message, IUserMessageRead } from '@schemas';
+import {
+  Notification,
+  IRoom,
+  Room,
+  Session,
+  IUser,
+  Message,
+  IUserMessageRead,
+} from '@chat-schemas';
 
 class RoomService {
-  userService = Singleton.getUserInstance();
+  userService = Singleton.getChatUserInstance();
   messageService = Singleton.getMessageInstance();
 
   public async setNotificationRoom(room_id: string, address: string) {
@@ -61,7 +69,7 @@ class RoomService {
     }
   }
 
-  public async getRoom(room_id: string) {
+  public async getRoom(room_id: string): Promise<(IRoom & { _id: Types.ObjectId }) | null> {
     try {
       const room = await Room.findOne({
         _id: room_id,
@@ -120,7 +128,7 @@ class RoomService {
         };
       }
       if (
-        room.room_type != Constant.ROOM_TYPE.UNLIMITED &&
+        room.room_type != ChatConstant.ROOM_TYPE.UNLIMITED &&
         !room.users.find((user: IUser) => user.wallet_address == address)
       ) {
         return {
@@ -133,15 +141,15 @@ class RoomService {
         data: {
           ...room,
           users: room.users.map((user: IUser) => {
-            let role = Constant.MEMBER_OF_ROOM_TYPE.MEMBER;
+            let role = ChatConstant.MEMBER_OF_ROOM_TYPE.MEMBER;
             if (room.admins && room.admins.includes(user.wallet_address))
-              role = Constant.MEMBER_OF_ROOM_TYPE.ADMIN;
+              role = ChatConstant.MEMBER_OF_ROOM_TYPE.ADMIN;
             if (room.sub_admins && room.sub_admins.includes(user.wallet_address))
-              role = Constant.MEMBER_OF_ROOM_TYPE.SUB_ADMIN;
+              role = ChatConstant.MEMBER_OF_ROOM_TYPE.SUB_ADMIN;
             if (!user?.dmtp_pub_key) {
               return {
                 ...user,
-                dmtp_pub_key: Constant.DMTP_KEY_PAIR.dmtp_pub_key,
+                dmtp_pub_key: ChatConstant.KEY_PAIR.dmtp_pub_key,
                 role,
               };
             }
@@ -150,9 +158,6 @@ class RoomService {
               role,
             };
           }),
-          is_official: room.users
-            .map((e: any) => e.wallet_address)
-            .includes(Constant.DMTP_OFFICIAL_WALLET_ADDRESS),
         },
       };
     } catch (error: any) {
@@ -166,35 +171,35 @@ class RoomService {
 
   public async getRoomOfUserV2(address: string, page: number = 0, limit: number = 15) {
     try {
-      const roomOfficial =
-        (
-          await this.createRoom(
-            [address, Constant.DMTP_OFFICIAL_WALLET_ADDRESS],
-            Constant.DMTP_OFFICIAL_WALLET_ADDRESS,
-            'DMTP OFFICIAL',
-            Constant.ROOM_TYPE.UNLIMITED,
-            Constant.DEFAULT_AVATAR,
-            '',
-            false,
-            undefined,
-            true,
-          )
-        ).data || new Types.ObjectId();
-      const listMessageWithDMTP = await Singleton.getPublicUnlimitedRoomInstance().getMessageOfRoom(
-        address,
-        roomOfficial._id.toString(),
-        0,
-        5,
-      );
-      if (listMessageWithDMTP.length == 0) {
-        for (const dmtpMessageInitial of Constant.DMTP_OFFICIAL_INITIAL_MESSAGE) {
-          await Singleton.getPublicUnlimitedRoomInstance().sendMessage(
-            Constant.DMTP_OFFICIAL_WALLET_ADDRESS,
-            roomOfficial._id.toString(),
-            dmtpMessageInitial,
-          );
-        }
-      }
+      // const roomOfficial =
+      //   (
+      //     await this.createRoom(
+      //       [address, ChatConstant.DMTP_OFFICIAL_WALLET_ADDRESS],
+      //       ChatConstant.DMTP_OFFICIAL_WALLET_ADDRESS,
+      //       'DMTP OFFICIAL',
+      //       ChatConstant.ROOM_TYPE.UNLIMITED,
+      //       ChatConstant.DEFAULT_AVATAR,
+      //       '',
+      //       false,
+      //       undefined,
+      //       true,
+      //     )
+      //   ).data || new Types.ObjectId();
+      // const listMessageWithDMTP = await Singleton.getPublicUnlimitedRoomInstance().getMessageOfRoom(
+      //   address,
+      //   roomOfficial._id.toString(),
+      //   0,
+      //   5,
+      // );
+      // if (listMessageWithDMTP.length == 0) {
+      //   for (const dmtpMessageInitial of ChatConstant.DMTP_OFFICIAL_INITIAL_MESSAGE) {
+      //     await Singleton.getPublicUnlimitedRoomInstance().sendMessage(
+      //       ChatConstant.DMTP_OFFICIAL_WALLET_ADDRESS,
+      //       roomOfficial._id.toString(),
+      //       dmtpMessageInitial,
+      //     );
+      //   }
+      // }
 
       let filter: any = {
         $match: {
@@ -248,15 +253,15 @@ class RoomService {
             ...room,
             users: await Promise.all(
               room.users.map(async (user: IUser) => {
-                let role = Constant.MEMBER_OF_ROOM_TYPE.MEMBER;
+                let role = ChatConstant.MEMBER_OF_ROOM_TYPE.MEMBER;
                 if (room.admins && room.admins.includes(user.wallet_address))
-                  role = Constant.MEMBER_OF_ROOM_TYPE.ADMIN;
+                  role = ChatConstant.MEMBER_OF_ROOM_TYPE.ADMIN;
                 if (room.sub_admins && room.sub_admins.includes(user.wallet_address))
-                  role = Constant.MEMBER_OF_ROOM_TYPE.SUB_ADMIN;
+                  role = ChatConstant.MEMBER_OF_ROOM_TYPE.SUB_ADMIN;
                 if (!user?.dmtp_pub_key) {
                   return {
                     ...user,
-                    dmtp_pub_key: Constant.DMTP_KEY_PAIR.dmtp_pub_key,
+                    dmtp_pub_key: ChatConstant.KEY_PAIR.dmtp_pub_key,
                     role,
                   };
                 }
@@ -274,7 +279,7 @@ class RoomService {
                 ])
               ).data?.pop()?.key_data,
             },
-            is_official: room._id.toString() == roomOfficial._id.toString(),
+            // is_official: room._id.toString() == roomOfficial._id.toString(),
           };
         }),
       );
@@ -298,10 +303,11 @@ class RoomService {
 
       if (oppositeAddress) {
         const user = await this.userService.get(oppositeAddress);
+
         if (user?.dmtp_pub_key) {
           return user?.dmtp_pub_key;
         }
-        return Constant.DMTP_KEY_PAIR.dmtp_pub_key;
+        return ChatConstant.KEY_PAIR.dmtp_pub_key;
       }
       return null;
     } catch (error) {
@@ -315,8 +321,8 @@ class RoomService {
         $and: [
           {
             $or: [
-              { room_type: Constant.ROOM_TYPE.UNLIMITED },
-              { room_type: Constant.ROOM_TYPE.LIMITED },
+              { room_type: ChatConstant.ROOM_TYPE.UNLIMITED },
+              { room_type: ChatConstant.ROOM_TYPE.LIMITED },
             ],
           },
           {
@@ -327,7 +333,7 @@ class RoomService {
           },
         ],
         deleted_at: { $exists: false },
-        users: { $ne: Constant.DMTP_OFFICIAL_WALLET_ADDRESS },
+        // users: { $ne: ChatConstant.DMTP_OFFICIAL_WALLET_ADDRESS },
       };
 
       const listRoom = await Room.find(filter)
@@ -337,23 +343,23 @@ class RoomService {
         .skip(page * limit)
         .limit(limit);
 
-      listRoom.map(room => {
-        if (room.nft_contracts) {
-          room.nft_contracts.map((contract: any) => {
-            const chainIndex = Object.values(Constant.SUPPORTED_CHAIN).findIndex(
-              chain => chain.chainId == contract.chain_id,
-            );
-            const chainName = Object.keys(Constant.SUPPORTED_CHAIN)[chainIndex];
-            const chainIcon = Object.values(Constant.SUPPORTED_CHAIN)[chainIndex].icon;
-            contract.chain_name = chainName;
-            contract.chain_icon = chainIcon;
-            contract.url = `${Object.values(Constant.SUPPORTED_CHAIN)[chainIndex].scan}address/${
-              contract.address
-            }`;
-          });
-        }
-        return room;
-      });
+      // listRoom.map(room => {
+      //   if (room.nft_contracts) {
+      //     room.nft_contracts.map((contract: any) => {
+      //       const chainIndex = Object.values(ChatConstant.SUPPORTED_CHAIN).findIndex(
+      //         chain => chain.chainId == contract.chain_id,
+      //       );
+      //       const chainName = Object.keys(ChatConstant.SUPPORTED_CHAIN)[chainIndex];
+      //       const chainIcon = Object.values(ChatConstant.SUPPORTED_CHAIN)[chainIndex].icon;
+      //       contract.chain_name = chainName;
+      //       contract.chain_icon = chainIcon;
+      //       contract.url = `${
+      //         Object.values(ChatConstant.SUPPORTED_CHAIN)[chainIndex].scan
+      //       }address/${contract.address}`;
+      //     });
+      //   }
+      //   return room;
+      // });
       return listRoom;
     } catch (e) {
       throw e;
@@ -364,14 +370,14 @@ class RoomService {
     users: string[],
     creator: string,
     name: string,
-    room_type: string = Constant.ROOM_TYPE.PRIVATE,
+    room_type: string = ChatConstant.ROOM_TYPE.PRIVATE,
     avatar: string = '',
     description: string = '',
     only_view: boolean = false,
-    nft_contract?: {
-      contractAddress: string;
-      chain_id: string;
-    },
+    // nft_contract?: {
+    //   contractAddress: string;
+    //   chain_id: string;
+    // },
     is_create_official: boolean = false,
   ): Promise<Some<(IRoom | null) & { _id: Types.ObjectId }>> {
     try {
@@ -387,7 +393,7 @@ class RoomService {
         ),
       ];
 
-      if (room_type == Constant.ROOM_TYPE.PRIVATE || is_create_official) {
+      if (room_type == ChatConstant.ROOM_TYPE.PRIVATE || is_create_official) {
         const findRoom = await Room.findOneAndUpdate(
           {
             users: {
@@ -438,7 +444,7 @@ class RoomService {
 
       let createField: any = {
         name,
-        avatar: !!avatar ? avatar : Constant.DEFAULT_AVATAR,
+        avatar: !!avatar ? avatar : ChatConstant.DEFAULT_AVATAR,
         description,
         room_type,
         users: lowerCaseUsers,
@@ -459,94 +465,112 @@ class RoomService {
         last_message: { message_data: '', at: now },
       };
 
-      if (room_type === Constant.ROOM_TYPE.PRIVATE) {
-        // room_type == PRIVATE
-        let both_init = true;
-        users.map(async user => {
-          if (user != creator) {
-            const findUser = await this.userService.get(user);
-            if (!findUser?.dmtp_pub_key) {
-              both_init = false;
-            }
+      let both_init = true;
+      users.map(async user => {
+        if (user != creator) {
+          const findUser = await this.userService.get(user);
+          if (!findUser?.dmtp_pub_key) {
+            both_init = false;
           }
-        });
-        createField['both_init'] = both_init;
-      } else if (room_type === Constant.ROOM_TYPE.LIMITED) {
-        if (nft_contract) {
-          if (users.length > 1) {
-            return {
-              status: false,
-              message: 'Room: Limited room creation can only have 1 member',
-            };
-          }
-          if (
-            !(await Singleton.getStickerInstance().isTokenOwned(
-              nft_contract.chain_id,
-              nft_contract.contractAddress,
-              creator,
-            ))
-          ) {
-            logger.error('room.service.ts:361 Not owner of contract');
-            return { status: false, message: 'Room: User not any NFT owner' };
-          }
-        } else {
-          return {
-            status: false,
-            message: 'Room: Unable to Create Unlimited without Contract',
-          };
         }
-      }
+      });
+      createField['both_init'] = both_init;
+
+      // if (room_type === ChatConstant.ROOM_TYPE.PRIVATE) {
+      //   // room_type == PRIVATE
+      //   let both_init = true;
+      //   users.map(async user => {
+      //     if (user != creator) {
+      //       const findUser = await this.userService.get(user);
+      //       if (!findUser?.dmtp_pub_key) {
+      //         both_init = false;
+      //       }
+      //     }
+      //   });
+      //   createField['both_init'] = both_init;
+      // } else if (room_type === ChatConstant.ROOM_TYPE.LIMITED) {
+      //   if (nft_contract) {
+      //     if (users.length > 1) {
+      //       return {
+      //         status: false,
+      //         message: 'Room: Limited room creation can only have 1 member',
+      //       };
+      //     }
+      //     if (
+      //       !(await Singleton.getStickerInstance().isTokenOwned(
+      //         nft_contract.chain_id,
+      //         nft_contract.contractAddress,
+      //         creator,
+      //       ))
+      //     ) {
+      //       logger.error('room.service.ts:361 Not owner of contract');
+      //       return { status: false, message: 'Room: User not any NFT owner' };
+      //     }
+      //   } else {
+      //     return {
+      //       status: false,
+      //       message: 'Room: Unable to Create Limited without Contract',
+      //     };
+      //   }
+      // }
 
       const newRoom = await Room.create(createField);
-      let roomWithNftContract = null;
-      let shared_key = null;
-      if (room_type == Constant.ROOM_TYPE.LIMITED) {
-        shared_key =
-          (await Singleton.getSharedKeyInstance().createSharedKey(newRoom._id.toString())) || '';
-        if (nft_contract) {
-          roomWithNftContract = await this.addNewNftContract(
-            creator,
-            newRoom._id.toString(),
-            nft_contract.contractAddress.toLowerCase(),
-            nft_contract.chain_id,
-            true,
-          );
-          roomWithNftContract?.nft_contracts?.map((contract: any) => {
-            const chainIndex = Object.values(Constant.SUPPORTED_CHAIN).findIndex(
-              chain => chain.chainId == contract.chain_id,
-            );
-            const chainName = Object.keys(Constant.SUPPORTED_CHAIN)[chainIndex];
-            const chainIcon = Object.values(Constant.SUPPORTED_CHAIN)[chainIndex].icon;
-            contract.chain_name = chainName;
-            contract.chain_icon = chainIcon;
-          });
-          // if (!addContractStatus) {
-          //   return { status: false, message: 'Room: User not any NFT owner' };
-          // }
-        }
-      }
+      // let roomWithNftContract = null;
+      // let shared_key = null;
+      // if (room_type == ChatConstant.ROOM_TYPE.LIMITED) {
+      //   shared_key =
+      //     (await Singleton.getSharedKeyInstance().createSharedKey(newRoom._id.toString())) || '';
+      //   if (nft_contract) {
+      //     roomWithNftContract = await this.addNewNftContract(
+      //       creator,
+      //       newRoom._id.toString(),
+      //       nft_contract.contractAddress.toLowerCase(),
+      //       nft_contract.chain_id,
+      //       true,
+      //     );
+      // roomWithNftContract?.nft_contracts?.map((contract: any) => {
+      //   const chainIndex = Object.values(ChatConstant.SUPPORTED_CHAIN).findIndex(
+      //     chain => chain.chainId == contract.chain_id,
+      //   );
+      //   const chainName = Object.keys(ChatConstant.SUPPORTED_CHAIN)[chainIndex];
+      //   const chainIcon = Object.values(ChatConstant.SUPPORTED_CHAIN)[chainIndex].icon;
+      //   contract.chain_name = chainName;
+      //   contract.chain_icon = chainIcon;
+      // });
+      // if (!addContractStatus) {
+      //   return { status: false, message: 'Room: User not any NFT owner' };
+      // }
+      //   }
+      // }
+
+      // const clonedRoom: IRoom & {
+      //   _id: Types.ObjectId;
+      // } = Object.assign(
+      //   {},
+      //   roomWithNftContract ? roomWithNftContract.toObject() : newRoom.toObject(),
+      // );
+
+      // // decrypt shared key to raw for emit
+      // if (shared_key) {
+      //   clonedRoom.shared_key = shared_key;
+      // }
+      // if (newRoom.room_type == ChatConstant.ROOM_TYPE.PRIVATE) {
+      //   const sessionOfRoom = await this.getSessionOfRoom(newRoom._id.toString());
+      //   await emitCreateRoom(sessionOfRoom, clonedRoom);
+      //   await emitNewNotification(sessionOfRoom, undefined);
+      // } else {
+      //   if (!is_create_official)
+      //     // emit to all user that new group created
+      //     await emitCreateRoom([], clonedRoom);
+      // }
 
       const clonedRoom: IRoom & {
         _id: Types.ObjectId;
-      } = Object.assign(
-        {},
-        roomWithNftContract ? roomWithNftContract.toObject() : newRoom.toObject(),
-      );
+      } = Object.assign({}, newRoom.toObject());
+      const sessionOfRoom = await this.getSessionOfRoom(newRoom._id.toString());
 
-      // decrypt shared key to raw for emit
-      if (shared_key) {
-        clonedRoom.shared_key = shared_key;
-      }
-      if (newRoom.room_type == Constant.ROOM_TYPE.PRIVATE) {
-        const sessionOfRoom = await this.getSessionOfRoom(newRoom._id.toString());
-        await emitCreateRoom(sessionOfRoom, clonedRoom);
-        await emitNewNotification(sessionOfRoom, undefined);
-      } else {
-        if (!is_create_official)
-          // emit to all user that new group created
-          await emitCreateRoom([], clonedRoom);
-      }
-
+      await emitCreateRoom(sessionOfRoom, clonedRoom);
+      await emitNewNotification(sessionOfRoom, undefined);
       return { status: true, data: newRoom };
     } catch (error) {
       throw error;
@@ -570,7 +594,7 @@ class RoomService {
           $all: lowerCaseUsers,
         },
         deleted_at: { $exists: false },
-        room_type: Constant.ROOM_TYPE.PRIVATE,
+        room_type: ChatConstant.ROOM_TYPE.PRIVATE,
       });
 
       return findRoom;
@@ -648,7 +672,7 @@ class RoomService {
       const filter = {
         _id: roomId,
         deleted_at: { $exists: false },
-        room_type: Constant.ROOM_TYPE.PRIVATE,
+        room_type: ChatConstant.ROOM_TYPE.PRIVATE,
       };
 
       const update = {
@@ -712,8 +736,8 @@ class RoomService {
         _id: roomId,
         deleted_at: { $exists: false },
         $or: [
-          { room_type: Constant.ROOM_TYPE.LIMITED },
-          { room_type: Constant.ROOM_TYPE.UNLIMITED },
+          { room_type: ChatConstant.ROOM_TYPE.LIMITED },
+          { room_type: ChatConstant.ROOM_TYPE.UNLIMITED },
         ],
       };
 
@@ -723,24 +747,24 @@ class RoomService {
         return { status: false, message: 'Room: Invalid Room ID' };
       }
 
-      if (findRoom.room_type == Constant.ROOM_TYPE.LIMITED) {
-        if (findRoom.nft_contracts) {
-          const stickerService = Singleton.getStickerInstance();
+      // if (findRoom.room_type == ChatConstant.ROOM_TYPE.LIMITED) {
+      //   if (findRoom.nft_contracts) {
+      //     const stickerService = Singleton.getStickerInstance();
 
-          let userVerify = false;
-          for (const contract of findRoom.nft_contracts) {
-            if (await stickerService.isTokenOwned(contract.chain_id, contract.address, address)) {
-              userVerify = true;
-            }
-          }
-          if (!userVerify) {
-            return {
-              status: false,
-              message: 'Room: User not Qualified',
-            };
-          }
-        }
-      }
+      //     let userVerify = false;
+      //     for (const contract of findRoom.nft_contracts) {
+      //       if (await stickerService.isTokenOwned(contract.chain_id, contract.address, address)) {
+      //         userVerify = true;
+      //       }
+      //     }
+      //     if (!userVerify) {
+      //       return {
+      //         status: false,
+      //         message: 'Room: User not Qualified',
+      //       };
+      //     }
+      //   }
+      // }
 
       if (!findRoom.users.includes(address)) {
         if (!findRoom.user_read.find(user => user.user.wallet_address == address)) {
@@ -885,8 +909,8 @@ class RoomService {
         deleted_at: { $exists: false },
         users: address,
         $or: [
-          { room_type: Constant.ROOM_TYPE.LIMITED },
-          { room_type: Constant.ROOM_TYPE.UNLIMITED },
+          { room_type: ChatConstant.ROOM_TYPE.LIMITED },
+          { room_type: ChatConstant.ROOM_TYPE.UNLIMITED },
         ],
       };
       const findRoom = await Room.findOne(filter);
@@ -897,7 +921,7 @@ class RoomService {
         return { status: false, message: 'You are not admin' };
       }
       let update = {};
-      const { ADMIN, MEMBER, SUB_ADMIN } = Constant.MEMBER_OF_ROOM_TYPE;
+      const { ADMIN, MEMBER, SUB_ADMIN } = ChatConstant.MEMBER_OF_ROOM_TYPE;
       switch (role) {
         case ADMIN:
           update = {
@@ -963,8 +987,8 @@ class RoomService {
         _id: roomId,
         deleted_at: { $exists: false },
         $or: [
-          { room_type: Constant.ROOM_TYPE.UNLIMITED },
-          { room_type: Constant.ROOM_TYPE.LIMITED },
+          { room_type: ChatConstant.ROOM_TYPE.UNLIMITED },
+          { room_type: ChatConstant.ROOM_TYPE.LIMITED },
         ],
       };
       const findRoom = await Room.findOne(filter);
@@ -972,14 +996,14 @@ class RoomService {
       let update = {};
       if (name) update = { ...update, name };
       if (avatar) update = { ...update, avatar };
-      else update = { ...update, avatar: Constant.DEFAULT_AVATAR };
+      else update = { ...update, avatar: ChatConstant.DEFAULT_AVATAR };
       if (description) update = { ...update, description };
       if (only_view !== findRoom?.only_view) update = { ...update, only_view, sub_admins: [] };
       update = { ...update, updated_at: new Date().toISOString() };
       const updatedRoom = await Room.findOneAndUpdate(filter, update, {
         new: true,
       });
-      emitUpdateRoom(roomId, name, avatar, description, only_view);
+      emitUpdateRoom(roomId, name, avatar, description);
       return updatedRoom;
     } catch (error) {
       throw error;
@@ -1023,10 +1047,10 @@ class RoomService {
           room_id: roomId,
           sender_address: { $ne: address },
           deleted_at: { $exists: false },
-          message_status: { $ne: Constant.MESSAGE_STATUS.READ },
+          message_status: { $ne: ChatConstant.MESSAGE_STATUS.READ },
         });
         for (let m of messages) {
-          m.message_status = Constant.MESSAGE_STATUS.READ;
+          m.message_status = ChatConstant.MESSAGE_STATUS.READ;
           await m.save();
         }
         await emitMessageStatus(roomId, messages);
@@ -1035,7 +1059,7 @@ class RoomService {
       await emitTotalUnread(address);
       await Notification.deleteMany({
         to_address: address,
-        'data.type': Constant.NOTIFICATION_TYPE.NEW_MESSAGE,
+        'data.type': ChatConstant.NOTIFICATION_TYPE.NEW_MESSAGE,
         'data.data.room_id': roomId,
       });
       await emitNewNotification(await this.getSessionOfRoom(roomId));
@@ -1119,10 +1143,10 @@ class RoomService {
         room_id,
         sender_address: { $ne: address },
         deleted_at: { $exists: false },
-        message_status: Constant.MESSAGE_STATUS.SENT,
+        message_status: ChatConstant.MESSAGE_STATUS.SENT,
       });
       for (let m of messages) {
-        m.message_status = Constant.MESSAGE_STATUS.RECEIVED;
+        m.message_status = ChatConstant.MESSAGE_STATUS.RECEIVED;
         await m.save();
       }
 
@@ -1177,52 +1201,52 @@ class RoomService {
     }
   }
 
-  public async addNewNftContract(
-    address: string,
-    room_id: string,
-    contractAddress: string,
-    chain_id: string,
-    is_already_check_token_owner: boolean = false,
-  ) {
-    try {
-      if (
-        !is_already_check_token_owner &&
-        !(await Singleton.getStickerInstance().isTokenOwned(chain_id, contractAddress, address))
-      ) {
-        logger.error('room.service.ts:995:addNewNftContract Not owner of contract');
-        return null;
-      }
-      const room = await Room.findOne({
-        _id: room_id,
-        deleted_at: { $exists: false },
-        room_type: Constant.ROOM_TYPE.LIMITED,
-      });
-      if (room && room.admins?.includes(address) && room.nft_contracts) {
-        const contractInfo = await Singleton.getStickerInstance().getNftContractInformation(
-          chain_id,
-          contractAddress,
-        );
-        let contractName = '';
-        if (contractInfo.status) {
-          contractName = contractInfo.data.name;
-        }
-        room.nft_contracts = [
-          ...new Set([
-            ...room.nft_contracts,
-            { address: contractAddress, chain_id, contract_name: contractName },
-          ]),
-        ];
-        await room.save();
-      }
-      return room;
-    } catch (error: any) {
-      logger.error(`room.service.ts:1011:addNewNftContract ${error.message}`);
-      return null;
-    }
-  }
+  // public async addNewNftContract(
+  //   address: string,
+  //   room_id: string,
+  //   contractAddress: string,
+  //   chain_id: string,
+  //   is_already_check_token_owner: boolean = false,
+  // ) {
+  //   try {
+  //     if (
+  //       !is_already_check_token_owner &&
+  //       !(await Singleton.getStickerInstance().isTokenOwned(chain_id, contractAddress, address))
+  //     ) {
+  //       logger.error('room.service.ts:995:addNewNftContract Not owner of contract');
+  //       return null;
+  //     }
+  //     const room = await Room.findOne({
+  //       _id: room_id,
+  //       deleted_at: { $exists: false },
+  //       room_type: ChatConstant.ROOM_TYPE.LIMITED,
+  //     });
+  //     if (room && room.admins?.includes(address) && room.nft_contracts) {
+  //       const contractInfo = await Singleton.getStickerInstance().getNftContractInformation(
+  //         chain_id,
+  //         contractAddress,
+  //       );
+  //       let contractName = '';
+  //       if (contractInfo.status) {
+  //         contractName = contractInfo.data.name;
+  //       }
+  //       room.nft_contracts = [
+  //         ...new Set([
+  //           ...room.nft_contracts,
+  //           { address: contractAddress, chain_id, contract_name: contractName },
+  //         ]),
+  //       ];
+  //       await room.save();
+  //     }
+  //     return room;
+  //   } catch (error: any) {
+  //     logger.error(`room.service.ts:1011:addNewNftContract ${error.message}`);
+  //     return null;
+  //   }
+  // }
 
   public randomString() {
-    return (Math.random() * Constant.RANDOM_COMPLEXITY).toString();
+    return (Math.random() * ChatConstant.RANDOM_COMPLEXITY).toString();
   }
 }
 

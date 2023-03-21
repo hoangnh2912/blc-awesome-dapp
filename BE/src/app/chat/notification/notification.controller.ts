@@ -1,5 +1,5 @@
 import { Request as exRequest } from 'express';
-import { AuthMiddleware } from '@middlewares';
+import { SignatureMiddleware } from '@middlewares';
 import {
   Body,
   Controller,
@@ -12,9 +12,9 @@ import {
   Security,
   Tags,
 } from 'tsoa';
-import { Constant, logger, onError, onSuccess, Option } from '@constants';
+import { Constant, logger, onError, onSuccess, OptionResponse } from '@constants';
 import { Singleton } from '@providers';
-import { INotification } from '@schemas';
+import { INotification } from '@chat-schemas';
 
 const { NETWORK_STATUS_CODE, NETWORK_STATUS_MESSAGE } = Constant;
 @Tags('Notification')
@@ -23,7 +23,7 @@ const { NETWORK_STATUS_CODE, NETWORK_STATUS_MESSAGE } = Constant;
   authorize: [],
   address: [],
 })
-@Middlewares([AuthMiddleware])
+@Middlewares([SignatureMiddleware])
 export class NotificationController extends Controller {
   private notificationService = Singleton.getNotificationInstance();
 
@@ -33,7 +33,7 @@ export class NotificationController extends Controller {
     @Query() page: number = 0,
     @Query() numberPerPage: number = 30,
     @Query() type?: string,
-  ): Promise<Option<INotification[]>> {
+  ): Promise<OptionResponse<INotification[]>> {
     try {
       const address = req.headers.address as string;
 
@@ -56,7 +56,7 @@ export class NotificationController extends Controller {
   public async readNotification(
     @Request() req: exRequest,
     @Body() { notification_id }: { notification_id: string },
-  ): Promise<Option<any>> {
+  ): Promise<OptionResponse<any>> {
     try {
       const address = req.headers.address as string;
 
@@ -73,7 +73,7 @@ export class NotificationController extends Controller {
   }
 
   @Post('read-all-notification')
-  public async readAllNotification(@Request() req: exRequest): Promise<Option<any>> {
+  public async readAllNotification(@Request() req: exRequest): Promise<OptionResponse<any>> {
     try {
       const address = req.headers.address as string;
       const notification = await this.notificationService.readAllNotification(address);

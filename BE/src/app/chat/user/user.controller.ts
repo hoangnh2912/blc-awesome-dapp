@@ -1,10 +1,10 @@
-import { Constant, logger, onError, onSuccess, Option } from '@constants';
-import { AuthMiddleware } from '@middlewares';
-import { discordManager, emitSNS, Singleton, web3 } from '@providers';
-import { IUser, UserBalance } from '@schemas';
+import { Constant, logger, onError, onSuccess, OptionResponse } from '@constants';
+import { SignatureMiddleware } from '@middlewares';
+import { Singleton, web3 } from '@providers';
+import { IUser, UserBalance } from '@chat-schemas';
 import { Request as exRequest } from 'express';
-import { parse } from 'json2csv';
-import stream from 'stream';
+// import { parse } from 'json2csv';
+// import stream from 'stream';
 import {
   Body,
   Controller,
@@ -27,11 +27,11 @@ const { NETWORK_STATUS_CODE, NETWORK_STATUS_MESSAGE } = Constant;
   address: [],
 })
 export class UsersController extends Controller {
-  private userService = Singleton.getUserInstance();
+  private userService = Singleton.getChatUserInstance();
 
   @Get('user-info')
-  @Middlewares([AuthMiddleware])
-  public async getUser(@Request() req: exRequest): Promise<Option<IUser & UserBalance>> {
+  @Middlewares([SignatureMiddleware])
+  public async getUser(@Request() req: exRequest): Promise<OptionResponse<IUser & UserBalance>> {
     try {
       const address = req.headers.address as string;
       const user = await this.userService.get(address);
@@ -65,7 +65,7 @@ export class UsersController extends Controller {
   }
 
   @Get('get-user-by-address')
-  @Middlewares([AuthMiddleware])
+  @Middlewares([SignatureMiddleware])
   public async getUserByAddress(@Request() req: exRequest, @Query('address') addressCheck: string) {
     try {
       const address = req.headers.address as string;
@@ -80,7 +80,7 @@ export class UsersController extends Controller {
   }
 
   @Get('unstoppable-domain-to-address')
-  @Middlewares([AuthMiddleware])
+  @Middlewares([SignatureMiddleware])
   public async unstoppableDomainToAddress(@Query() domain: string) {
     try {
       const address = await this.userService.unstoppableDomainToAddress(domain);
@@ -112,51 +112,51 @@ export class UsersController extends Controller {
    *               - false: use prod FE app
    *               - default: false
    */
-  @Post('user-from-code-or-refresh-token-discord')
-  @Middlewares([AuthMiddleware])
-  public async userInfoFromDiscord(
-    @Request() req: exRequest,
-    @Query() redirect_uri: string,
-    @Query() code?: string,
-    @Query() refresh_token?: string,
-  ): Promise<Option<IUser>> {
-    try {
-      if (!code && !refresh_token) {
-        this.setStatus(NETWORK_STATUS_CODE.BAD_REQUEST);
-        return onError(NETWORK_STATUS_MESSAGE.BAD_REQUEST);
-      }
-      const address = req.headers.address as string;
-      let userInfo = {};
-      if (code) {
-        userInfo = await discordManager.codeToUserInfo(code, redirect_uri);
-      } else if (refresh_token) {
-        userInfo = await discordManager.refreshTokenToUserInfo(refresh_token, redirect_uri);
-      }
-      const isExist = await this.userService.checkExist(address);
-      let user = null;
-      const payload = {
-        wallet_address: address,
-        ...userInfo,
-      };
-      if (isExist) {
-        user = await this.userService.update(payload);
-      } else {
-        user = await this.userService.create(payload);
-      }
-      await emitSNS(user.session, {
-        discord: user.discord?.id,
-        telegram: user.telegram,
-      });
-      return onSuccess(user);
-    } catch (error) {
-      logger.error(error);
-      this.setStatus(NETWORK_STATUS_CODE.INTERNAL_SERVER_ERROR);
-      return onError(NETWORK_STATUS_MESSAGE.INTERNAL_SERVER_ERROR);
-    }
-  }
+  // @Post('user-from-code-or-refresh-token-discord')
+  // @Middlewares([SignatureMiddleware])
+  // public async userInfoFromDiscord(
+  //   @Request() req: exRequest,
+  //   @Query() redirect_uri: string,
+  //   @Query() code?: string,
+  //   @Query() refresh_token?: string,
+  // ): Promise<OptionResponse<IUser>> {
+  //   try {
+  //     if (!code && !refresh_token) {
+  //       this.setStatus(NETWORK_STATUS_CODE.BAD_REQUEST);
+  //       return onError(NETWORK_STATUS_MESSAGE.BAD_REQUEST);
+  //     }
+  //     const address = req.headers.address as string;
+  //     let userInfo = {};
+  //     if (code) {
+  //       userInfo = await discordManager.codeToUserInfo(code, redirect_uri);
+  //     } else if (refresh_token) {
+  //       userInfo = await discordManager.refreshTokenToUserInfo(refresh_token, redirect_uri);
+  //     }
+  //     const isExist = await this.userService.checkExist(address);
+  //     let user = null;
+  //     const payload = {
+  //       wallet_address: address,
+  //       ...userInfo,
+  //     };
+  //     if (isExist) {
+  //       user = await this.userService.update(payload);
+  //     } else {
+  //       user = await this.userService.create(payload);
+  //     }
+  //     await emitSNS(user.session, {
+  //       discord: user.discord?.id,
+  //       telegram: user.telegram,
+  //     });
+  //     return onSuccess(user);
+  //   } catch (error) {
+  //     logger.error(error);
+  //     this.setStatus(NETWORK_STATUS_CODE.INTERNAL_SERVER_ERROR);
+  //     return onError(NETWORK_STATUS_MESSAGE.INTERNAL_SERVER_ERROR);
+  //   }
+  // }
 
   @Post('create-or-update-user-info')
-  @Middlewares([AuthMiddleware])
+  @Middlewares([SignatureMiddleware])
   public async createOrUpdateUserInfo(
     @Request() req: exRequest,
     @Body()
@@ -165,7 +165,7 @@ export class UsersController extends Controller {
       avatar?: string;
       description?: string;
     },
-  ): Promise<Option<IUser>> {
+  ): Promise<OptionResponse<IUser>> {
     try {
       const address = req.headers.address as string;
       const isExist = await this.userService.checkExist(address);
@@ -188,7 +188,7 @@ export class UsersController extends Controller {
   }
 
   @Post('create-user-address')
-  @Middlewares([AuthMiddleware])
+  @Middlewares([SignatureMiddleware])
   public async createUserAddress(
     @Request() req: exRequest,
     @Body()
@@ -196,7 +196,7 @@ export class UsersController extends Controller {
       campaign?: string;
       referrer?: string;
     },
-  ): Promise<Option<IUser>> {
+  ): Promise<OptionResponse<IUser>> {
     try {
       const address = req.headers.address as string;
       let user = null;
@@ -219,50 +219,50 @@ export class UsersController extends Controller {
     }
   }
 
-  @Get('export-users')
-  public async exportUser(@Request() req: exRequest, @Query() p: string): Promise<any> {
-    try {
-      if (p == `${process.env.PASSWORD}`) {
-        const users = await this.userService.getAllUser();
-        const csvContent = parse(
-          users.map(user => ({
-            name: user.name || 'N/A',
-            address: user.wallet_address,
-            avatar: user.avatar || 'N/A',
-            discord: user.discord?.username
-              ? `${user.discord?.username}#${user.discord?.discriminator}`
-              : 'N/A',
-            campaign: user.campaign || 'N/A',
-            created_at: user.created_at || 'N/A',
-          })),
-        );
-        const readStream = new stream.PassThrough();
-        readStream.end(Buffer.from(csvContent.split(`"`).join('')));
-        const response = req.res;
-        if (response) {
-          response.set(
-            'Content-disposition',
-            'attachment; filename=' + `${new Date().toISOString()}.csv`,
-          );
-          response.set('Content-Type', 'text/plain');
-          readStream.pipe(response);
-          return new Promise((resolve: any, reject: any) => {
-            readStream.on('error', reject);
-            readStream.on('end', resolve);
-          });
-        }
-      }
-      this.setStatus(NETWORK_STATUS_CODE.UNAUTHORIZED);
-      return onError(NETWORK_STATUS_MESSAGE.UNAUTHORIZED);
-    } catch (error) {
-      logger.error(error);
-      this.setStatus(NETWORK_STATUS_CODE.INTERNAL_SERVER_ERROR);
-      return onError(NETWORK_STATUS_MESSAGE.INTERNAL_SERVER_ERROR);
-    }
-  }
+  // @Get('export-users')
+  // public async exportUser(@Request() req: exRequest, @Query() p: string): Promise<any> {
+  //   try {
+  //     if (p == `${process.env.PASSWORD}`) {
+  //       const users = await this.userService.getAllUser();
+  //       const csvContent = parse(
+  //         users.map(user => ({
+  //           name: user.name || 'N/A',
+  //           address: user.wallet_address,
+  //           avatar: user.avatar || 'N/A',
+  //           discord: user.discord?.username
+  //             ? `${user.discord?.username}#${user.discord?.discriminator}`
+  //             : 'N/A',
+  //           campaign: user.campaign || 'N/A',
+  //           created_at: user.created_at || 'N/A',
+  //         })),
+  //       );
+  //       const readStream = new stream.PassThrough();
+  //       readStream.end(Buffer.from(csvContent.split(`"`).join('')));
+  //       const response = req.res;
+  //       if (response) {
+  //         response.set(
+  //           'Content-disposition',
+  //           'attachment; filename=' + `${new Date().toISOString()}.csv`,
+  //         );
+  //         response.set('Content-Type', 'text/plain');
+  //         readStream.pipe(response);
+  //         return new Promise((resolve: any, reject: any) => {
+  //           readStream.on('error', reject);
+  //           readStream.on('end', resolve);
+  //         });
+  //       }
+  //     }
+  //     this.setStatus(NETWORK_STATUS_CODE.UNAUTHORIZED);
+  //     return onError(NETWORK_STATUS_MESSAGE.UNAUTHORIZED);
+  //   } catch (error) {
+  //     logger.error(error);
+  //     this.setStatus(NETWORK_STATUS_CODE.INTERNAL_SERVER_ERROR);
+  //     return onError(NETWORK_STATUS_MESSAGE.INTERNAL_SERVER_ERROR);
+  //   }
+  // }
 
   @Post('send-friend-request')
-  @Middlewares([AuthMiddleware])
+  @Middlewares([SignatureMiddleware])
   public async sendFriendRequest(
     @Request() req: exRequest,
     @Body() data: { object_address: string },
@@ -285,8 +285,8 @@ export class UsersController extends Controller {
   }
 
   @Get('get-friend-requests')
-  @Middlewares([AuthMiddleware])
-  public async getFriendRequests(@Request() req: exRequest): Promise<Option<IUser>> {
+  @Middlewares([SignatureMiddleware])
+  public async getFriendRequests(@Request() req: exRequest): Promise<OptionResponse<IUser>> {
     try {
       const address = req.headers.address as string;
       const friendRequests = await this.userService.getFriendRequests(address);
@@ -299,11 +299,11 @@ export class UsersController extends Controller {
   }
 
   @Post('accept-friend-request')
-  @Middlewares([AuthMiddleware])
+  @Middlewares([SignatureMiddleware])
   public async acceptFriendRequest(
     @Request() req: exRequest,
     @Body() data: { sender_address: string },
-  ): Promise<Option<IUser>> {
+  ): Promise<OptionResponse<IUser>> {
     try {
       const address = req.headers.address as string;
       const findRoom = await Singleton.getRoomInstance().findRoomWithListAddress([
@@ -335,11 +335,11 @@ export class UsersController extends Controller {
     }
   }
   @Get('get-friend-list')
-  @Middlewares([AuthMiddleware])
+  @Middlewares([SignatureMiddleware])
   public async getFriendList(
     @Request() req: exRequest,
     @Query() filter?: string,
-  ): Promise<Option<IUser>> {
+  ): Promise<OptionResponse<IUser>> {
     try {
       const address = req.headers.address as string;
       const addressFromDomain = await this.userService.unstoppableDomainToAddress(address);
@@ -353,11 +353,11 @@ export class UsersController extends Controller {
   }
 
   @Post('delete-friend-request')
-  @Middlewares([AuthMiddleware])
+  @Middlewares([SignatureMiddleware])
   public async deleteFriendRequest(
     @Request() req: exRequest,
     @Body() data: { sender_address: string },
-  ): Promise<Option<IUser>> {
+  ): Promise<OptionResponse<IUser>> {
     try {
       const address = req.headers.address as string;
 
@@ -371,11 +371,11 @@ export class UsersController extends Controller {
   }
 
   @Post('cancel-friend-request')
-  @Middlewares([AuthMiddleware])
+  @Middlewares([SignatureMiddleware])
   public async cancelFriendRequest(
     @Request() req: exRequest,
     @Body() data: { sender_address: string },
-  ): Promise<Option<IUser>> {
+  ): Promise<OptionResponse<IUser>> {
     try {
       const address = req.headers.address as string;
 
@@ -389,11 +389,11 @@ export class UsersController extends Controller {
   }
 
   @Post('unfriend')
-  @Middlewares([AuthMiddleware])
+  @Middlewares([SignatureMiddleware])
   public async unfriend(
     @Request() req: exRequest,
     @Body() data: { object_address: string },
-  ): Promise<Option<IUser>> {
+  ): Promise<OptionResponse<IUser>> {
     try {
       const address = req.headers.address as string;
       const updatedUser = await this.userService.unfriend(address, data.object_address);
@@ -407,7 +407,7 @@ export class UsersController extends Controller {
   }
 
   @Get('get-total-unread')
-  @Middlewares([AuthMiddleware])
+  @Middlewares([SignatureMiddleware])
   public async getTotalUnread(@Query() addressList: string[]) {
     try {
       // const address = req.headers.address as string;
@@ -460,7 +460,7 @@ export class UsersController extends Controller {
   }
 
   @Post('submit-key-pair')
-  @Middlewares([AuthMiddleware])
+  @Middlewares([SignatureMiddleware])
   public async submitKeyPair(
     @Request() req: exRequest,
     @Body()
@@ -487,7 +487,7 @@ export class UsersController extends Controller {
   }
 
   @Post('generate-api-key')
-  @Middlewares([AuthMiddleware])
+  @Middlewares([SignatureMiddleware])
   public async generateApiKey(@Request() req: exRequest) {
     try {
       const address = req.headers.address as string;

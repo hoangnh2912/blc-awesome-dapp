@@ -1,4 +1,4 @@
-import { ChatConstant, logger, Constant } from '@constants';
+import { ChatConstant, logger } from '@constants';
 import {
   // botSendMessageToWallets,
   emitAddReaction,
@@ -400,7 +400,7 @@ class MessageService {
 
   public async reactMessage(messageId: string, address: string, emoji: string) {
     try {
-      const userService = Singleton.getUserInstance();
+      const userService = Singleton.getChatUserInstance();
       const user = await userService.get(address);
       if (!user) {
         return {
@@ -458,7 +458,7 @@ class MessageService {
 
       findMessage.markModified('reaction');
       await findMessage.save();
-      await emitAddReaction(findMessage, findMessage.reaction);
+      await emitAddReaction(findMessage, findMessage.reaction[findReactionIdx]);
       return {
         data: findMessage,
         status: true,
@@ -470,7 +470,7 @@ class MessageService {
 
   public async removeReaction(messageId: string, address: string, emoji: string) {
     try {
-      const userService = Singleton.getUserInstance();
+      const userService = Singleton.getChatUserInstance();
       const user = await userService.get(address);
       if (!user) {
         return {
@@ -528,7 +528,7 @@ class MessageService {
       }
       findMessage.markModified('reaction');
       await findMessage.save();
-      await emitRemoveReaction(findMessage, findMessage.reaction);
+      await emitRemoveReaction(findMessage, findMessage.reaction[findReactionIdx]);
       return {
         data: findMessage,
         status: true,
@@ -620,7 +620,7 @@ class MessageService {
   public async decryptMessageOfRoom(room_id: string, bobAddress: string) {
     try {
       const roomService = Singleton.getRoomInstance();
-      const userService = Singleton.getUserInstance();
+      const userService = Singleton.getChatUserInstance();
       const messageList = await Message.find({
         room_id,
         deleted_at: { $exists: false },

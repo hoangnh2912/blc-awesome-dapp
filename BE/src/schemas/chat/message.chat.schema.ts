@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import { Constant } from '../constants';
+import { ChatConstant } from '@constants';
 import { ISticker, IUser } from '.';
 
 export type IUserMessage = Pick<IUser, 'wallet_address'>;
@@ -48,8 +48,8 @@ const messageSchema = new Schema<IMessage>({
   message_status: {
     required: false,
     type: String,
-    enum: Object.values(Constant.MESSAGE_STATUS),
-    default: Constant.MESSAGE_STATUS.SENT,
+    enum: Object.values(ChatConstant.MESSAGE_STATUS),
+    default: ChatConstant.MESSAGE_STATUS.SENT,
   },
   is_notification: { required: true, type: Boolean, default: false },
 });

@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import { IStickerPriceType, Token } from './market.schema';
+import { IStickerPriceType, Token } from './market.chat.schema';
 
 export interface IPool {
   name?: string;

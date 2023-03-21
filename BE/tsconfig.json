@@ -41,6 +41,7 @@
       "@providers": ["./src/providers/index.ts"],
       "@schemas": ["./src/schemas/index.ts"],
       "@chat-schemas": ["./src/schemas/chat/index.ts"],
+      "@config/*": ["./config/*"]
     }
   }
 }

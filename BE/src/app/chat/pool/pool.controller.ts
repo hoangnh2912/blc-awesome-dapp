@@ -1,14 +1,14 @@
 import { Body, Controller, Delete, Get, Middlewares, Post, Route, Security, Tags } from 'tsoa';
-import { Constant, logger, onError, onSuccess, Option } from '@constants';
-import { AuthMiddleware, MinterMiddleware } from '@middlewares';
+import { Constant, logger, onError, onSuccess, OptionResponse } from '@constants';
+import { SignatureMiddleware } from '@middlewares';
 import { uploadJson } from '@providers';
-import { IPool } from '@schemas';
+import { IPool } from '@chat-schemas';
 import { PoolService } from './pool.service';
 
 const { NETWORK_STATUS_CODE, NETWORK_STATUS_MESSAGE } = Constant;
 
 @Tags('Pool')
-@Middlewares([AuthMiddleware, MinterMiddleware])
+@Middlewares([SignatureMiddleware])
 @Route('pool')
 @Security({
   authorize: [],
@@ -18,7 +18,7 @@ export class PoolController extends Controller {
   private poolService = new PoolService();
 
   @Get('get-pool-list')
-  public async getPool(): Promise<Option<IPool[]>> {
+  public async getPool(): Promise<OptionResponse<IPool[]>> {
     try {
       const pools = await this.poolService.getPools();
       return onSuccess(pools);
@@ -30,7 +30,7 @@ export class PoolController extends Controller {
   }
 
   @Delete('clear-all-pool')
-  public async clearAllPool(): Promise<Option<Boolean>> {
+  public async clearAllPool(): Promise<OptionResponse<Boolean>> {
     try {
       const isRemoveSuccess = await this.poolService.clearAllPool();
       return onSuccess(isRemoveSuccess);
@@ -47,7 +47,7 @@ export class PoolController extends Controller {
     data: {
       cids: string[];
     },
-  ): Promise<Option<Boolean>> {
+  ): Promise<OptionResponse<Boolean>> {
     try {
       const { cids } = data;
       const isRemoveSuccess = await this.poolService.removeToPool(cids);
@@ -113,17 +113,17 @@ export class PoolController extends Controller {
     > & {
       token_address: string;
     },
-  ): Promise<Option<IPool>> {
+  ): Promise<OptionResponse<IPool>> {
     try {
       const { images, description, name, price, whitelist, amount, token_address } = data;
 
-      const tokenCheck = Object.values(Constant.TOKEN_ERC20).find(
-        e => e.contract_address.toLowerCase() == token_address.toLowerCase(),
-      );
-      if (!tokenCheck) {
-        this.setStatus(NETWORK_STATUS_CODE.BAD_REQUEST);
-        return onError('Token not found!');
-      }
+      // const tokenCheck = Object.values(ChatConstant.TOKEN_ERC20).find(
+      //   e => e.contract_address.toLowerCase() == token_address.toLowerCase(),
+      // );
+      // if (!tokenCheck) {
+      //   this.setStatus(NETWORK_STATUS_CODE.BAD_REQUEST);
+      //   return onError('Token not found!');
+      // }
 
       const metadataIPFS = await uploadJson({
         name,

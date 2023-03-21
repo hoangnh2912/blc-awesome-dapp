@@ -5,6 +5,12 @@ type SuccessResponse<T> = {
   success: boolean;
 };
 
+type Some<T> = {
+  data?: T | null;
+  status: boolean;
+  message?: string;
+};
+
 type ErrorResponse = {
   message: string;
   success: boolean;
@@ -48,4 +54,4 @@ function onSuccessArray<T>(data: T[]): SuccessResponse<T[]> {
   };
 }
 
-export { onError, onSuccess, onSuccessArray, OptionResponse };
+export { onError, onSuccess, onSuccessArray, OptionResponse, Some };

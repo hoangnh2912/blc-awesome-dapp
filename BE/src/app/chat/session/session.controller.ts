@@ -1,5 +1,5 @@
 import { Controller, Get, Query, Route, Tags } from 'tsoa';
-import { Constant, logger, onError, onSuccess, Option } from '@constants';
+import { Constant, logger, onError, onSuccess, OptionResponse } from '@constants';
 import { SessionData, SessionService } from './session.service';
 
 const { NETWORK_STATUS_CODE, NETWORK_STATUS_MESSAGE } = Constant;
@@ -9,7 +9,7 @@ export class SessionController extends Controller {
   private sessionService = new SessionService();
 
   @Get('get-message-sign')
-  public async getMessageSign(@Query() address: string): Promise<Option<SessionData>> {
+  public async getMessageSign(@Query() address: string): Promise<OptionResponse<SessionData>> {
     try {
       return onSuccess(this.sessionService.getMessageSign(address.toLowerCase()));
     } catch (error) {

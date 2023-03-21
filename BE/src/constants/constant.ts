@@ -111,6 +111,7 @@ const Constant = {
     UNAUTHORIZED: 401,
     NOT_FOUND: 404,
     INTERNAL_SERVER_ERROR: 500,
+    CONTENT_TOO_LARGE: 413,
   },
   NETWORK_STATUS_MESSAGE: {
     EMPTY: 'Empty',
@@ -121,6 +122,7 @@ const Constant = {
     NOT_FOUND: 'Not found',
     INTERNAL_SERVER_ERROR: 'Internal server error',
     NOT_ENOUGH_RIGHT: 'Not Enough Rights',
+    CONTENT_TOO_LARGE: 'Content too large',
   },
   CONFIG_CONTRACT,
   ROOT_PATH: __dirname.replace('build/src/constants', ''),

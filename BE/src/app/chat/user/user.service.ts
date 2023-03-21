@@ -1,7 +1,6 @@
-import { Constant, logger, Some } from '@constants';
+import { ChatConstant, logger, Some } from '@constants';
 import {
-  botSendMessageToWallets,
-  DMTPCidContract,
+  CidContract,
   emitAcceptFriend,
   emitDeleteFriendRequest,
   emitFriendRequest,
@@ -21,17 +20,17 @@ import {
   Room,
   User,
   Authorized,
-} from '@schemas';
+} from '@chat-schemas';
 import keccak256 from 'keccak256';
-import { Types, UpdateQuery } from 'mongoose';
-import { dmtp_pub_key } from '../../../dmtp_key_pair.json';
+import { Types } from 'mongoose';
+// import { dmtp_pub_key } from '../../../dmtp_key_pair.json';
 
 type InputUserParams = Pick<
   IUser,
   'discord' | 'wallet_address' | 'avatar' | 'name' | 'description'
 >;
 
-class UsersService {
+class UserService {
   public async getAllUser() {
     return await User.find({});
   }
@@ -87,7 +86,9 @@ class UsersService {
 
   public async getPublicKey(wallet_address: string) {
     try {
-      const publicKey = (await User.findOne({ wallet_address }))?.dmtp_pub_key || dmtp_pub_key;
+      const publicKey =
+        (await User.findOne({ wallet_address }))?.dmtp_pub_key ||
+        ChatConstant.KEY_PAIR.dmtp_pub_key;
       return publicKey;
     } catch (error) {
       throw error;
@@ -115,7 +116,7 @@ class UsersService {
       users: {
         $all: [sender_address, lowerAddressReceiver],
       },
-      room_type: Constant.ROOM_TYPE.PRIVATE,
+      room_type: ChatConstant.ROOM_TYPE.PRIVATE,
     });
 
     const payloadReceiver = {
@@ -123,7 +124,7 @@ class UsersService {
       ...(room && {
         room_id: room._id,
       }),
-      friend_status: Constant.FRIEND_STATUS.NONE,
+      friend_status: ChatConstant.FRIEND_STATUS.NONE,
     };
     const userSender = await User.findOne(
       {
@@ -146,14 +147,14 @@ class UsersService {
           payloadReceiver?.friends.includes(sender_address.toLocaleLowerCase()) ||
           userSender?.friends.includes(receiver_address.toLocaleLowerCase())
         )
-          payloadReceiver.friend_status = Constant.FRIEND_STATUS.ACCEPTED;
+          payloadReceiver.friend_status = ChatConstant.FRIEND_STATUS.ACCEPTED;
       }
 
       if (payloadReceiver?.friend_requests && userSender?.friend_requests) {
         if (payloadReceiver?.friend_requests.includes(sender_address.toLocaleLowerCase()))
-          payloadReceiver.friend_status = Constant.FRIEND_STATUS.SENDER_WAIT;
+          payloadReceiver.friend_status = ChatConstant.FRIEND_STATUS.SENDER_WAIT;
         if (userSender?.friend_requests.includes(receiver_address.toLocaleLowerCase()))
-          payloadReceiver.friend_status = Constant.FRIEND_STATUS.RECEIVER_WAIT;
+          payloadReceiver.friend_status = ChatConstant.FRIEND_STATUS.RECEIVER_WAIT;
       }
     }
 
@@ -380,14 +381,7 @@ class UsersService {
       });
 
       await this.removeOldFriendNotification(sender_address, object_address);
-      await botSendMessageToWallets([object_address], {
-        content: `You have a friend request from ${sender_address} to ${object_address}`,
-        data: {
-          user: senderUser?.toObject(),
-          text: `You have a friend request from ${sender_address} to ${object_address}`,
-        },
-        type: Constant.NOTIFICATION_TYPE.FRIEND_REQUEST,
-      });
+
       if (sessions && senderUser?.session) {
         await emitNewNotification([...sessions, ...senderUser?.session], undefined);
       }
@@ -512,19 +506,10 @@ class UsersService {
             [sender_address, object_address],
             sender_address,
             '',
-            Constant.ROOM_TYPE.PRIVATE,
+            ChatConstant.ROOM_TYPE.PRIVATE,
           )
         ).data || new Types.ObjectId();
-      await botSendMessageToWallets([sender_address], {
-        content: `You are now friends with ${
-          friendRequest.name || friendRequest.wallet_address
-        } on ${sender_address}`,
-        data: {
-          user: friendRequest.toObject(),
-          room_id: roomCreated._id,
-        },
-        type: Constant.NOTIFICATION_TYPE.FRIEND_ACCEPT,
-      });
+
       if (updatedUser?.session && senderUser?.session) {
         await emitNewNotification([...updatedUser?.session, ...senderUser?.session], undefined);
         await emitAcceptFriend([...updatedUser?.session, ...senderUser?.session], {
@@ -542,19 +527,19 @@ class UsersService {
   public async removeOldFriendNotification(sender_address: string, object_address: string) {
     await Notification.deleteMany({
       to_address: object_address,
-      'data.type': Constant.NOTIFICATION_TYPE.FRIEND_REQUEST,
+      'data.type': ChatConstant.NOTIFICATION_TYPE.FRIEND_REQUEST,
       'data.data.user.wallet_address': sender_address,
     });
 
     await Notification.deleteMany({
       to_address: sender_address,
-      'data.type': Constant.NOTIFICATION_TYPE.FRIEND_ACCEPT,
+      'data.type': ChatConstant.NOTIFICATION_TYPE.FRIEND_ACCEPT,
       'data.data.user.wallet_address': object_address,
     });
 
     await Notification.deleteMany({
       to_address: sender_address,
-      'data.type': Constant.NOTIFICATION_TYPE.FRIEND_DENY,
+      'data.type': ChatConstant.NOTIFICATION_TYPE.FRIEND_DENY,
       'data.data.user.wallet_address': object_address,
     });
   }
@@ -612,7 +597,7 @@ class UsersService {
         users: {
           $in: [address],
         },
-        room_type: Constant.ROOM_TYPE.PRIVATE,
+        room_type: ChatConstant.ROOM_TYPE.PRIVATE,
       });
       // const friends = User.findOne(
       //   {
@@ -674,12 +659,12 @@ class UsersService {
 
       await Notification.deleteMany({
         to_address: object_address,
-        'data.type': Constant.NOTIFICATION_TYPE.NEW_MESSAGE,
+        'data.type': ChatConstant.NOTIFICATION_TYPE.NEW_MESSAGE,
         'data.data.user.wallet_address': sender_address,
       });
       await Notification.deleteMany({
         to_address: sender_address,
-        'data.type': Constant.NOTIFICATION_TYPE.NEW_MESSAGE,
+        'data.type': ChatConstant.NOTIFICATION_TYPE.NEW_MESSAGE,
         'data.data.user.wallet_address': object_address,
       });
       if (updatedUser?.session && sessionQuerySender?.session) {
@@ -689,16 +674,7 @@ class UsersService {
         );
         emitDeleteFriendRequest(sessionQuerySender?.session, object_address);
       }
-      if (updatedUser)
-        await botSendMessageToWallets([sender_address], {
-          content: `You have been denied friend request from ${
-            updatedUser.name || updatedUser.wallet_address
-          } on ${sender_address}`,
-          data: {
-            user: updatedUser.toObject(),
-          },
-          type: Constant.NOTIFICATION_TYPE.FRIEND_DENY,
-        });
+
       return updatedUser;
     } catch (error) {
       throw error;
@@ -781,12 +757,12 @@ class UsersService {
       await this.removeOldFriendNotification(friend, address);
       await Notification.deleteMany({
         to_address: address,
-        'data.type': Constant.NOTIFICATION_TYPE.NEW_MESSAGE,
+        'data.type': ChatConstant.NOTIFICATION_TYPE.NEW_MESSAGE,
         'data.data.user.wallet_address': friend,
       });
       await Notification.deleteMany({
         to_address: friend,
-        'data.type': Constant.NOTIFICATION_TYPE.NEW_MESSAGE,
+        'data.type': ChatConstant.NOTIFICATION_TYPE.NEW_MESSAGE,
         'data.data.user.wallet_address': address,
       });
       if (updatedUserBeRemove?.session && updatedUserRemove?.session) {
@@ -830,7 +806,7 @@ class UsersService {
         wallet_address: address,
         deleted_at: { $exists: false },
       };
-      const update: UpdateQuery<typeof User> = {
+      const update = {
         $push: { session: { $each: [{ session_id, address }], $slice: -25 } },
         updated_at: new Date().toISOString(),
       };
@@ -945,11 +921,11 @@ class UsersService {
         });
         logger.info('cid_key_pair', cid_key_pair);
         await sendTransaction(
-          DMTPCidContract,
+          CidContract,
           'addKey',
           [wallet_address, `${cid_key_pair.path}`],
           `${process.env.DMTP_OWNER_WALLET}`,
-          Constant.CONFIG_CONTRACT.DMTPCid.address,
+          ChatConstant.CONFIG_CONTRACT.CID.address,
         );
 
         findUser.cid_key_pair = cid_key_pair.path;
@@ -987,4 +963,4 @@ class UsersService {
   }
 }
 
-export { UsersService };
+export { UserService };

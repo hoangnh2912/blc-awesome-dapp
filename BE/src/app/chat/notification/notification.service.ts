@@ -1,8 +1,8 @@
-import { INotification, Notification } from '@schemas';
-import { Constant, logger } from '@constants';
+import { INotification, Notification } from '@chat-schemas';
+import { ChatConstant, logger } from '@constants';
 export class NotificationService {
   public async getList(address: string, page: number, numberPerPage: number, type: string = '') {
-    const typeNames = Object.values(Constant.NOTIFICATION_TAB_TYPE);
+    const typeNames = Object.values(ChatConstant.NOTIFICATION_TAB_TYPE);
     const count = await this.getTotalNotificationCount(address, type);
 
     if (!typeNames.includes(type)) {
@@ -47,7 +47,7 @@ export class NotificationService {
       const notifications = await Notification.countDocuments({
         to_address: address,
         is_read: false,
-        'data.type': { $regex: Constant.NOTIFICATION_TAB_TYPE.FRIEND },
+        'data.type': { $regex: ChatConstant.NOTIFICATION_TAB_TYPE.FRIEND },
       });
       return notifications;
     } catch (error: any) {

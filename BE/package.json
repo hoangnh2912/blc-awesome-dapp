@@ -70,6 +70,7 @@
     "@constants": "./build/src/constants/index.js",
     "@middlewares": "./build/src/middlewares/index.js",
     "@providers": "./build/src/providers/index.js",
-    "@chat-schemas": "./build/src/schemas/chat/index.js"
+    "@chat-schemas": "./build/src/schemas/chat/index.js",
+    "@config": "./build/config"
   }
 }

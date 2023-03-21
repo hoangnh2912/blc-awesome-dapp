@@ -3,6 +3,7 @@ import { MusicService } from '@app/music/music.service';
 import { StealServiceService } from '@app/steal-address/steal-address.service';
 import { TokenCreatorService } from '@app/token-creator/token-creator.service';
 import { UserService } from '@app/user/user.service';
+import { UserService as ChatUserService } from '@app/chat/user/user.service';
 import { MessageService } from '@app/chat/message/message.service';
 import { PublicLimitedMessageService } from '@app/chat/message.public.limited/message.public.limited.service';
 import { PublicUnlimitedMessageService } from '@app/chat/message.public.unlimited/message.public.unlimited.service';
@@ -14,6 +15,7 @@ import { SharedKeyService } from '@app/chat/shared.key/shared.key.service';
 class Singleton {
   private static tokenCreatorInstance: TokenCreatorService;
   private static userInstance: UserService;
+  private static chatUserInstance: ChatUserService;
   private static stealAddressInstance: StealServiceService;
   private static musicInstance: MusicService;
   private static marketInstance: MarketService;
@@ -39,6 +41,13 @@ class Singleton {
       Singleton.userInstance = new UserService();
     }
     return Singleton.userInstance;
+  }
+
+  public static getChatUserInstance(): ChatUserService {
+    if (!Singleton.chatUserInstance) {
+      Singleton.chatUserInstance = new ChatUserService();
+    }
+    return Singleton.chatUserInstance;
   }
 
   public static getStealAddressInstance(): StealServiceService {

@@ -1,4 +1,4 @@
-import csvtojson from 'csvtojson';
+// import csvtojson from 'csvtojson';
 import { Request as exRequest } from 'express';
 import {
   Body,
@@ -14,15 +14,23 @@ import {
   UploadedFile,
   UploadedFiles,
 } from 'tsoa';
-import { Constant, IToken, logger, onError, onSuccess, onSuccessArray, Option } from '@constants';
-import { AuthMiddleware, MinterMiddleware } from '@middlewares';
+import {
+  Constant,
+  // IToken,
+  logger,
+  onError,
+  onSuccess,
+  onSuccessArray,
+  OptionResponse,
+} from '@constants';
+import { SignatureMiddleware, MinterMiddleware } from '@middlewares';
 import { Singleton, uploadFile, uploadFolder, uploadJson } from '@providers';
-import { ISticker, IUser } from '@schemas';
+import { ISticker, IUser } from '@chat-schemas';
 
 const { NETWORK_STATUS_CODE, NETWORK_STATUS_MESSAGE } = Constant;
 
 @Tags('Sticker')
-@Middlewares([AuthMiddleware])
+@Middlewares([SignatureMiddleware])
 @Route('sticker')
 @Security({
   authorize: [],
@@ -37,7 +45,7 @@ export class StickerController extends Controller {
     // @Query() minPrice?: number,
     // @Query() maxPrice?: number,
     // @Query() whitelist?: string[]
-  ): Promise<Option<ISticker[]>> {
+  ): Promise<OptionResponse<ISticker[]>> {
     try {
       const address = req.headers.address as string;
       const stickerList = await this.stickerService.getStickerOfOwner(
@@ -61,7 +69,7 @@ export class StickerController extends Controller {
     metadata: Pick<ISticker, 'name' | 'images'> & {
       description?: string;
     },
-  ): Promise<Option<String>> {
+  ): Promise<OptionResponse<String>> {
     try {
       const { images, description = '', name } = metadata;
       const metadataIPFS = await uploadJson({
@@ -84,7 +92,7 @@ export class StickerController extends Controller {
   public async uploadJsonMetadata(
     @Body()
     metadata: any,
-  ): Promise<Option<String>> {
+  ): Promise<OptionResponse<String>> {
     try {
       const metadataIPFS = await uploadJson(metadata);
       return onSuccess(`${metadataIPFS.path}`);
@@ -126,7 +134,7 @@ export class StickerController extends Controller {
   public async uploadImage(
     @UploadedFile()
     imageFile: Express.Multer.File,
-  ): Promise<Option<String>> {
+  ): Promise<OptionResponse<String>> {
     try {
       const imageIPFS = await uploadFile(imageFile.buffer);
       return onSuccess(`http://35.77.41.240/file/download-file?cid=${imageIPFS.path}`);
@@ -137,26 +145,26 @@ export class StickerController extends Controller {
     }
   }
 
-  @Post('csv-to-addresses')
-  public async csvToAddresses(
-    @UploadedFile()
-    csvFile: Express.Multer.File,
-  ): Promise<Option<String>> {
-    try {
-      const csv = await csvFile.buffer.toString();
-      const jsonArray = await csvtojson({
-        noheader: true,
-      }).fromString(csv);
-      return onSuccess(jsonArray.map(item => Object.values(item)[0]));
-    } catch (error) {
-      logger.error(error);
-      this.setStatus(NETWORK_STATUS_CODE.INTERNAL_SERVER_ERROR);
-      return onError(NETWORK_STATUS_MESSAGE.INTERNAL_SERVER_ERROR);
-    }
-  }
+  // @Post('csv-to-addresses')
+  // public async csvToAddresses(
+  //   @UploadedFile()
+  //   csvFile: Express.Multer.File,
+  // ): Promise<Option<String>> {
+  //   try {
+  //     const csv = await csvFile.buffer.toString();
+  //     const jsonArray = await csvtojson({
+  //       noheader: true,
+  //     }).fromString(csv);
+  //     return onSuccess(jsonArray.map(item => Object.values(item)[0]));
+  //   } catch (error) {
+  //     logger.error(error);
+  //     this.setStatus(NETWORK_STATUS_CODE.INTERNAL_SERVER_ERROR);
+  //     return onError(NETWORK_STATUS_MESSAGE.INTERNAL_SERVER_ERROR);
+  //   }
+  // }
 
   @Get('get-sticker-by-nft-id')
-  public async getStickerById(@Query() id_token: string): Promise<Option<IUser>> {
+  public async getStickerById(@Query() id_token: string): Promise<OptionResponse<IUser>> {
     try {
       const user = await this.stickerService.getStickerById(id_token);
       return onSuccess(user);
@@ -179,76 +187,76 @@ export class StickerController extends Controller {
   //   }
   // }
 
-  @Get('get-nft-information')
-  public async getNftInformation(
-    @Query() chain_id: string,
-    @Query() contract_address: string,
-    @Query() tokenId: string,
-  ) {
-    try {
-      const nftInformation = await this.stickerService.getNftInformation(
-        chain_id,
-        contract_address,
-        tokenId,
-      );
-      if (!nftInformation.status) {
-        this.setStatus(NETWORK_STATUS_CODE.BAD_REQUEST);
-        return onError(nftInformation.message);
-      }
-      return onSuccess(nftInformation.data);
-    } catch (error) {
-      logger.error(error);
-      this.setStatus(NETWORK_STATUS_CODE.INTERNAL_SERVER_ERROR);
-      return onError(error);
-    }
-  }
+  // @Get('get-nft-information')
+  // public async getNftInformation(
+  //   @Query() chain_id: string,
+  //   @Query() contract_address: string,
+  //   @Query() tokenId: string,
+  // ) {
+  //   try {
+  //     const nftInformation = await this.stickerService.getNftInformation(
+  //       chain_id,
+  //       contract_address,
+  //       tokenId,
+  //     );
+  //     if (!nftInformation.status) {
+  //       this.setStatus(NETWORK_STATUS_CODE.BAD_REQUEST);
+  //       return onError(nftInformation.message);
+  //     }
+  //     return onSuccess(nftInformation.data);
+  //   } catch (error) {
+  //     logger.error(error);
+  //     this.setStatus(NETWORK_STATUS_CODE.INTERNAL_SERVER_ERROR);
+  //     return onError(error);
+  //   }
+  // }
 
-  @Get('get-contract-nft')
-  public async getContractNft(@Query() chain_id: string, @Query() contract_address: string) {
-    try {
-      const contractNFTs = await this.stickerService.getContractNFTs(chain_id, contract_address);
-      if (!contractNFTs.status) {
-        this.setStatus(NETWORK_STATUS_CODE.BAD_REQUEST);
-        return onError(contractNFTs.message);
-      }
-      return onSuccess(contractNFTs.data);
-    } catch (error) {
-      logger.error(error);
-      this.setStatus(NETWORK_STATUS_CODE.INTERNAL_SERVER_ERROR);
-      return onError(error);
-    }
-  }
-  @Get('get-nft-contract-information')
-  public async getNftContractInformation(
-    @Query() chain_id: string,
-    @Query() contract_address: string,
-  ) {
-    try {
-      const contractNFTs = await this.stickerService.getNftContractInformation(
-        chain_id,
-        contract_address,
-      );
-      if (!contractNFTs.status) {
-        this.setStatus(NETWORK_STATUS_CODE.BAD_REQUEST);
-        return onError(contractNFTs.message);
-      }
-      return onSuccess(contractNFTs.data);
-    } catch (error) {
-      logger.error(error);
-      this.setStatus(NETWORK_STATUS_CODE.INTERNAL_SERVER_ERROR);
-      return onError(error);
-    }
-  }
+  // @Get('get-contract-nft')
+  // public async getContractNft(@Query() chain_id: string, @Query() contract_address: string) {
+  //   try {
+  //     const contractNFTs = await this.stickerService.getContractNFTs(chain_id, contract_address);
+  //     if (!contractNFTs.status) {
+  //       this.setStatus(NETWORK_STATUS_CODE.BAD_REQUEST);
+  //       return onError(contractNFTs.message);
+  //     }
+  //     return onSuccess(contractNFTs.data);
+  //   } catch (error) {
+  //     logger.error(error);
+  //     this.setStatus(NETWORK_STATUS_CODE.INTERNAL_SERVER_ERROR);
+  //     return onError(error);
+  //   }
+  // }
+  // @Get('get-nft-contract-information')
+  // public async getNftContractInformation(
+  //   @Query() chain_id: string,
+  //   @Query() contract_address: string,
+  // ) {
+  //   try {
+  //     const contractNFTs = await this.stickerService.getNftContractInformation(
+  //       chain_id,
+  //       contract_address,
+  //     );
+  //     if (!contractNFTs.status) {
+  //       this.setStatus(NETWORK_STATUS_CODE.BAD_REQUEST);
+  //       return onError(contractNFTs.message);
+  //     }
+  //     return onSuccess(contractNFTs.data);
+  //   } catch (error) {
+  //     logger.error(error);
+  //     this.setStatus(NETWORK_STATUS_CODE.INTERNAL_SERVER_ERROR);
+  //     return onError(error);
+  //   }
+  // }
 
-  @Get('get-supported-chain')
-  public async getSupportedChain() {
-    try {
-      const chains = await this.stickerService.getSupportedChain();
-      return onSuccess(chains);
-    } catch (error) {
-      logger.error(error);
-      this.setStatus(NETWORK_STATUS_CODE.INTERNAL_SERVER_ERROR);
-      return onError(error);
-    }
-  }
+  // @Get('get-supported-chain')
+  // public async getSupportedChain() {
+  //   try {
+  //     const chains = await this.stickerService.getSupportedChain();
+  //     return onSuccess(chains);
+  //   } catch (error) {
+  //     logger.error(error);
+  //     this.setStatus(NETWORK_STATUS_CODE.INTERNAL_SERVER_ERROR);
+  //     return onError(error);
+  //   }
+  // }
 }

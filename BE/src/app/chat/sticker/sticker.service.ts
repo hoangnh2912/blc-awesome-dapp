@@ -1,10 +1,10 @@
-import { Constant, logger, Some } from '@constants';
-import { GetContractNFTsResponseAdapter } from '@moralisweb3/common-evm-utils';
-import { DMTPMarketContract, Singleton, stickerContract } from '@providers';
-import { Authorized, ISticker, Sticker } from '@schemas';
+import { ChatConstant, logger } from '@constants';
+// import { GetContractNFTsResponseAdapter } from '@moralisweb3/common-evm-utils';
+import { ChatMarketContract, Singleton, stickerContract } from '@providers';
+import { Authorized, ISticker, Sticker } from '@chat-schemas';
 import axios from 'axios';
 class StickerService {
-  private userService = Singleton.getUserInstance();
+  private userService = Singleton.getChatUserInstance();
 
   public async getStickerOfOwner(
     address: string,
@@ -56,7 +56,7 @@ class StickerService {
     images: string[];
     image: string;
   }> {
-    const stickerCID = await DMTPMarketContract.methods.stickerURI(stickerId).call();
+    const stickerCID = await ChatMarketContract.methods.stickerURI(stickerId).call();
 
     const stickerMetadata: any = await new Promise(async (resolve, _) => {
       try {
@@ -204,180 +204,180 @@ class StickerService {
   }
 
   public getTokens() {
-    return Object.values(Constant.TOKEN_ERC20).filter(
-      e => e.contract_address != Constant.TOKEN_ERC20.NONE.contract_address,
+    return Object.values(ChatConstant.TOKEN_ERC20).filter(
+      e => e.contract_address != ChatConstant.TOKEN_ERC20.NONE.contract_address,
     );
   }
 
-  public async getNftContractInformation(
-    chain_id: string,
-    contract_address: string,
-  ): Promise<Some<any>> {
-    try {
-      // const contract = newContract(Constant.CONFIG_CONTRACT.Sticker.abi, contract_address);
-      // const contractOwner = await contract.methods.owner().call();
-      const moralis = await Singleton.getMoralisInstance();
-      // const findChain = EvmChain.create(chain_id, moralis.core);
-      const metadata = await moralis.EvmApi.nft.getNFTContractMetadata({
-        chain: chain_id,
-        address: contract_address,
-      });
+  // public async getNftContractInformation(
+  //   chain_id: string,
+  //   contract_address: string,
+  // ): Promise<Some<any>> {
+  //   try {
+  //     // const contract = newContract(Constant.CONFIG_CONTRACT.Sticker.abi, contract_address);
+  //     // const contractOwner = await contract.methods.owner().call();
+  //     const moralis = await Singleton.getMoralisInstance();
+  //     // const findChain = EvmChain.create(chain_id, moralis.core);
+  //     const metadata = await moralis.EvmApi.nft.getNFTContractMetadata({
+  //       chain: chain_id,
+  //       address: contract_address,
+  //     });
 
-      if (!metadata) {
-        return {
-          status: false,
-          message: 'Contract NFT: metadata not found',
-        };
-      }
-      if (!metadata.result) {
-        return {
-          status: false,
-          message: 'Contract NFT: contract not found',
-        };
-      }
-      return {
-        status: true,
-        // data: {
-        //   contractOwner,
-        //   metadata: metadata.result,
-        // },
-        data: metadata.result,
-      };
-      return {
-        status: false,
-        message: 'Contract NFT: chain_id not found',
-      };
-    } catch (error: any) {
-      logger.error('getNftContractInformation ' + error.message);
-      return {
-        status: false,
-        message: 'Contract NFT: false when getNftContractInformation',
-      };
-    }
-  }
-  public async getNftInformation(
-    chain_id: string,
-    contract_address: string,
-    tokenId: string,
-  ): Promise<Some<any>> {
-    try {
-      const moralis = await Singleton.getMoralisInstance();
-      // const findChain = EvmChain.create(chain_id, moralis.core);
-      const metadata = await moralis.EvmApi.nft.getNFTMetadata({
-        chain: chain_id,
-        address: contract_address,
-        tokenId,
-      });
-      if (!metadata) {
-        return {
-          status: false,
-          message: 'Contract NFT: metadata not found',
-        };
-      }
-      if (!metadata.result) {
-        return {
-          status: false,
-          message: 'Contract NFT: false when getNftInformation',
-        };
-      }
-      return {
-        status: true,
-        data: metadata.result,
-      };
-      return {
-        status: false,
-        message: 'Contract NFT: chain_id not found',
-      };
-    } catch (error: any) {
-      logger.error('getNftInformation ' + error.message);
-      return {
-        status: false,
-        message: 'Contract NFT: false when getNftInformation',
-      };
-    }
-  }
-  public async getContractNFTs(
-    chain_id: string,
-    contract_address: string,
-  ): Promise<Some<GetContractNFTsResponseAdapter>> {
-    try {
-      const moralis = await Singleton.getMoralisInstance();
-      // const findChain = EvmChain.create(chain_id, moralis.core);
-      const metadata = await moralis.EvmApi.nft.getContractNFTs({
-        chain: chain_id,
-        address: contract_address,
-      });
-      if (!metadata.result) {
-        return {
-          status: false,
-          message: 'Contract NFT: contract not found',
-        };
-      }
-      return {
-        status: true,
-        data: metadata as any,
-      };
-      return {
-        status: false,
-        message: 'Contract NFT: chain_id not found',
-      };
-    } catch (error: any) {
-      logger.error('getContractNFTs ' + error.message);
-      return {
-        status: false,
-        message: 'Contract NFT: false when getContractNFTs',
-      };
-    }
-  }
+  //     if (!metadata) {
+  //       return {
+  //         status: false,
+  //         message: 'Contract NFT: metadata not found',
+  //       };
+  //     }
+  //     if (!metadata.result) {
+  //       return {
+  //         status: false,
+  //         message: 'Contract NFT: contract not found',
+  //       };
+  //     }
+  //     return {
+  //       status: true,
+  //       // data: {
+  //       //   contractOwner,
+  //       //   metadata: metadata.result,
+  //       // },
+  //       data: metadata.result,
+  //     };
+  //     return {
+  //       status: false,
+  //       message: 'Contract NFT: chain_id not found',
+  //     };
+  //   } catch (error: any) {
+  //     logger.error('getNftContractInformation ' + error.message);
+  //     return {
+  //       status: false,
+  //       message: 'Contract NFT: false when getNftContractInformation',
+  //     };
+  //   }
+  // }
+  // public async getNftInformation(
+  //   chain_id: string,
+  //   contract_address: string,
+  //   tokenId: string,
+  // ): Promise<Some<any>> {
+  //   try {
+  //     const moralis = await Singleton.getMoralisInstance();
+  //     // const findChain = EvmChain.create(chain_id, moralis.core);
+  //     const metadata = await moralis.EvmApi.nft.getNFTMetadata({
+  //       chain: chain_id,
+  //       address: contract_address,
+  //       tokenId,
+  //     });
+  //     if (!metadata) {
+  //       return {
+  //         status: false,
+  //         message: 'Contract NFT: metadata not found',
+  //       };
+  //     }
+  //     if (!metadata.result) {
+  //       return {
+  //         status: false,
+  //         message: 'Contract NFT: false when getNftInformation',
+  //       };
+  //     }
+  //     return {
+  //       status: true,
+  //       data: metadata.result,
+  //     };
+  //     return {
+  //       status: false,
+  //       message: 'Contract NFT: chain_id not found',
+  //     };
+  //   } catch (error: any) {
+  //     logger.error('getNftInformation ' + error.message);
+  //     return {
+  //       status: false,
+  //       message: 'Contract NFT: false when getNftInformation',
+  //     };
+  //   }
+  // }
+  // public async getContractNFTs(
+  //   chain_id: string,
+  //   contract_address: string,
+  // ): Promise<Some<GetContractNFTsResponseAdapter>> {
+  //   try {
+  //     const moralis = await Singleton.getMoralisInstance();
+  //     // const findChain = EvmChain.create(chain_id, moralis.core);
+  //     const metadata = await moralis.EvmApi.nft.getContractNFTs({
+  //       chain: chain_id,
+  //       address: contract_address,
+  //     });
+  //     if (!metadata.result) {
+  //       return {
+  //         status: false,
+  //         message: 'Contract NFT: contract not found',
+  //       };
+  //     }
+  //     return {
+  //       status: true,
+  //       data: metadata as any,
+  //     };
+  //     return {
+  //       status: false,
+  //       message: 'Contract NFT: chain_id not found',
+  //     };
+  //   } catch (error: any) {
+  //     logger.error('getContractNFTs ' + error.message);
+  //     return {
+  //       status: false,
+  //       message: 'Contract NFT: false when getContractNFTs',
+  //     };
+  //   }
+  // }
 
-  public async getTokenOwners(chain_id: string, contract_address: string, tokenId: string) {
-    try {
-      const moralis = await Singleton.getMoralisInstance();
-      // const findChain = EvmChain.create(chain_id, moralis.core);
-      let nftOwners: any = await moralis.EvmApi.nft.getNFTTokenIdOwners({
-        chain: chain_id,
-        address: contract_address,
-        tokenId,
-      });
-      if (!nftOwners.result) {
-        return [];
-      }
-      // const filteredResult = nftOwners.result.filter((owner) => {(owner.ownerOf != undefined)})
-      return nftOwners.result.map((owner: any) => owner.ownerOf?.lowercase || '');
-    } catch (error: any) {
-      logger.error('getTokenOwners', error.message);
-      return [];
-    }
-  }
+  // public async getTokenOwners(chain_id: string, contract_address: string, tokenId: string) {
+  //   try {
+  //     const moralis = await Singleton.getMoralisInstance();
+  //     // const findChain = EvmChain.create(chain_id, moralis.core);
+  //     let nftOwners: any = await moralis.EvmApi.nft.getNFTTokenIdOwners({
+  //       chain: chain_id,
+  //       address: contract_address,
+  //       tokenId,
+  //     });
+  //     if (!nftOwners.result) {
+  //       return [];
+  //     }
+  //     // const filteredResult = nftOwners.result.filter((owner) => {(owner.ownerOf != undefined)})
+  //     return nftOwners.result.map((owner: any) => owner.ownerOf?.lowercase || '');
+  //   } catch (error: any) {
+  //     logger.error('getTokenOwners', error.message);
+  //     return [];
+  //   }
+  // }
 
-  public async isTokenOwned(chain_id: string, contract_address: string, address: string) {
-    try {
-      const contractNft = await this.getContractNFTs(chain_id, contract_address);
+  // public async isTokenOwned(chain_id: string, contract_address: string, address: string) {
+  //   try {
+  //     const contractNft = await this.getContractNFTs(chain_id, contract_address);
 
-      if (contractNft.status) {
-        const listToken = contractNft.data?.result;
-        if (!listToken) {
-          return false;
-        }
-        let listOwner: string[] = [];
-        listOwner = await Promise.all(
-          listToken.map(token => {
-            return this.getTokenOwners(chain_id, contract_address, token.tokenId.toString());
-          }),
-        );
-        listOwner = [...new Set(listOwner.flat())];
-        return listOwner.includes(address.toLowerCase());
-      }
-      return false;
-    } catch (error) {
-      return false;
-    }
-  }
+  //     if (contractNft.status) {
+  //       const listToken = contractNft.data?.result;
+  //       if (!listToken) {
+  //         return false;
+  //       }
+  //       let listOwner: string[] = [];
+  //       listOwner = await Promise.all(
+  //         listToken.map(token => {
+  //           return this.getTokenOwners(chain_id, contract_address, token.tokenId.toString());
+  //         }),
+  //       );
+  //       listOwner = [...new Set(listOwner.flat())];
+  //       return listOwner.includes(address.toLowerCase());
+  //     }
+  //     return false;
+  //   } catch (error) {
+  //     return false;
+  //   }
+  // }
 
-  public async getSupportedChain() {
-    const chains = Constant.SUPPORTED_CHAIN;
+  // public async getSupportedChain() {
+  //   const chains = ChatConstant.SUPPORTED_CHAIN;
 
-    return chains ? chains : {};
-  }
+  //   return chains ? chains : {};
+  // }
 }
 export { StickerService };

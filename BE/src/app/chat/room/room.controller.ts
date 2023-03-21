@@ -1,5 +1,5 @@
 import { Request as exRequest } from 'express';
-import { IRoom } from '@schemas';
+import { IRoom } from '@chat-schemas';
 import {
   Body,
   Controller,
@@ -14,10 +14,10 @@ import {
   Security,
   Tags,
 } from 'tsoa';
-import { Constant, logger, onError, onSuccess, Option } from '@constants';
+import { Constant, logger, onError, onSuccess, OptionResponse } from '@constants';
 import {
   AdminRoleMiddleware,
-  AuthMiddleware,
+  SignatureMiddleware,
   CheckRolePowerMiddleware,
   CreatorRoleMiddleware,
 } from '@middlewares';
@@ -27,7 +27,7 @@ import { Types } from 'mongoose';
 const { NETWORK_STATUS_CODE, NETWORK_STATUS_MESSAGE } = Constant;
 
 @Tags('Room')
-@Middlewares([AuthMiddleware])
+@Middlewares([SignatureMiddleware])
 @Route('room')
 @Security({
   authorize: [],
@@ -41,7 +41,7 @@ export class RoomController extends Controller {
     @Request() req: exRequest,
     @Query() page?: number,
     @Query() limit?: number,
-  ): Promise<Option<IRoom[]>> {
+  ): Promise<OptionResponse<IRoom[]>> {
     try {
       const address = req.headers.address as string;
       // const address = "0x3408d73f50977cec63e32bc64f7d8705add19638"
@@ -76,7 +76,7 @@ export class RoomController extends Controller {
   public async getOppositeUser(
     @Request() req: exRequest,
     @Query() room_id: string,
-  ): Promise<Option<string>> {
+  ): Promise<OptionResponse<string>> {
     try {
       const address = req.headers.address as string;
       const pubKey = await this.roomService.getOppositeUser(address, room_id);
@@ -93,7 +93,7 @@ export class RoomController extends Controller {
     @Query() page?: number,
     @Query() limit?: number,
     @Query() filter?: string,
-  ): Promise<Option<IRoom[]>> {
+  ): Promise<OptionResponse<IRoom[]>> {
     try {
       const roomList = await this.roomService.getPublicRoom(page, limit, filter);
       return onSuccess(roomList);
@@ -120,15 +120,11 @@ export class RoomController extends Controller {
         chain_id: string;
       };
     },
-  ): Promise<Option<IRoom & { _id: Types.ObjectId }>> {
+  ): Promise<OptionResponse<IRoom & { _id: Types.ObjectId }>> {
     try {
       const address = req.headers.address as string;
-      const { type } = await Singleton.getWhitelistInstance().checkWhiteList(address);
-      if (type != Constant.WHITELIST_TYPE.GROUP_CREATOR) {
-        this.setStatus(NETWORK_STATUS_CODE.BAD_REQUEST);
-        return onError('You are not allowed to create room');
-      }
-      const { name, users, room_type, description, avatar, nft_contract, only_view } = inputParam;
+
+      const { name, users, room_type, description, avatar, only_view } = inputParam;
       const newRoom = await this.roomService.createRoom(
         users,
         address,
@@ -137,7 +133,7 @@ export class RoomController extends Controller {
         avatar,
         description,
         only_view,
-        nft_contract,
+        // nft_contract,
       );
       if (!newRoom.status) {
         this.setStatus(NETWORK_STATUS_CODE.BAD_REQUEST);
@@ -166,7 +162,7 @@ export class RoomController extends Controller {
   @Post('add-user-of-room')
   public async addUserOfRoom(
     @Body() inputParam: { roomId: string; address: string },
-  ): Promise<Option<IRoom[]>> {
+  ): Promise<OptionResponse<IRoom[]>> {
     try {
       const updatedRoom = await this.roomService.addUserOfRoom(
         inputParam.roomId,
@@ -188,7 +184,7 @@ export class RoomController extends Controller {
   public async hiddenRoom(
     @Request() req: exRequest,
     @Body() inputParam: { roomId: string },
-  ): Promise<Option<IRoom[]>> {
+  ): Promise<OptionResponse<IRoom[]>> {
     try {
       const address = req.headers.address as string;
 
@@ -209,7 +205,7 @@ export class RoomController extends Controller {
   public async joinPublicRoom(
     @Request() req: exRequest,
     @Body() inputParam: { roomId: string },
-  ): Promise<Option<IRoom[]>> {
+  ): Promise<OptionResponse<IRoom[]>> {
     try {
       const address = req.headers.address as string;
 
@@ -250,12 +246,13 @@ export class RoomController extends Controller {
       return onError(NETWORK_STATUS_MESSAGE.INTERNAL_SERVER_ERROR);
     }
   }
+
   @Middlewares([CheckRolePowerMiddleware])
   @Post('remove-user-of-room')
   public async removeUserOfRoom(
     @Request() req: exRequest,
     @Body() inputParam: { room_id: string; address: string },
-  ): Promise<Option<IRoom[]>> {
+  ): Promise<OptionResponse<IRoom[]>> {
     try {
       const address = req.headers.address as string;
       const updatedRoom = await this.roomService.removeUserOfRoom(
@@ -280,7 +277,7 @@ export class RoomController extends Controller {
   public async setRoleOfRoom(
     @Request() req: exRequest,
     @Body() inputParam: { roomId: string; address: string; role: string },
-  ): Promise<Option<IRoom[]>> {
+  ): Promise<OptionResponse<IRoom[]>> {
     try {
       const address = req.headers.address as string;
 
@@ -305,7 +302,9 @@ export class RoomController extends Controller {
 
   @Middlewares([CreatorRoleMiddleware])
   @Post('remove-room')
-  public async removeRoom(@Body() inputParam: { roomId: string }): Promise<Option<IRoom[]>> {
+  public async removeRoom(
+    @Body() inputParam: { roomId: string },
+  ): Promise<OptionResponse<IRoom[]>> {
     try {
       const removedRoom = await this.roomService.removeRoom(inputParam.roomId);
       return onSuccess(removedRoom);
@@ -327,7 +326,7 @@ export class RoomController extends Controller {
       description: string;
       only_view?: boolean;
     },
-  ): Promise<Option<IRoom[]>> {
+  ): Promise<OptionResponse<IRoom[]>> {
     try {
       const updatedRoom = await this.roomService.updateRoom(
         inputParam.roomId,
@@ -349,7 +348,7 @@ export class RoomController extends Controller {
     // @Body() inputParam: { room_id: string },
     @Body() inputParam: { room_id: string; message_id?: string },
     @Request() req: exRequest,
-  ): Promise<Option<IRoom>> {
+  ): Promise<OptionResponse<IRoom>> {
     try {
       const address = req.headers.address as string;
 
@@ -383,44 +382,44 @@ export class RoomController extends Controller {
     }
   }
 
-  @Post('add-new-nft-contract')
-  public async addNewNftContract(
-    // @Body() inputParam: { room_id: string },
-    @Body()
-    inputParam: {
-      room_id: string;
-      contractAddress: string;
-      chain_id: string;
-    },
-    @Request() req: exRequest,
-  ): Promise<Option<IRoom>> {
-    try {
-      const address = req.headers.address as string;
-      const { room_id, contractAddress, chain_id } = inputParam;
+  // @Post('add-new-nft-contract')
+  // public async addNewNftContract(
+  //   // @Body() inputParam: { room_id: string },
+  //   @Body()
+  //   inputParam: {
+  //     room_id: string;
+  //     contractAddress: string;
+  //     chain_id: string;
+  //   },
+  //   @Request() req: exRequest,
+  // ): Promise<OptionResponse<IRoom>> {
+  //   try {
+  //     const address = req.headers.address as string;
+  //     const { room_id, contractAddress, chain_id } = inputParam;
 
-      const updatedRoom = await this.roomService.addNewNftContract(
-        address,
-        room_id,
-        contractAddress.toLowerCase(),
-        chain_id,
-      );
-      if (!updatedRoom) {
-        this.setStatus(NETWORK_STATUS_CODE.BAD_REQUEST);
-        return onError(NETWORK_STATUS_MESSAGE.BAD_REQUEST);
-      }
-      return onSuccess(updatedRoom);
-    } catch (error) {
-      logger.error(error);
-      this.setStatus(NETWORK_STATUS_CODE.INTERNAL_SERVER_ERROR);
-      return onError(NETWORK_STATUS_MESSAGE.INTERNAL_SERVER_ERROR);
-    }
-  }
+  //     const updatedRoom = await this.roomService.addNewNftContract(
+  //       address,
+  //       room_id,
+  //       contractAddress.toLowerCase(),
+  //       chain_id,
+  //     );
+  //     if (!updatedRoom) {
+  //       this.setStatus(NETWORK_STATUS_CODE.BAD_REQUEST);
+  //       return onError(NETWORK_STATUS_MESSAGE.BAD_REQUEST);
+  //     }
+  //     return onSuccess(updatedRoom);
+  //   } catch (error) {
+  //     logger.error(error);
+  //     this.setStatus(NETWORK_STATUS_CODE.INTERNAL_SERVER_ERROR);
+  //     return onError(NETWORK_STATUS_MESSAGE.INTERNAL_SERVER_ERROR);
+  //   }
+  // }
 
   @Post('set-notification-room')
   public async setNotificationRoom(
     @Body() inputParam: { room_id: string },
     @Request() req: exRequest,
-  ): Promise<Option<IRoom>> {
+  ): Promise<OptionResponse<IRoom>> {
     try {
       const address = req.headers.address as string;
       const { room_id } = inputParam;

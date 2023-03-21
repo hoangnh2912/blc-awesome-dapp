@@ -1,7 +1,7 @@
-import { Constant, logger, onError, onSuccess, onSuccessArray, Option } from '@constants';
-import { AuthMiddleware } from '@middlewares';
+import { Constant, logger, onError, onSuccess, onSuccessArray, OptionResponse } from '@constants';
+import { SignatureMiddleware } from '@middlewares';
 import { Singleton } from '@providers';
-import { IMessage } from '@schemas';
+import { IMessage } from '@chat-schemas';
 import { Request as exRequest } from 'express';
 import {
   Body,
@@ -20,7 +20,7 @@ import {
 const { NETWORK_STATUS_CODE, NETWORK_STATUS_MESSAGE } = Constant;
 
 @Tags('Message-Public-Unlimited')
-@Middlewares([AuthMiddleware])
+@Middlewares([SignatureMiddleware])
 @Route('message-public-unlimited')
 @Security({
   authorize: [],
@@ -36,7 +36,7 @@ export class MessagePublicUnlimitedController extends Controller {
     @Query() page: number,
     @Query() limit: number = Constant.LIMIT_MESSAGE,
     @Query() isDescending: boolean = false,
-  ): Promise<Option<IMessage[]>> {
+  ): Promise<OptionResponse<IMessage[]>> {
     try {
       const address = req.headers.address as string;
 
@@ -63,7 +63,7 @@ export class MessagePublicUnlimitedController extends Controller {
       message_id: string;
       message_data: string;
     },
-  ): Promise<Option<IMessage>> {
+  ): Promise<OptionResponse<IMessage>> {
     try {
       const address = req.headers.address as string;
       const { message_data, message_id } = data;

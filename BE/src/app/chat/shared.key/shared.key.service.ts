@@ -1,6 +1,6 @@
-import { Constant, logger, Some } from '@constants';
+import { ChatConstant, logger, Some } from '@constants';
 import { Singleton } from '@providers';
-import { ISharedKey, SharedKey } from '@schemas';
+import { ISharedKey, SharedKey } from '@chat-schemas';
 import { Types } from 'mongoose';
 import { createECDH } from 'crypto';
 class SharedKeyService {
@@ -24,14 +24,14 @@ class SharedKeyService {
           message: 'Shared Key: key_id not exists',
         };
       }
-      const userPubkey = await Singleton.getUserInstance().getPublicKey(address);
+      const userPubkey = await Singleton.getChatUserInstance().getPublicKey(address);
       const dmtp = createECDH('secp256k1');
-      dmtp.setPrivateKey(Buffer.from(Constant.DMTP_KEY_PAIR.dmtp_priv_key, 'hex'));
+      dmtp.setPrivateKey(Buffer.from(ChatConstant.KEY_PAIR.dmtp_priv_key, 'hex'));
       const secretKey = dmtp.computeSecret(Buffer.from(userPubkey, 'hex'));
       sharedKeys.map(sharedKey => {
         const decrypted = Singleton.getMessageInstance().decryptMessage(
           sharedKey.key_data,
-          Constant.DMTP_KEY_PAIR.dmtp_priv_key,
+          ChatConstant.KEY_PAIR.dmtp_priv_key,
         );
         sharedKey.key_data = Singleton.getMessageInstance().encryptMessage(
           decrypted,
@@ -54,13 +54,13 @@ class SharedKeyService {
   public async createSharedKey(room_id: string) {
     try {
       const findRoom = await Singleton.getRoomInstance().getRoom(room_id);
-      if (findRoom?.room_type != Constant.ROOM_TYPE.LIMITED) {
+      if (findRoom?.room_type != ChatConstant.ROOM_TYPE.LIMITED) {
         return null;
       }
       const key_data = this.generateSharedKey();
       const encrypted_key = Singleton.getMessageInstance().encryptMessage(
         key_data,
-        Constant.DMTP_KEY_PAIR.dmtp_priv_key,
+        ChatConstant.KEY_PAIR.dmtp_priv_key,
       );
       const field = {
         room_id,
@@ -78,7 +78,7 @@ class SharedKeyService {
 
   private generateSharedKey() {
     return Singleton.getMessageInstance().encryptMessage(
-      (Math.random() * Constant.RANDOM_COMPLEXITY).toString(),
+      (Math.random() * ChatConstant.RANDOM_COMPLEXITY).toString(),
       new Date().toISOString(),
     );
   }
@@ -98,13 +98,13 @@ class SharedKeyService {
       const getKey = await SharedKey.findOne({ room_id }).sort({ created_at: -1 });
 
       if (getKey) {
-        const userPubkey = await Singleton.getUserInstance().getPublicKey(address);
+        const userPubkey = await Singleton.getChatUserInstance().getPublicKey(address);
         const dmtp = createECDH('secp256k1');
-        dmtp.setPrivateKey(Buffer.from(Constant.DMTP_KEY_PAIR.dmtp_priv_key, 'hex'));
+        dmtp.setPrivateKey(Buffer.from(ChatConstant.KEY_PAIR.dmtp_priv_key, 'hex'));
         const secretKey = dmtp.computeSecret(Buffer.from(userPubkey, 'hex'));
         const decrypted = Singleton.getMessageInstance().decryptMessage(
           getKey.key_data,
-          Constant.DMTP_KEY_PAIR.dmtp_priv_key,
+          ChatConstant.KEY_PAIR.dmtp_priv_key,
         );
         getKey.key_data = Singleton.getMessageInstance().encryptMessage(
           decrypted,
@@ -135,7 +135,7 @@ class SharedKeyService {
 
   public getDmtpPubkey() {
     try {
-      return Constant.DMTP_KEY_PAIR.dmtp_pub_key;
+      return ChatConstant.KEY_PAIR.dmtp_pub_key;
     } catch (error: any) {
       logger.error(error.message);
       return null;

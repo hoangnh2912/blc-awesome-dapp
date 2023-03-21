@@ -12,13 +12,13 @@ import {
   // Post,
 } from 'tsoa';
 import { Constant, logger, onError, onSuccess } from '@constants';
-import { AuthMiddleware } from '@middlewares';
+import { SignatureMiddleware } from '@middlewares';
 import { Singleton } from '@providers';
 
 const { NETWORK_STATUS_CODE, NETWORK_STATUS_MESSAGE } = Constant;
 
 @Tags('Shared-Key')
-@Middlewares(AuthMiddleware)
+@Middlewares(SignatureMiddleware)
 @Route('shared-key')
 @Security({
   authorize: [],

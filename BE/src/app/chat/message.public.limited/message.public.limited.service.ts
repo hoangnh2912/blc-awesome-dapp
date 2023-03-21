@@ -1,12 +1,6 @@
-import { Constant } from '@constants';
-import { Cid, IMessage, Message, Room, User } from '@schemas';
-import {
-  botSendMessageToWallets,
-  emitMessageV2,
-  emitTotalUnread,
-  emitUpdateMessageV2,
-  Singleton,
-} from '../../providers';
+import { ChatConstant } from '@constants';
+import { Cid, IMessage, Message, Room, User } from '@chat-schemas';
+import { emitMessageV2, emitTotalUnread, emitUpdateMessageV2, Singleton } from '@providers';
 class PublicLimitedMessageService {
   public async getMessageOfRoom(
     address: string,
@@ -17,7 +11,7 @@ class PublicLimitedMessageService {
   ) {
     const room = await Room.findOne({
       _id: room_id,
-      room_type: Constant.ROOM_TYPE.LIMITED,
+      room_type: ChatConstant.ROOM_TYPE.LIMITED,
       users: address,
       deleted_at: { $exists: false },
     });
@@ -73,7 +67,7 @@ class PublicLimitedMessageService {
       const findRoom = await Room.findOne({
         _id: room_id,
         users: address,
-        room_type: Constant.ROOM_TYPE.LIMITED,
+        room_type: ChatConstant.ROOM_TYPE.LIMITED,
         deleted_at: { $exists: false },
       });
 
@@ -166,30 +160,9 @@ class PublicLimitedMessageService {
 
       await emitMessageV2(messageEmit);
 
-      const to_address = findRoom.users.filter(user => {
-        return user != sender_user.wallet_address && !findRoom.is_disable.includes(user);
-      });
-      botSendMessageToWallets(to_address, {
-        embeds: [
-          {
-            title: 'New message on DMTP',
-            color: 0x9900ff,
-            url: `https://dmtp.tech/messages/${room_id}`,
-          },
-        ],
-        data: {
-          user: {
-            name: sender_user.name,
-            avatar: sender_user.avatar,
-            wallet_address: sender_user.wallet_address,
-          },
-          room_id,
-        },
-        content: `Message from ${
-          !!sender_user.name ? sender_user.name : sender_user.wallet_address
-        } in ${findRoom.name}`,
-        type: Constant.NOTIFICATION_TYPE.NEW_MESSAGE,
-      });
+      // const to_address = findRoom.users.filter(user => {
+      //   return user != sender_user.wallet_address && !findRoom.is_disable.includes(user);
+      // });
 
       const roomUsers = findRoom.users;
       if (roomUsers) {
