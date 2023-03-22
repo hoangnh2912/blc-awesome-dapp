@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 // import {  web3 } from '@providers';
 import { onError, Constant, logger } from '@constants';
-import { Room } from '@chat-schemas';
+import { Room } from '@schemas';
 import { ChatMarketContract } from '@providers';
 
 const { NETWORK_STATUS_CODE, NETWORK_STATUS_MESSAGE } = Constant;

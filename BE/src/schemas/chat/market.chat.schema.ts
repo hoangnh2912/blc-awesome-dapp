@@ -14,7 +14,7 @@ export interface Token {
   logo: string;
 }
 
-export interface IMarket {
+export interface IChatMarket {
   id_token: string;
   name?: string;
   description?: string;
@@ -30,7 +30,7 @@ export interface IMarket {
   cid?: string;
 }
 
-const marketSchema = new Schema<IMarket>({
+const chatMarketSchema = new Schema<IChatMarket>({
   id_token: { required: true, type: String, unique: true },
   name: { required: false, type: String },
   description: { required: false, type: String },
@@ -46,6 +46,6 @@ const marketSchema = new Schema<IMarket>({
   cid: { required: false, type: String },
 });
 
-export const Market = mongoose.model('Market', marketSchema, undefined, {
+export const ChatMarket = mongoose.model('ChatMarket', chatMarketSchema, undefined, {
   overwriteModels: true,
 });

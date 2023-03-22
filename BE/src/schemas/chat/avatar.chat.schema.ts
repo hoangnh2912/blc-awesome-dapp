@@ -1,4 +1,4 @@
-import { Constant } from '@constants';
+import { ChatConstant } from '@constants';
 import mongoose, { Schema } from 'mongoose';
 
 export interface IAvatar {
@@ -10,7 +10,7 @@ export interface IAvatar {
 
 const avatarSchema = new Schema<IAvatar>({
   wallet_address: { required: true, type: String },
-  cid: { required: false, type: String, default: Constant.DEFAULT_AVATAR.split('cid=').pop() },
+  cid: { required: false, type: String, default: ChatConstant.DEFAULT_AVATAR.split('cid=').pop() },
   updated_at: { required: false, type: Date },
   created_at: { required: false, type: Date, default: Date.now },
 });

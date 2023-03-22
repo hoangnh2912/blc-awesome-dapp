@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 
-export interface ISynchronize {
+export interface IChatSynchronize {
   last_block_number: number;
   transactions?: string[];
   created_at?: Date;
@@ -8,7 +8,7 @@ export interface ISynchronize {
   deleted_at?: Date;
 }
 
-const synchronizeSchema = new Schema<ISynchronize>({
+const chatSynchronizeSchema = new Schema<IChatSynchronize>({
   last_block_number: { required: true, type: Number, unique: true },
   transactions: { required: false, type: Schema.Types.Mixed, default: [] },
   created_at: { required: false, type: Date, default: Date.now },
@@ -16,6 +16,6 @@ const synchronizeSchema = new Schema<ISynchronize>({
   deleted_at: { required: false, type: Date },
 });
 
-export const Synchronize = mongoose.model('Synchronize', synchronizeSchema, undefined, {
+export const ChatSynchronize = mongoose.model('ChatSynchronize', chatSynchronizeSchema, undefined, {
   overwriteModels: true,
 });

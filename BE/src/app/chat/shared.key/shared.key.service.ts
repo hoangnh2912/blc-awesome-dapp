@@ -1,6 +1,6 @@
 import { ChatConstant, logger, Some } from '@constants';
 import { Singleton } from '@providers';
-import { ISharedKey, SharedKey } from '@chat-schemas';
+import { ISharedKey, SharedKey } from '@schemas';
 import { Types } from 'mongoose';
 import { createECDH } from 'crypto';
 class SharedKeyService {

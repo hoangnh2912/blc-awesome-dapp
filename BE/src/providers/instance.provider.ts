@@ -3,7 +3,7 @@ import { MusicService } from '@app/music/music.service';
 import { StealServiceService } from '@app/steal-address/steal-address.service';
 import { TokenCreatorService } from '@app/token-creator/token-creator.service';
 import { UserService } from '@app/user/user.service';
-import { UserService as ChatUserService } from '@app/chat/user/user.service';
+import { ChatUserService } from '@app/chat/user/user.service';
 import { MessageService } from '@app/chat/message/message.service';
 import { PublicLimitedMessageService } from '@app/chat/message.public.limited/message.public.limited.service';
 import { PublicUnlimitedMessageService } from '@app/chat/message.public.unlimited/message.public.unlimited.service';

@@ -1,7 +1,9 @@
 import { Constant, logger, onError, onSuccess, onSuccessArray, OptionResponse } from '@constants';
 import { SignatureMiddleware } from '@middlewares';
 import { Singleton } from '@providers';
-import { IMessage } from '@chat-schemas';
+import { IMessage } from '@schemas';
+// import { IMessage } from '../../../schemas/chat/index';
+
 import { Request as exRequest } from 'express';
 import {
   Body,

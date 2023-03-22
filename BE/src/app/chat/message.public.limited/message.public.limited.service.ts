@@ -1,5 +1,5 @@
 import { ChatConstant } from '@constants';
-import { Cid, IMessage, Message, Room, User } from '@chat-schemas';
+import { Cid, IMessage, Message, Room, ChatUser } from '@schemas';
 import { emitMessageV2, emitTotalUnread, emitUpdateMessageV2, Singleton } from '@providers';
 class PublicLimitedMessageService {
   public async getMessageOfRoom(
@@ -34,7 +34,7 @@ class PublicLimitedMessageService {
     for (let i = 0; i < messages.length; i++) {
       const message = messages[i];
       if (!userInfoMessage[message.sender_user.wallet_address]) {
-        userInfoMessage[message.sender_user.wallet_address] = await User.findOne({
+        userInfoMessage[message.sender_user.wallet_address] = await ChatUser.findOne({
           wallet_address: message.sender_user.wallet_address,
         });
       }
@@ -58,7 +58,7 @@ class PublicLimitedMessageService {
     is_empty: boolean = false,
   ) {
     try {
-      const sender_user = await User.findOne({
+      const sender_user = await ChatUser.findOne({
         wallet_address: address,
         deleted_at: { $exists: false },
       });
@@ -148,7 +148,7 @@ class PublicLimitedMessageService {
       let messageEmit = {
         ...messages.toObject(),
       };
-      const userInfoMessage = await User.findOne({
+      const userInfoMessage = await ChatUser.findOne({
         wallet_address: messageEmit.sender_user.wallet_address,
       });
       if (!userInfoMessage) return null;

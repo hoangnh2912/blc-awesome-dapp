@@ -25,7 +25,7 @@ import {
 } from '@constants';
 import { SignatureMiddleware, MinterMiddleware } from '@middlewares';
 import { Singleton, uploadFile, uploadFolder, uploadJson } from '@providers';
-import { ISticker, IUser } from '@chat-schemas';
+import { ISticker, IChatUser } from '@schemas';
 
 const { NETWORK_STATUS_CODE, NETWORK_STATUS_MESSAGE } = Constant;
 
@@ -164,7 +164,7 @@ export class StickerController extends Controller {
   // }
 
   @Get('get-sticker-by-nft-id')
-  public async getStickerById(@Query() id_token: string): Promise<OptionResponse<IUser>> {
+  public async getStickerById(@Query() id_token: string): Promise<OptionResponse<IChatUser>> {
     try {
       const user = await this.stickerService.getStickerById(id_token);
       return onSuccess(user);

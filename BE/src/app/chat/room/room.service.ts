@@ -16,11 +16,11 @@ import {
   Notification,
   IRoom,
   Room,
-  Session,
-  IUser,
+  ChatSession,
+  IChatUser,
   Message,
   IUserMessageRead,
-} from '@chat-schemas';
+} from '@schemas';
 
 class RoomService {
   userService = Singleton.getChatUserInstance();
@@ -129,7 +129,7 @@ class RoomService {
       }
       if (
         room.room_type != ChatConstant.ROOM_TYPE.UNLIMITED &&
-        !room.users.find((user: IUser) => user.wallet_address == address)
+        !room.users.find((user: IChatUser) => user.wallet_address == address)
       ) {
         return {
           status: false,
@@ -140,7 +140,7 @@ class RoomService {
         status: true,
         data: {
           ...room,
-          users: room.users.map((user: IUser) => {
+          users: room.users.map((user: IChatUser) => {
             let role = ChatConstant.MEMBER_OF_ROOM_TYPE.MEMBER;
             if (room.admins && room.admins.includes(user.wallet_address))
               role = ChatConstant.MEMBER_OF_ROOM_TYPE.ADMIN;
@@ -252,7 +252,7 @@ class RoomService {
           return {
             ...room,
             users: await Promise.all(
-              room.users.map(async (user: IUser) => {
+              room.users.map(async (user: IChatUser) => {
                 let role = ChatConstant.MEMBER_OF_ROOM_TYPE.MEMBER;
                 if (room.admins && room.admins.includes(user.wallet_address))
                   role = ChatConstant.MEMBER_OF_ROOM_TYPE.ADMIN;
@@ -641,9 +641,9 @@ class RoomService {
         return [];
       }
 
-      const sessionList: [{ session: Session[] }] = session[0].session;
+      const sessionList: [{ session: ChatSession[] }] = session[0].session;
 
-      let totalSession: Session[] = [];
+      let totalSession: ChatSession[] = [];
       // for (const session in sessionList){
 
       // }

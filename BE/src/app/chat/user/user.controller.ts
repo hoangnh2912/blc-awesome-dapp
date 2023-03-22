@@ -1,7 +1,7 @@
 import { Constant, logger, onError, onSuccess, OptionResponse } from '@constants';
 import { SignatureMiddleware } from '@middlewares';
 import { Singleton, web3 } from '@providers';
-import { IUser, UserBalance } from '@chat-schemas';
+import { IChatUser, ChatUserBalance } from '@schemas';
 import { Request as exRequest } from 'express';
 // import { parse } from 'json2csv';
 // import stream from 'stream';
@@ -31,7 +31,9 @@ export class UsersController extends Controller {
 
   @Get('user-info')
   @Middlewares([SignatureMiddleware])
-  public async getUser(@Request() req: exRequest): Promise<OptionResponse<IUser & UserBalance>> {
+  public async getUser(
+    @Request() req: exRequest,
+  ): Promise<OptionResponse<IChatUser & ChatUserBalance>> {
     try {
       const address = req.headers.address as string;
       const user = await this.userService.get(address);
@@ -165,7 +167,7 @@ export class UsersController extends Controller {
       avatar?: string;
       description?: string;
     },
-  ): Promise<OptionResponse<IUser>> {
+  ): Promise<OptionResponse<IChatUser>> {
     try {
       const address = req.headers.address as string;
       const isExist = await this.userService.checkExist(address);
@@ -196,7 +198,7 @@ export class UsersController extends Controller {
       campaign?: string;
       referrer?: string;
     },
-  ): Promise<OptionResponse<IUser>> {
+  ): Promise<OptionResponse<IChatUser>> {
     try {
       const address = req.headers.address as string;
       let user = null;
@@ -286,7 +288,7 @@ export class UsersController extends Controller {
 
   @Get('get-friend-requests')
   @Middlewares([SignatureMiddleware])
-  public async getFriendRequests(@Request() req: exRequest): Promise<OptionResponse<IUser>> {
+  public async getFriendRequests(@Request() req: exRequest): Promise<OptionResponse<IChatUser>> {
     try {
       const address = req.headers.address as string;
       const friendRequests = await this.userService.getFriendRequests(address);
@@ -303,7 +305,7 @@ export class UsersController extends Controller {
   public async acceptFriendRequest(
     @Request() req: exRequest,
     @Body() data: { sender_address: string },
-  ): Promise<OptionResponse<IUser>> {
+  ): Promise<OptionResponse<IChatUser>> {
     try {
       const address = req.headers.address as string;
       const findRoom = await Singleton.getRoomInstance().findRoomWithListAddress([
@@ -339,7 +341,7 @@ export class UsersController extends Controller {
   public async getFriendList(
     @Request() req: exRequest,
     @Query() filter?: string,
-  ): Promise<OptionResponse<IUser>> {
+  ): Promise<OptionResponse<IChatUser>> {
     try {
       const address = req.headers.address as string;
       const addressFromDomain = await this.userService.unstoppableDomainToAddress(address);
@@ -357,7 +359,7 @@ export class UsersController extends Controller {
   public async deleteFriendRequest(
     @Request() req: exRequest,
     @Body() data: { sender_address: string },
-  ): Promise<OptionResponse<IUser>> {
+  ): Promise<OptionResponse<IChatUser>> {
     try {
       const address = req.headers.address as string;
 
@@ -375,7 +377,7 @@ export class UsersController extends Controller {
   public async cancelFriendRequest(
     @Request() req: exRequest,
     @Body() data: { sender_address: string },
-  ): Promise<OptionResponse<IUser>> {
+  ): Promise<OptionResponse<IChatUser>> {
     try {
       const address = req.headers.address as string;
 
@@ -393,7 +395,7 @@ export class UsersController extends Controller {
   public async unfriend(
     @Request() req: exRequest,
     @Body() data: { object_address: string },
-  ): Promise<OptionResponse<IUser>> {
+  ): Promise<OptionResponse<IChatUser>> {
     try {
       const address = req.headers.address as string;
       const updatedUser = await this.userService.unfriend(address, data.object_address);

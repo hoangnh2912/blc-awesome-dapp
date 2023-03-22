@@ -1,5 +1,5 @@
 import { Request as exRequest } from 'express';
-import { IMarket } from '@schemas';
+import { IChatMarket } from '@schemas';
 import { Controller, Get, Middlewares, Request, Route, Security, Tags } from 'tsoa';
 import { Constant, logger, onError, onSuccess, OptionResponse } from '@constants';
 import { SignatureMiddleware } from '@middlewares';
@@ -14,11 +14,11 @@ const { NETWORK_STATUS_CODE, NETWORK_STATUS_MESSAGE } = Constant;
   authorize: [],
   address: [],
 })
-export class MarketController extends Controller {
+export class ChatMarketController extends Controller {
   private marketService = new MarketService();
 
   @Get('get-sticker-market')
-  public async getSticker(@Request() req: exRequest): Promise<OptionResponse<IMarket[]>> {
+  public async getSticker(@Request() req: exRequest): Promise<OptionResponse<IChatMarket[]>> {
     try {
       const address = req.headers.address as string;
       const marketList = await this.marketService.getMarkets(address);

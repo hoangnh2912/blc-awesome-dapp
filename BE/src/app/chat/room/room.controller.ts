@@ -1,5 +1,5 @@
 import { Request as exRequest } from 'express';
-import { IRoom } from '@chat-schemas';
+import { IRoom } from '@schemas';
 import {
   Body,
   Controller,

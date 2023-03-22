@@ -62,6 +62,31 @@ enum FRIEND_STATUS {
   RECEIVER_WAIT = 3,
 }
 
+const SOCKET_EVENT_NAME = {
+  totalUnreadCount: 'total unread',
+  friendRequest: 'friend request',
+  friendAccept: 'friend accept',
+  unfriend: 'unfriend',
+  notification: 'notification',
+  roomCreate: 'room create',
+  friendRequestDeleted: 'friend request deleted',
+  reactionAdded: 'reaction added',
+  reactionRemoved: 'reaction removed',
+  messageSent: 'message sent',
+  messageDeleted: 'message deleted',
+  messageUpdated: 'message updated',
+  messageStatus: 'message status',
+  userJoined: 'user joined',
+  userLeave: 'user left',
+  userRole: 'user set role',
+  roomUpdated: 'room updated',
+  groupCreated: 'room create group',
+  userConnected: 'user connected',
+  userDisconnected: 'user disconnected',
+  balanceUpdate: 'balance update',
+  sns: 'sns',
+};
+
 const ChatConstant = {
   ROOM_TYPE,
   MESSAGE_STATUS,
@@ -75,5 +100,7 @@ const ChatConstant = {
   RANDOM_COMPLEXITY: 10000000,
   FRIEND_STATUS,
   CONFIG_CONTRACT,
+  SOCKET_EVENT_NAME,
+  SOCKET_RESPONSE_TIMEOUT: 5000,
 };
 export { ChatConstant };

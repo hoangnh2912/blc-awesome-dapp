@@ -8,18 +8,18 @@ interface IDiscord {
   is_in_discord_server: boolean;
 }
 
-export interface Session {
+export interface ChatSession {
   session_id: string;
   address: string;
 }
 
-export interface UserBalance {
+export interface ChatUserBalance {
   dmtp: string;
   stdmtp: string;
   matic: string;
 }
 
-export interface IUser {
+export interface IChatUser {
   discord?: IDiscord;
   telegram?: string;
   authorized_id?: string;
@@ -31,7 +31,7 @@ export interface IUser {
   stickers: string[];
   friends: string[];
   friend_requests?: string[];
-  session: Session[];
+  session: ChatSession[];
   active_points: number;
   wallet_score: number;
   campaign?: string;
@@ -44,7 +44,7 @@ export interface IUser {
   deleted_at?: Date;
 }
 
-const userSchema = new Schema<IUser>({
+const chatUserSchema = new Schema<IChatUser>({
   discord: { required: false, type: Schema.Types.Mixed },
   telegram: { required: false, type: String },
   authorized_id: { required: false, type: String },
@@ -69,6 +69,6 @@ const userSchema = new Schema<IUser>({
   deleted_at: { required: false, type: Date },
 });
 
-export const User = mongoose.model('User', userSchema, undefined, {
+export const ChatUser = mongoose.model('ChatUser', chatUserSchema, undefined, {
   overwriteModels: true,
 });

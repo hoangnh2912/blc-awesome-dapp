@@ -14,33 +14,33 @@ import {
 import {
   Avatar,
   IRoom,
-  IUser,
+  IChatUser,
   IUserMessageRead,
   Notification,
   Room,
-  User,
+  ChatUser,
   Authorized,
-} from '@chat-schemas';
+} from '@schemas';
 import keccak256 from 'keccak256';
 import { Types } from 'mongoose';
 // import { dmtp_pub_key } from '../../../dmtp_key_pair.json';
 
 type InputUserParams = Pick<
-  IUser,
+  IChatUser,
   'discord' | 'wallet_address' | 'avatar' | 'name' | 'description'
 >;
 
-class UserService {
+class ChatUserService {
   public async getAllUser() {
-    return await User.find({});
+    return await ChatUser.find({});
   }
   public async get(address: string): Promise<
-    IUser & {
+    IChatUser & {
       link_addresses: string[];
     }
   > {
     const lowerAddress = address.toLowerCase();
-    const user = await User.findOne({
+    const user = await ChatUser.findOne({
       wallet_address: lowerAddress,
     });
 
@@ -77,7 +77,7 @@ class UserService {
 
   public async getPrivateKey(wallet_address: string) {
     try {
-      const privateKey = (await User.findOne({ wallet_address }))?.dmtp_priv_key || '';
+      const privateKey = (await ChatUser.findOne({ wallet_address }))?.dmtp_priv_key || '';
       return privateKey;
     } catch (error) {
       throw error;
@@ -87,7 +87,7 @@ class UserService {
   public async getPublicKey(wallet_address: string) {
     try {
       const publicKey =
-        (await User.findOne({ wallet_address }))?.dmtp_pub_key ||
+        (await ChatUser.findOne({ wallet_address }))?.dmtp_pub_key ||
         ChatConstant.KEY_PAIR.dmtp_pub_key;
       return publicKey;
     } catch (error) {
@@ -97,7 +97,7 @@ class UserService {
 
   public async getWithFriend(sender_address: string, receiver_address: string): Promise<any> {
     const lowerAddressReceiver = receiver_address.toLowerCase();
-    const userReceiver = await User.findOne(
+    const userReceiver = await ChatUser.findOne(
       {
         wallet_address: lowerAddressReceiver,
       },
@@ -126,7 +126,7 @@ class UserService {
       }),
       friend_status: ChatConstant.FRIEND_STATUS.NONE,
     };
-    const userSender = await User.findOne(
+    const userSender = await ChatUser.findOne(
       {
         wallet_address: sender_address,
       },
@@ -168,14 +168,14 @@ class UserService {
         deleted_at: { $exists: false },
       };
 
-      const users = await User.find(filter);
+      const users = await ChatUser.find(filter);
       return users;
     } catch (error) {
       throw error;
     }
   }
 
-  public async create(inputUser: InputUserParams, referrer: string = ''): Promise<IUser> {
+  public async create(inputUser: InputUserParams, referrer: string = ''): Promise<IChatUser> {
     const isExist = await this.checkExist(inputUser.wallet_address);
 
     if (!isExist && referrer) {
@@ -213,7 +213,7 @@ class UserService {
       stickers: [],
       updated_at: new Date().toISOString(),
     };
-    const user = await User.findOneAndUpdate(
+    const user = await ChatUser.findOneAndUpdate(
       {
         wallet_address: inputUser.wallet_address,
       },
@@ -232,7 +232,7 @@ class UserService {
     return user;
   }
 
-  public async update(inputUser: InputUserParams): Promise<IUser> {
+  public async update(inputUser: InputUserParams): Promise<IChatUser> {
     const payloadUpdate = {} as any;
     if (inputUser.name) payloadUpdate.name = inputUser.name;
     if (inputUser.avatar) {
@@ -253,7 +253,7 @@ class UserService {
     }
     if (inputUser.discord) payloadUpdate.discord = inputUser.discord;
     if (inputUser.description) payloadUpdate.description = inputUser.description;
-    const user = await User.findOneAndUpdate(
+    const user = await ChatUser.findOneAndUpdate(
       {
         wallet_address: inputUser.wallet_address,
       },
@@ -268,12 +268,12 @@ class UserService {
         new: true,
       },
     );
-    return user?.toObject() as IUser;
+    return user?.toObject() as IChatUser;
   }
 
   public async checkExist(address: string): Promise<boolean> {
     try {
-      const isExist = await User.exists({
+      const isExist = await ChatUser.exists({
         wallet_address: address,
       });
       return !!isExist;
@@ -293,7 +293,7 @@ class UserService {
           $addToSet: { stickers: tokenId },
           updated_at: new Date().toISOString(),
         };
-        await User.updateOne(filter, update);
+        await ChatUser.updateOne(filter, update);
       }
     } catch (error) {
       throw error;
@@ -308,7 +308,7 @@ class UserService {
       if (!nftAmount) {
         const filter = { wallet_address };
         const update = { $pull: { stickers: tokenId } };
-        await User.updateOne(filter, update);
+        await ChatUser.updateOne(filter, update);
       }
     } catch (error) {
       throw error;
@@ -318,7 +318,7 @@ class UserService {
   public async sendFriendRequest(
     sender_address: string,
     object_address: string,
-  ): Promise<Some<IUser>> {
+  ): Promise<Some<IChatUser>> {
     try {
       const filter = {
         wallet_address: object_address,
@@ -327,7 +327,7 @@ class UserService {
         },
       };
 
-      const user = await User.findOne(filter);
+      const user = await ChatUser.findOne(filter);
       if (user && user?.friend_requests?.includes(sender_address)) {
         return {
           status: false,
@@ -349,7 +349,7 @@ class UserService {
         updated_at: new Date().toISOString(),
       };
 
-      const updated = await User.findOneAndUpdate(filter, update, {
+      const updated = await ChatUser.findOneAndUpdate(filter, update, {
         new: true,
       });
 
@@ -359,7 +359,7 @@ class UserService {
           message: 'Address invalid',
         };
       }
-      const sessionQuery = await User.findOne(
+      const sessionQuery = await ChatUser.findOne(
         {
           wallet_address: object_address,
           deleted_at: {
@@ -373,7 +373,7 @@ class UserService {
       const sessions = sessionQuery ? sessionQuery.session || [] : [];
       await emitFriendRequest(sessions, sender_address);
 
-      const senderUser = await User.findOne({
+      const senderUser = await ChatUser.findOne({
         wallet_address: sender_address,
         deleted_at: {
           $exists: false,
@@ -394,7 +394,7 @@ class UserService {
     }
   }
 
-  public async getFriendRequests(address: string): Promise<IUser[] | null> {
+  public async getFriendRequests(address: string): Promise<IChatUser[] | null> {
     try {
       const match = {
         $match: {
@@ -430,7 +430,7 @@ class UserService {
           friend_requests: 1,
         },
       };
-      const friendRequests = await User.aggregate([match, lookup, project]);
+      const friendRequests = await ChatUser.aggregate([match, lookup, project]);
 
       return friendRequests;
     } catch (error) {
@@ -454,7 +454,7 @@ class UserService {
         updated_at: new Date().toISOString(),
       };
 
-      const friendRequest = await User.findOneAndUpdate(filter, acceptRequest, {
+      const friendRequest = await ChatUser.findOneAndUpdate(filter, acceptRequest, {
         new: true,
       });
 
@@ -482,12 +482,12 @@ class UserService {
       };
 
       // add to request accept account's friend list
-      const updatedUser = await User.findOneAndUpdate(filter, addFriend, {
+      const updatedUser = await ChatUser.findOneAndUpdate(filter, addFriend, {
         new: true,
       });
 
       // add to request sender account's friend list
-      const senderUser = await User.findOneAndUpdate(
+      const senderUser = await ChatUser.findOneAndUpdate(
         {
           wallet_address: sender_address,
           deleted_at: { $exists: false },
@@ -559,7 +559,7 @@ class UserService {
         },
       };
 
-      let friends = await User.aggregate([
+      let friends = await ChatUser.aggregate([
         {
           $match: {
             wallet_address: address,
@@ -607,7 +607,7 @@ class UserService {
       //   { friends: 1 }
       // );
       if (!friends[0]) return [];
-      friends = friends[0].friends.map((friend: IUser) => ({
+      friends = friends[0].friends.map((friend: IChatUser) => ({
         ...friend,
         room_id:
           roomOfUser.find((room: IRoom) => room.users.includes(friend.wallet_address))?._id || null,
@@ -640,11 +640,11 @@ class UserService {
         },
         updated_at: new Date().toISOString(),
       };
-      const updatedUser = await User.findOneAndUpdate(filter, update, {
+      const updatedUser = await ChatUser.findOneAndUpdate(filter, update, {
         new: true,
       });
 
-      const sessionQuerySender = await User.findOne(
+      const sessionQuerySender = await ChatUser.findOne(
         {
           wallet_address: sender_address,
           deleted_at: {
@@ -694,11 +694,11 @@ class UserService {
         },
         updated_at: new Date().toISOString(),
       };
-      const updatedUser = await User.findOneAndUpdate(filter, update, {
+      const updatedUser = await ChatUser.findOneAndUpdate(filter, update, {
         new: true,
       });
 
-      const sessionQuerySender = await User.findOne(
+      const sessionQuerySender = await ChatUser.findOne(
         {
           wallet_address: sender_address,
           deleted_at: {
@@ -738,12 +738,12 @@ class UserService {
       };
 
       // remove from sender's friend list
-      const updatedUserRemove = await User.findOneAndUpdate(filter, update, {
+      const updatedUserRemove = await ChatUser.findOneAndUpdate(filter, update, {
         new: true,
       });
 
       // remove from object's friend list
-      const updatedUserBeRemove = await User.findOneAndUpdate(
+      const updatedUserBeRemove = await ChatUser.findOneAndUpdate(
         {
           wallet_address: friend,
           deleted_at: { $exists: false },
@@ -784,7 +784,7 @@ class UserService {
 
   public async getSessionId(address: string) {
     try {
-      const sessionId = await User.findOne(
+      const sessionId = await ChatUser.findOne(
         {
           wallet_address: address,
           deleted_at: { $exists: false },
@@ -810,7 +810,7 @@ class UserService {
         $push: { session: { $each: [{ session_id, address }], $slice: -25 } },
         updated_at: new Date().toISOString(),
       };
-      const updatedUser = await User.findOneAndUpdate(filter, update, {
+      const updatedUser = await ChatUser.findOneAndUpdate(filter, update, {
         new: true,
       });
 
@@ -836,7 +836,7 @@ class UserService {
         },
       },
     };
-    const updatedUser = await User.findOneAndUpdate(filter, update, {
+    const updatedUser = await ChatUser.findOneAndUpdate(filter, update, {
       new: true,
     });
     return updatedUser ? true : false;
@@ -882,7 +882,7 @@ class UserService {
         },
       };
 
-      const totalUnreadQuery: any = await User.aggregate([match, lookup]);
+      const totalUnreadQuery: any = await ChatUser.aggregate([match, lookup]);
 
       let totalUnread = 0;
       if (totalUnreadQuery) {
@@ -903,7 +903,7 @@ class UserService {
 
   public async submitKeyPair(wallet_address: string, pub_key: string, priv_key: string) {
     try {
-      const findUser = await User.findOne({
+      const findUser = await ChatUser.findOne({
         wallet_address,
         deleted_at: { $exists: false },
       });
@@ -963,4 +963,4 @@ class UserService {
   }
 }
 
-export { UserService };
+export { ChatUserService };

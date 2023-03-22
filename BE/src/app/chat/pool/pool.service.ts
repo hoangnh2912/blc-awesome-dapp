@@ -1,4 +1,4 @@
-import { IPool, Pool } from '@chat-schemas';
+import { IPool, Pool } from '@schemas';
 import { ChatConstant } from '@constants';
 class PoolService {
   public async addToPool(

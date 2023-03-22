@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
-import { Constant } from '../constants';
-import { IUserMessage } from './message.schema';
+import { ChatConstant } from '@constants';
+import { IUserMessage } from './message.chat.schema';
 
 export interface IUserMessageRead {
   user: IUserMessage;
@@ -67,8 +67,8 @@ const roomSchema = new Schema<IRoom>({
   room_type: {
     required: true,
     type: String,
-    enum: Object.values(Constant.ROOM_TYPE),
-    default: Constant.ROOM_TYPE.PRIVATE,
+    enum: Object.values(ChatConstant.ROOM_TYPE),
+    default: ChatConstant.ROOM_TYPE.PRIVATE,
   },
   is_disable: { required: true, type: Schema.Types.Mixed, default: [] },
 });

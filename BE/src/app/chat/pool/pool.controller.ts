@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, Middlewares, Post, Route, Security, Tags
 import { Constant, logger, onError, onSuccess, OptionResponse } from '@constants';
 import { SignatureMiddleware } from '@middlewares';
 import { uploadJson } from '@providers';
-import { IPool } from '@chat-schemas';
+import { IPool } from '@schemas';
 import { PoolService } from './pool.service';
 
 const { NETWORK_STATUS_CODE, NETWORK_STATUS_MESSAGE } = Constant;

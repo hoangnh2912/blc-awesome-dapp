@@ -11,7 +11,7 @@ import {
   Singleton,
   uploadJson,
 } from '@providers';
-import { Cid, IMessage, Message, Room, User } from '@chat-schemas';
+import { Cid, IMessage, Message, Room, ChatUser } from '@schemas';
 import { createECDH } from 'crypto';
 import { AES, enc } from 'crypto-js';
 import keccak256 from 'keccak256';
@@ -30,7 +30,7 @@ class MessageService {
       deleted_at: { $exists: false },
     });
 
-    const user = await User.findOne({
+    const user = await ChatUser.findOne({
       wallet_address: address,
     });
 
@@ -70,7 +70,7 @@ class MessageService {
     for (let i = 0; i < messages.length; i++) {
       const message = messages[i];
       if (!userInfoMessage[message.sender_user.wallet_address]) {
-        userInfoMessage[message.sender_user.wallet_address] = await User.findOne({
+        userInfoMessage[message.sender_user.wallet_address] = await ChatUser.findOne({
           wallet_address: message.sender_user.wallet_address,
         });
       }
@@ -104,7 +104,7 @@ class MessageService {
     is_notification?: boolean,
   ) {
     try {
-      const sender_user = await User.findOne({
+      const sender_user = await ChatUser.findOne({
         wallet_address: address,
         deleted_at: { $exists: false },
       });
@@ -205,7 +205,7 @@ class MessageService {
       let messageEmit = {
         ...messages.toObject(),
       };
-      const userInfoMessage = await User.findOne({
+      const userInfoMessage = await ChatUser.findOne({
         wallet_address: messageEmit.sender_user.wallet_address,
       });
       if (!userInfoMessage) return null;

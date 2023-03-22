@@ -1,7 +1,7 @@
 import { ChatConstant, logger } from '@constants';
 // import { GetContractNFTsResponseAdapter } from '@moralisweb3/common-evm-utils';
 import { ChatMarketContract, Singleton, stickerContract } from '@providers';
-import { Authorized, ISticker, Sticker } from '@chat-schemas';
+import { Authorized, ISticker, Sticker } from '@schemas';
 import axios from 'axios';
 class StickerService {
   private userService = Singleton.getChatUserInstance();

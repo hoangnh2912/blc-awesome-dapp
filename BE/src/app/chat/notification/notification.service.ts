@@ -1,4 +1,4 @@
-import { INotification, Notification } from '@chat-schemas';
+import { INotification, Notification } from '@schemas';
 import { ChatConstant, logger } from '@constants';
 export class NotificationService {
   public async getList(address: string, page: number, numberPerPage: number, type: string = '') {

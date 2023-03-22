@@ -1,8 +1,8 @@
 import mongoose, { Schema } from 'mongoose';
 import { ChatConstant } from '@constants';
-import { ISticker, IUser } from '.';
+import { ISticker, IChatUser } from '.';
 
-export type IUserMessage = Pick<IUser, 'wallet_address'>;
+export type IUserMessage = Pick<IChatUser, 'wallet_address'>;
 export type IStickerMessage = Pick<ISticker, 'id_token' | 'name'> & {
   image: string;
 };

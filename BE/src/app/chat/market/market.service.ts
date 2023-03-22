@@ -1,9 +1,9 @@
 // import { Constant } from '@constants';
 import { ChatMarketContract } from '@providers';
-import { Buy, IMarket, IStickerPriceType, Market, Token } from '@chat-schemas';
+import { Buy, IChatMarket, IStickerPriceType, ChatMarket, Token } from '@schemas';
 class MarketService {
-  public async getMarkets(address: string): Promise<IMarket[]> {
-    const marketList = await Market.find({
+  public async getMarkets(address: string): Promise<IChatMarket[]> {
+    const marketList = await ChatMarket.find({
       $or: [
         {
           whitelist: {
@@ -42,13 +42,13 @@ class MarketService {
       image: string;
     },
     amount: string,
-  ): Promise<IMarket | null> {
+  ): Promise<IChatMarket | null> {
     try {
       const stickerCID = await ChatMarketContract.methods.stickerURI(stickerId).call();
 
       const amount_left = await ChatMarketContract.methods.stickerLeft(stickerId).call();
 
-      const updated = await Market.findOneAndUpdate(
+      const updated = await ChatMarket.findOneAndUpdate(
         {
           id_token: stickerId,
         },
@@ -78,9 +78,9 @@ class MarketService {
   public async setWhitelistSticker(
     stickerId: string,
     whitelist: string[],
-  ): Promise<IMarket | null> {
+  ): Promise<IChatMarket | null> {
     try {
-      const updated = await Market.findOneAndUpdate(
+      const updated = await ChatMarket.findOneAndUpdate(
         {
           id_token: stickerId,
         },
@@ -103,7 +103,7 @@ class MarketService {
     stickerId: string,
     buyer: string,
     txHash: string,
-  ): Promise<IMarket | null> {
+  ): Promise<IChatMarket | null> {
     try {
       await Buy.create({
         id_token: stickerId,
@@ -113,7 +113,7 @@ class MarketService {
 
       const amount_left = await ChatMarketContract.methods.stickerLeft(stickerId).call();
 
-      const updated = await Market.findOneAndUpdate(
+      const updated = await ChatMarket.findOneAndUpdate(
         {
           id_token: stickerId,
         },

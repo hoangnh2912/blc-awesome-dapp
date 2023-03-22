@@ -14,7 +14,7 @@ import {
 } from 'tsoa';
 import { Constant, logger, onError, onSuccess, OptionResponse } from '@constants';
 import { Singleton } from '@providers';
-import { INotification } from '@chat-schemas';
+import { INotification } from '@schemas';
 
 const { NETWORK_STATUS_CODE, NETWORK_STATUS_MESSAGE } = Constant;
 @Tags('Notification')

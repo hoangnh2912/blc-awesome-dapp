@@ -2,8 +2,8 @@ import { createServer } from 'http';
 // import { NextFunction } from "express";
 import { Singleton, web3 } from '@providers';
 import { Server } from 'socket.io';
-import { logger, Constant } from '@constants';
-import { IMessage, IReaction, INotification, Session, IRoom, Authorized } from '@chat-schemas';
+import { logger, ChatConstant } from '@constants';
+import { IMessage, IReaction, INotification, ChatSession, IRoom, Authorized } from '@schemas';
 import { Types } from 'mongoose';
 import { createECDH } from 'crypto';
 import { ethers } from 'ethers';
@@ -26,7 +26,7 @@ const io = new Server(socketServer, {
 
 io.use(async (socket, next) => {
   const roomService = Singleton.getRoomInstance();
-  const usersService = Singleton.getUserInstance();
+  const usersService = Singleton.getChatUserInstance();
 
   const authorize = socket.handshake.auth.authorize;
   const apiKey = socket.handshake.auth['api_key'];
@@ -74,7 +74,7 @@ io.use(async (socket, next) => {
         listRooms.map((room: any) =>
           Promise.all([
             socket.join(room._id.toString()),
-            socket.to(room._id.toString()).emit(Constant.SOCKET_EVENT_NAME.userConnected, user),
+            socket.to(room._id.toString()).emit(ChatConstant.SOCKET_EVENT_NAME.userConnected, user),
             roomService.receiveMessageWhenOnline(address, room._id.toString()),
           ]),
         ),
@@ -88,7 +88,7 @@ io.use(async (socket, next) => {
 });
 
 io.on('connection', async socket => {
-  const usersService = Singleton.getUserInstance();
+  const usersService = Singleton.getChatUserInstance();
 
   socket.on('disconnect', async () => {
     const matchingSocket = await io.in(socket.id).fetchSockets();
@@ -96,40 +96,40 @@ io.on('connection', async socket => {
     const isDisconnected = matchingSocket.length === 0;
 
     if (isDisconnected) {
-      socket.broadcast.emit(Constant.SOCKET_EVENT_NAME.userDisconnected, socket.id);
+      socket.broadcast.emit(ChatConstant.SOCKET_EVENT_NAME.userDisconnected, socket.id);
       await usersService.removeSessionId(socket.id);
     }
   });
 });
 
-const balanceUpdate = (addresses: Session[], data: string) => {
+const balanceUpdate = (addresses: ChatSession[], data: string) => {
   addresses.forEach(address => {
-    io.to(address.session_id).emit(Constant.SOCKET_EVENT_NAME.balanceUpdate, data);
+    io.to(address.session_id).emit(ChatConstant.SOCKET_EVENT_NAME.balanceUpdate, data);
   });
 };
 
 const emitNewNotification = (
-  addresses: (Session | undefined)[],
+  addresses: (ChatSession | undefined)[],
   data?: (INotification & { _id: Types.ObjectId }) | undefined,
 ) => {
   addresses.forEach(address => {
-    if (address) io.to(address.session_id).emit(Constant.SOCKET_EVENT_NAME.notification, data);
+    if (address) io.to(address.session_id).emit(ChatConstant.SOCKET_EVENT_NAME.notification, data);
   });
 };
 
 const emitCreateRoom = async (
-  addresses: (Session | undefined)[],
+  addresses: (ChatSession | undefined)[],
   data: (IRoom & { _id: Types.ObjectId }) | undefined,
 ) => {
   switch (data?.room_type) {
-    case Constant.ROOM_TYPE.LIMITED:
+    case ChatConstant.ROOM_TYPE.LIMITED:
       if (data.shared_key) {
         const messageService = Singleton.getMessageInstance();
         const dmtp = createECDH('secp256k1');
         for (const address of addresses) {
           if (address) {
-            dmtp.setPrivateKey(Buffer.from(Constant.DMTP_KEY_PAIR.dmtp_priv_key, 'hex'));
-            const userPubkey = await Singleton.getUserInstance().getPublicKey(address.address);
+            dmtp.setPrivateKey(Buffer.from(ChatConstant.KEY_PAIR.dmtp_priv_key, 'hex'));
+            const userPubkey = await Singleton.getChatUserInstance().getPublicKey(address.address);
             const secretKey = dmtp.computeSecret(Buffer.from(userPubkey, 'hex'));
             data.shared_key = messageService.encryptMessage(
               data.shared_key,
@@ -138,23 +138,25 @@ const emitCreateRoom = async (
           }
         }
       }
-      io.emit(Constant.SOCKET_EVENT_NAME.groupCreated, data);
+      io.emit(ChatConstant.SOCKET_EVENT_NAME.groupCreated, data);
       break;
-    case Constant.ROOM_TYPE.UNLIMITED:
-      io.emit(Constant.SOCKET_EVENT_NAME.groupCreated, data);
+    case ChatConstant.ROOM_TYPE.UNLIMITED:
+      io.emit(ChatConstant.SOCKET_EVENT_NAME.groupCreated, data);
       break;
     default:
       addresses.forEach(address => {
-        if (address) io.to(address.session_id).emit(Constant.SOCKET_EVENT_NAME.roomCreate, data);
-        if (address) io.to(address.session_id).emit(Constant.SOCKET_EVENT_NAME.groupCreated, data);
+        if (address)
+          io.to(address.session_id).emit(ChatConstant.SOCKET_EVENT_NAME.roomCreate, data);
+        if (address)
+          io.to(address.session_id).emit(ChatConstant.SOCKET_EVENT_NAME.groupCreated, data);
       });
       break;
   }
 };
 
-const emitAcceptFriend = (addresses: (Session | undefined)[], data: any | undefined) => {
+const emitAcceptFriend = (addresses: (ChatSession | undefined)[], data: any | undefined) => {
   addresses.forEach(address => {
-    if (address) io.to(address.session_id).emit(Constant.SOCKET_EVENT_NAME.friendAccept, data);
+    if (address) io.to(address.session_id).emit(ChatConstant.SOCKET_EVENT_NAME.friendAccept, data);
   });
 };
 
@@ -179,8 +181,8 @@ const emitMessageV2 = async (message: IMessage & { _id: Types.ObjectId }) => {
     const sessions = await roomService.getSessionOfRoom(message.room_id);
     sessions.map(session => {
       io.to(session.session_id)
-        .timeout(Constant.SOCKET_RESPONSE_TIMEOUT)
-        .emit(Constant.SOCKET_EVENT_NAME.messageSent, message);
+        .timeout(ChatConstant.SOCKET_RESPONSE_TIMEOUT)
+        .emit(ChatConstant.SOCKET_EVENT_NAME.messageSent, message);
     });
   } catch (error) {
     throw error;
@@ -197,8 +199,8 @@ const emitMessageStatus = async (
     const sessions = await roomService.getSessionOfRoom(room_id);
     sessions.map(session => {
       io.to(session.session_id)
-        .timeout(Constant.SOCKET_RESPONSE_TIMEOUT)
-        .emit(Constant.SOCKET_EVENT_NAME.messageStatus, message);
+        .timeout(ChatConstant.SOCKET_RESPONSE_TIMEOUT)
+        .emit(ChatConstant.SOCKET_EVENT_NAME.messageStatus, message);
     });
   } catch (error) {
     throw error;
@@ -206,15 +208,18 @@ const emitMessageStatus = async (
 };
 
 const emitTotalUnread = async (address: string) => {
-  const userService = Singleton.getUserInstance();
+  const userService = Singleton.getChatUserInstance();
   const userSessionQuery = await userService.get(address);
   const userSession = userSessionQuery?.session;
   if (userSession) {
     const totalUnread = await userService.getTotalUnread(address);
     if (totalUnread) {
       userSession.map((session: any) => {
-        io.to(session.session_id).emit(Constant.SOCKET_EVENT_NAME.totalUnreadCount, totalUnread);
-        io.to(session.session_id).emit(Constant.SOCKET_EVENT_NAME.notification, undefined);
+        io.to(session.session_id).emit(
+          ChatConstant.SOCKET_EVENT_NAME.totalUnreadCount,
+          totalUnread,
+        );
+        io.to(session.session_id).emit(ChatConstant.SOCKET_EVENT_NAME.notification, undefined);
       });
     }
   }
@@ -225,7 +230,7 @@ const emitUpdateMessageV2 = async (message: IMessage & { _id: Types.ObjectId }) 
     const roomService = Singleton.getRoomInstance();
     const sessions = await roomService.getSessionOfRoom(message.room_id);
     sessions.forEach(session => {
-      io.to(session.session_id).emit(Constant.SOCKET_EVENT_NAME.messageUpdated, message);
+      io.to(session.session_id).emit(ChatConstant.SOCKET_EVENT_NAME.messageUpdated, message);
     });
   } catch (error) {
     throw error;
@@ -234,7 +239,7 @@ const emitUpdateMessageV2 = async (message: IMessage & { _id: Types.ObjectId }) 
 
 const emitDeleteMessage = (message: IMessage & { _id: Types.ObjectId }, lastMessage: string) => {
   try {
-    io.to(message.room_id).emit(Constant.SOCKET_EVENT_NAME.messageDeleted, {
+    io.to(message.room_id).emit(ChatConstant.SOCKET_EVENT_NAME.messageDeleted, {
       message_id: message._id,
       lastMessage,
     });
@@ -245,7 +250,7 @@ const emitDeleteMessage = (message: IMessage & { _id: Types.ObjectId }, lastMess
 
 const emitJoinRoom = (room_id: string, address: string) => {
   try {
-    io.to(room_id).emit(Constant.SOCKET_EVENT_NAME.userJoined, { address });
+    io.to(room_id).emit(ChatConstant.SOCKET_EVENT_NAME.userJoined, { address });
   } catch (error: any) {
     logger.error(error.message);
   }
@@ -255,7 +260,7 @@ const emitLeaveRoom = async (
   senderAddress: string,
   room_id: string,
   address: string,
-  sessions: Session[],
+  sessions: ChatSession[],
   shared_key: string | null,
 ) => {
   try {
@@ -269,20 +274,20 @@ const emitLeaveRoom = async (
             address,
           };
           if (session.address != address) {
-            dmtp.setPrivateKey(Buffer.from(Constant.DMTP_KEY_PAIR.dmtp_priv_key, 'hex'));
-            const userPubkey = await Singleton.getUserInstance().getPublicKey(session.address);
+            dmtp.setPrivateKey(Buffer.from(ChatConstant.KEY_PAIR.dmtp_priv_key, 'hex'));
+            const userPubkey = await Singleton.getChatUserInstance().getPublicKey(session.address);
             const secretKey = dmtp.computeSecret(Buffer.from(userPubkey, 'hex'));
             obj['shared_key'] = Singleton.getMessageInstance().encryptMessage(
               shared_key,
               secretKey.toString('hex'),
             );
           }
-          io.to(session.session_id).emit(Constant.SOCKET_EVENT_NAME.userLeave, obj);
+          io.to(session.session_id).emit(ChatConstant.SOCKET_EVENT_NAME.userLeave, obj);
         }),
       );
     } else {
       sessions.map(session => {
-        io.to(session.session_id).emit(Constant.SOCKET_EVENT_NAME.userLeave, {
+        io.to(session.session_id).emit(ChatConstant.SOCKET_EVENT_NAME.userLeave, {
           senderAddress,
           room_id,
           address,
@@ -296,7 +301,7 @@ const emitLeaveRoom = async (
 
 const emitSetRole = (room_id: string, address: string, role: string) => {
   try {
-    io.to(room_id).emit(Constant.SOCKET_EVENT_NAME.userRole, {
+    io.to(room_id).emit(ChatConstant.SOCKET_EVENT_NAME.userRole, {
       address,
       role,
     });
@@ -307,7 +312,7 @@ const emitSetRole = (room_id: string, address: string, role: string) => {
 
 const emitUpdateRoom = (room_id: string, name: string, avatar: string, description: string) => {
   try {
-    io.to(room_id).emit(Constant.SOCKET_EVENT_NAME.roomUpdated, {
+    io.to(room_id).emit(ChatConstant.SOCKET_EVENT_NAME.roomUpdated, {
       name,
       avatar,
       description,
@@ -317,10 +322,10 @@ const emitUpdateRoom = (room_id: string, name: string, avatar: string, descripti
   }
 };
 
-const emitFriendRequest = (sessions: Session[], from: string) => {
+const emitFriendRequest = (sessions: ChatSession[], from: string) => {
   try {
     sessions.forEach(session => {
-      io.to(session.session_id).emit(Constant.SOCKET_EVENT_NAME.friendRequest, from);
+      io.to(session.session_id).emit(ChatConstant.SOCKET_EVENT_NAME.friendRequest, from);
     });
   } catch (error) {
     throw error;
@@ -328,7 +333,7 @@ const emitFriendRequest = (sessions: Session[], from: string) => {
 };
 
 const emitSNS = (
-  sessions: Session[],
+  sessions: ChatSession[],
   payload: {
     telegram: string | undefined;
     discord: string | undefined;
@@ -336,27 +341,27 @@ const emitSNS = (
 ) => {
   try {
     sessions.forEach(session => {
-      io.to(session.session_id).emit(Constant.SOCKET_EVENT_NAME.sns, payload);
+      io.to(session.session_id).emit(ChatConstant.SOCKET_EVENT_NAME.sns, payload);
     });
   } catch (error) {
     throw error;
   }
 };
 
-const emitDeleteFriendRequest = (sessions: Session[], from: string) => {
+const emitDeleteFriendRequest = (sessions: ChatSession[], from: string) => {
   try {
     sessions.forEach(session => {
-      io.to(session.session_id).emit(Constant.SOCKET_EVENT_NAME.friendRequestDeleted, from);
+      io.to(session.session_id).emit(ChatConstant.SOCKET_EVENT_NAME.friendRequestDeleted, from);
     });
   } catch (error) {
     throw error;
   }
 };
 
-const emitUnFriend = (sessions: Session[], addresses: string[]) => {
+const emitUnFriend = (sessions: ChatSession[], addresses: string[]) => {
   try {
     sessions.forEach(session => {
-      io.to(session.session_id).emit(Constant.SOCKET_EVENT_NAME.unfriend, addresses);
+      io.to(session.session_id).emit(ChatConstant.SOCKET_EVENT_NAME.unfriend, addresses);
     });
   } catch (error) {
     throw error;
@@ -365,7 +370,7 @@ const emitUnFriend = (sessions: Session[], addresses: string[]) => {
 
 const emitAddReaction = (message: IMessage & { _id: Types.ObjectId }, reaction: IReaction) => {
   try {
-    io.to(message.room_id).emit(Constant.SOCKET_EVENT_NAME.reactionAdded, {
+    io.to(message.room_id).emit(ChatConstant.SOCKET_EVENT_NAME.reactionAdded, {
       message_id: message._id,
       reaction,
     });
@@ -376,7 +381,7 @@ const emitAddReaction = (message: IMessage & { _id: Types.ObjectId }, reaction: 
 
 const emitRemoveReaction = (message: IMessage & { _id: Types.ObjectId }, reaction: IReaction) => {
   try {
-    io.to(message.room_id).emit(Constant.SOCKET_EVENT_NAME.reactionRemoved, {
+    io.to(message.room_id).emit(ChatConstant.SOCKET_EVENT_NAME.reactionRemoved, {
       message_id: message._id,
       reaction,
     });
@@ -387,11 +392,11 @@ const emitRemoveReaction = (message: IMessage & { _id: Types.ObjectId }, reactio
 
 const checkActiveSession = async (session_id: string) => {
   try {
-    const userService = Singleton.getUserInstance();
+    const userService = Singleton.getChatUserInstance();
 
     const status = io
       .to(session_id)
-      .timeout(Constant.SOCKET_RESPONSE_TIMEOUT)
+      .timeout(ChatConstant.SOCKET_RESPONSE_TIMEOUT)
       .emit('session check', async (err: any, res: any) => {
         if (!err && res.length != 0) {
           return true;
