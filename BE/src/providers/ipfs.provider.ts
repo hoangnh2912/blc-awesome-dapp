@@ -63,7 +63,7 @@ const uploadFolder = async (contents: Buffer[]): Promise<any> => {
 };
 
 const readCID = async (cid: string) => {
-  const data = await AxiosGet(`${process.env.IPFS_GATEWAY_URI}${cid.replace('ipfs://', '')}`);
+  const data = await AxiosGet(`${cid}`);
   return data.data;
 };
 

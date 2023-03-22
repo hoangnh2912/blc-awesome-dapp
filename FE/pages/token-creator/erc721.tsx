@@ -14,6 +14,7 @@ import {
 import { useSDK } from "@thirdweb-dev/react";
 import { useEffect, useMemo, useState } from "react";
 import { IoIosSettings } from "react-icons/io";
+import LinkScan from "../../components/link-scan";
 import { useModalTransaction } from "../../components/modal-transaction";
 import ApiServices from "../../services/api";
 import { deployContract } from "../../services/thirdweb";
@@ -69,13 +70,7 @@ const Erc721 = () => {
             {
               title: "Transaction Hash",
               value: (
-                <a
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href={`https://goerli.etherscan.io/tx/${contractDeployed.transactionHash}`}
-                >
-                  {contractDeployed.transactionHash}
-                </a>
+                <LinkScan transactionHash={contractDeployed.transactionHash} />
               ),
             },
             {
@@ -92,26 +87,12 @@ const Erc721 = () => {
             {
               title: "Transaction Hash",
               value: (
-                <a
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href={`https://goerli.etherscan.io/tx/${contractDeployed.transactionHash}`}
-                >
-                  {contractDeployed.transactionHash}
-                </a>
+                <LinkScan transactionHash={contractDeployed.transactionHash} />
               ),
             },
             {
               title: "Contract Address",
-              value: (
-                <a
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href={`https://goerli.etherscan.io/address/${contractAddress}`}
-                >
-                  {contractAddress}
-                </a>
-              ),
+              value: <LinkScan transactionHash={contractAddress} />,
             },
           ],
           txState: "success",

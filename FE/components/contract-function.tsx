@@ -2,6 +2,7 @@ import { Box, Button, Input, Stack, Text, useToast } from "@chakra-ui/react";
 import { SmartContract } from "@thirdweb-dev/sdk";
 import { BaseContract } from "ethers";
 import { AbiItem } from "web3-utils";
+import LinkScan from "./link-scan";
 import { useModalTransaction } from "./modal-transaction";
 
 const ContractFunctionComponent = ({
@@ -60,13 +61,9 @@ const ContractFunctionComponent = ({
                         {
                           title: "Transaction Hash",
                           value: (
-                            <a
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              href={`https://mumbai.polygonscan.com/tx/${res.receipt.transactionHash}`}
-                            >
-                              {res.receipt.transactionHash}
-                            </a>
+                            <LinkScan
+                              transactionHash={res.receipt.transactionHash}
+                            />
                           ),
                         },
                       ],

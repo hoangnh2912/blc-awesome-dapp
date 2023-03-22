@@ -11,17 +11,28 @@ async function main() {
   const contractInteractInstance = await contractFactory.attach(
     abiMusic.MusicMarket.address
   );
-  for (let i = 0; i < musicData.length; i++) {
-    const music = musicData[i];
 
-    await contractInteractInstance.listSong(
-      music.id,
-      music.price,
-      music.amount,
-      music.uri
+  const chunkSize = 50;
+  for (let i = 0; i < musicData.length; i += chunkSize) {
+    const chunk = musicData.slice(i, i + chunkSize);
+    await contractInteractInstance.listSongs(
+      chunk.map((item) => item.id),
+      chunk.map((item) => item.price),
+      chunk.map((item) => item.amount),
+      chunk.map((item) => item.uri)
     );
-    console.log("Listed song", music.id);
+    console.log("Listed song", chunk.length);
   }
+
+  // for (let i = 0; i < musicData.length; i++) {
+  //   await contractInteractInstance.listSongs(
+  //     [musicData[i].id],
+  //     [musicData[i].price],
+  //     [musicData[i].amount],
+  //     [musicData[i].uri]
+  //   );
+  //   console.log("Listed song", i + 1);
+  // }
 }
 
 main()

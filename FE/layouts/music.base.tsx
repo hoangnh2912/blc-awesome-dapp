@@ -61,7 +61,11 @@ const MusicBaseLayout = ({
             ? `${currentSongState.name} - ${currentSongState.singer}`
             : "Music Protocol"}
         </title>
-        <link rel="shortcut icon" href="/favicon.ico" />
+
+        <link
+          rel="shortcut icon"
+          href={currentSongState ? `${currentSongState.image}` : "/favicon.ico"}
+        />
         <meta name="description" content="Music" />
         <meta property="og:url" content="http://scimta.com" />
         <meta property="og:type" content="website" />

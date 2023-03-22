@@ -13,6 +13,7 @@ import { useAddress, useSDK } from "@thirdweb-dev/react";
 import _ from "lodash";
 import type { NextPage } from "next";
 import { useEffect, useState } from "react";
+import LinkScan from "../components/link-scan";
 import { useModalTransaction } from "../components/modal-transaction";
 import { ABI_STEAL_ADDRESS } from "../constants/abi";
 import BaseLayout from "../layouts/base";
@@ -145,15 +146,7 @@ const StealAddress: NextPage = () => {
           content: [
             {
               title: "Transaction Hash",
-              value: (
-                <a
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href={`https://mumbai.polygonscan.com/tx/${res.receipt.transactionHash}`}
-                >
-                  {res.receipt.transactionHash}
-                </a>
-              ),
+              value: <LinkScan transactionHash={res.receipt.transactionHash} />,
             },
           ],
           txState: "success",

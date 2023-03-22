@@ -16,7 +16,7 @@ const onJobGetDataFromSmartContract = async () => {
 
     if (!last_block_number) {
       await Synchronize.create({
-        last_block_number: process.env.CONTRACT_DEPLOY_BLOCK,
+        last_block_number: 33395644,
       });
       return;
     }

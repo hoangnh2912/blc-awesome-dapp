@@ -1,29 +1,14 @@
 export const ABI_MUSIC = {
   MUC: {
-    address: '0x552092B922144030421C6ECaaa9EC7B92B31b9fF',
+    address: '0x4b137a387D2b4734013D6F78B4bC01aa25BD48bf',
     abi: [
       { inputs: [], stateMutability: 'nonpayable', type: 'constructor' },
       {
         anonymous: false,
         inputs: [
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'owner',
-            type: 'address',
-          },
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'spender',
-            type: 'address',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'value',
-            type: 'uint256',
-          },
+          { indexed: true, internalType: 'address', name: 'owner', type: 'address' },
+          { indexed: true, internalType: 'address', name: 'spender', type: 'address' },
+          { indexed: false, internalType: 'uint256', name: 'value', type: 'uint256' },
         ],
         name: 'Approval',
         type: 'event',
@@ -31,24 +16,9 @@ export const ABI_MUSIC = {
       {
         anonymous: false,
         inputs: [
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'from',
-            type: 'address',
-          },
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'to',
-            type: 'address',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'value',
-            type: 'uint256',
-          },
+          { indexed: true, internalType: 'address', name: 'from', type: 'address' },
+          { indexed: true, internalType: 'address', name: 'to', type: 'address' },
+          { indexed: false, internalType: 'uint256', name: 'value', type: 'uint256' },
         ],
         name: 'Transfer',
         type: 'event',
@@ -178,43 +148,22 @@ export const ABI_MUSIC = {
         stateMutability: 'nonpayable',
         type: 'function',
       },
-      {
-        inputs: [],
-        name: 'faucet',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-      },
+      { inputs: [], name: 'faucet', outputs: [], stateMutability: 'nonpayable', type: 'function' },
     ],
     contractName: 'MUC',
     input: [],
     path: 'music',
   },
   Music: {
-    address: '0xaD51523D62b0AD26280c2B3F6721f4E888B44A6C',
+    address: '0x3d37f86Cc018DD42112fc952B9866adE2aABfcaC',
     abi: [
       { inputs: [], stateMutability: 'nonpayable', type: 'constructor' },
       {
         anonymous: false,
         inputs: [
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'account',
-            type: 'address',
-          },
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'operator',
-            type: 'address',
-          },
-          {
-            indexed: false,
-            internalType: 'bool',
-            name: 'approved',
-            type: 'bool',
-          },
+          { indexed: true, internalType: 'address', name: 'account', type: 'address' },
+          { indexed: true, internalType: 'address', name: 'operator', type: 'address' },
+          { indexed: false, internalType: 'bool', name: 'approved', type: 'bool' },
         ],
         name: 'ApprovalForAll',
         type: 'event',
@@ -222,24 +171,9 @@ export const ABI_MUSIC = {
       {
         anonymous: false,
         inputs: [
-          {
-            indexed: true,
-            internalType: 'bytes32',
-            name: 'role',
-            type: 'bytes32',
-          },
-          {
-            indexed: true,
-            internalType: 'bytes32',
-            name: 'previousAdminRole',
-            type: 'bytes32',
-          },
-          {
-            indexed: true,
-            internalType: 'bytes32',
-            name: 'newAdminRole',
-            type: 'bytes32',
-          },
+          { indexed: true, internalType: 'bytes32', name: 'role', type: 'bytes32' },
+          { indexed: true, internalType: 'bytes32', name: 'previousAdminRole', type: 'bytes32' },
+          { indexed: true, internalType: 'bytes32', name: 'newAdminRole', type: 'bytes32' },
         ],
         name: 'RoleAdminChanged',
         type: 'event',
@@ -247,24 +181,9 @@ export const ABI_MUSIC = {
       {
         anonymous: false,
         inputs: [
-          {
-            indexed: true,
-            internalType: 'bytes32',
-            name: 'role',
-            type: 'bytes32',
-          },
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'account',
-            type: 'address',
-          },
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'sender',
-            type: 'address',
-          },
+          { indexed: true, internalType: 'bytes32', name: 'role', type: 'bytes32' },
+          { indexed: true, internalType: 'address', name: 'account', type: 'address' },
+          { indexed: true, internalType: 'address', name: 'sender', type: 'address' },
         ],
         name: 'RoleGranted',
         type: 'event',
@@ -272,24 +191,9 @@ export const ABI_MUSIC = {
       {
         anonymous: false,
         inputs: [
-          {
-            indexed: true,
-            internalType: 'bytes32',
-            name: 'role',
-            type: 'bytes32',
-          },
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'account',
-            type: 'address',
-          },
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'sender',
-            type: 'address',
-          },
+          { indexed: true, internalType: 'bytes32', name: 'role', type: 'bytes32' },
+          { indexed: true, internalType: 'address', name: 'account', type: 'address' },
+          { indexed: true, internalType: 'address', name: 'sender', type: 'address' },
         ],
         name: 'RoleRevoked',
         type: 'event',
@@ -297,36 +201,11 @@ export const ABI_MUSIC = {
       {
         anonymous: false,
         inputs: [
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'operator',
-            type: 'address',
-          },
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'from',
-            type: 'address',
-          },
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'to',
-            type: 'address',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256[]',
-            name: 'ids',
-            type: 'uint256[]',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256[]',
-            name: 'values',
-            type: 'uint256[]',
-          },
+          { indexed: true, internalType: 'address', name: 'operator', type: 'address' },
+          { indexed: true, internalType: 'address', name: 'from', type: 'address' },
+          { indexed: true, internalType: 'address', name: 'to', type: 'address' },
+          { indexed: false, internalType: 'uint256[]', name: 'ids', type: 'uint256[]' },
+          { indexed: false, internalType: 'uint256[]', name: 'values', type: 'uint256[]' },
         ],
         name: 'TransferBatch',
         type: 'event',
@@ -334,36 +213,11 @@ export const ABI_MUSIC = {
       {
         anonymous: false,
         inputs: [
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'operator',
-            type: 'address',
-          },
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'from',
-            type: 'address',
-          },
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'to',
-            type: 'address',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'id',
-            type: 'uint256',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'value',
-            type: 'uint256',
-          },
+          { indexed: true, internalType: 'address', name: 'operator', type: 'address' },
+          { indexed: true, internalType: 'address', name: 'from', type: 'address' },
+          { indexed: true, internalType: 'address', name: 'to', type: 'address' },
+          { indexed: false, internalType: 'uint256', name: 'id', type: 'uint256' },
+          { indexed: false, internalType: 'uint256', name: 'value', type: 'uint256' },
         ],
         name: 'TransferSingle',
         type: 'event',
@@ -371,18 +225,8 @@ export const ABI_MUSIC = {
       {
         anonymous: false,
         inputs: [
-          {
-            indexed: false,
-            internalType: 'string',
-            name: 'value',
-            type: 'string',
-          },
-          {
-            indexed: true,
-            internalType: 'uint256',
-            name: 'id',
-            type: 'uint256',
-          },
+          { indexed: false, internalType: 'string', name: 'value', type: 'string' },
+          { indexed: true, internalType: 'uint256', name: 'id', type: 'uint256' },
         ],
         name: 'URI',
         type: 'event',
@@ -546,6 +390,20 @@ export const ABI_MUSIC = {
         type: 'function',
       },
       {
+        inputs: [],
+        name: 'name',
+        outputs: [{ internalType: 'string', name: '', type: 'string' }],
+        stateMutability: 'pure',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'symbol',
+        outputs: [{ internalType: 'string', name: '', type: 'string' }],
+        stateMutability: 'pure',
+        type: 'function',
+      },
+      {
         inputs: [{ internalType: 'bytes4', name: 'interfaceId', type: 'bytes4' }],
         name: 'supportsInterface',
         outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
@@ -558,28 +416,18 @@ export const ABI_MUSIC = {
     path: 'music',
   },
   MusicMarket: {
-    address: '0x8C4cE4fB850A201FD6b9df0D1f96D7459d9e7873',
+    address: '0x5F0Bf78E618702aB00d2503ee792fDa2d28Fd143',
     abi: [
       {
-        inputs: [{ internalType: 'contract IERC20', name: 'muc', type: 'address' }],
+        inputs: [{ internalType: 'contract IMuc', name: 'muc', type: 'address' }],
         stateMutability: 'nonpayable',
         type: 'constructor',
       },
       {
         anonymous: false,
         inputs: [
-          {
-            indexed: true,
-            internalType: 'uint256',
-            name: 'id',
-            type: 'uint256',
-          },
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'buyer',
-            type: 'address',
-          },
+          { indexed: true, internalType: 'uint256', name: 'id', type: 'uint256' },
+          { indexed: true, internalType: 'address', name: 'buyer', type: 'address' },
         ],
         name: 'BuySong',
         type: 'event',
@@ -587,36 +435,11 @@ export const ABI_MUSIC = {
       {
         anonymous: false,
         inputs: [
-          {
-            indexed: true,
-            internalType: 'uint256',
-            name: 'id',
-            type: 'uint256',
-          },
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'seller',
-            type: 'address',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'price',
-            type: 'uint256',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'amount',
-            type: 'uint256',
-          },
-          {
-            indexed: false,
-            internalType: 'string',
-            name: 'uri',
-            type: 'string',
-          },
+          { indexed: true, internalType: 'uint256', name: 'id', type: 'uint256' },
+          { indexed: true, internalType: 'address', name: 'seller', type: 'address' },
+          { indexed: false, internalType: 'uint256', name: 'price', type: 'uint256' },
+          { indexed: false, internalType: 'uint256', name: 'amount', type: 'uint256' },
+          { indexed: false, internalType: 'string', name: 'uri', type: 'string' },
         ],
         name: 'ListSong',
         type: 'event',
@@ -624,20 +447,22 @@ export const ABI_MUSIC = {
       {
         anonymous: false,
         inputs: [
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'previousOwner',
-            type: 'address',
-          },
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'newOwner',
-            type: 'address',
-          },
+          { indexed: true, internalType: 'address', name: 'previousOwner', type: 'address' },
+          { indexed: true, internalType: 'address', name: 'newOwner', type: 'address' },
         ],
         name: 'OwnershipTransferred',
+        type: 'event',
+      },
+      {
+        anonymous: false,
+        inputs: [{ indexed: true, internalType: 'uint256', name: 'id', type: 'uint256' }],
+        name: 'PauseListSong',
+        type: 'event',
+      },
+      {
+        anonymous: false,
+        inputs: [{ indexed: true, internalType: 'uint256', name: 'id', type: 'uint256' }],
+        name: 'UnpauseListSong',
         type: 'event',
       },
       {
@@ -679,6 +504,7 @@ export const ABI_MUSIC = {
               { internalType: 'uint256', name: 'amount', type: 'uint256' },
               { internalType: 'string', name: 'uri', type: 'string' },
               { internalType: 'address', name: 'seller', type: 'address' },
+              { internalType: 'bool', name: 'paused', type: 'bool' },
             ],
             internalType: 'struct IMusicMarket.Song',
             name: '',
@@ -702,157 +528,54 @@ export const ABI_MUSIC = {
       },
       {
         inputs: [
+          { internalType: 'uint256[]', name: 'id', type: 'uint256[]' },
+          { internalType: 'uint256[]', name: 'price', type: 'uint256[]' },
+          { internalType: 'uint256[]', name: 'amount', type: 'uint256[]' },
+          { internalType: 'string[]', name: 'uri', type: 'string[]' },
+        ],
+        name: 'listSongs',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [
           { internalType: 'contract IMusic', name: 'token', type: 'address' },
           { internalType: 'uint256', name: 'id', type: 'uint256' },
+          { internalType: 'uint256', name: 'deadline', type: 'uint256' },
+          { internalType: 'uint8', name: 'v', type: 'uint8' },
+          { internalType: 'bytes32', name: 'r', type: 'bytes32' },
+          { internalType: 'bytes32', name: 's', type: 'bytes32' },
         ],
         name: 'buySong',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
       },
+      {
+        inputs: [{ internalType: 'uint256', name: 'id', type: 'uint256' }],
+        name: 'pauseListSong',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [{ internalType: 'uint256', name: 'id', type: 'uint256' }],
+        name: 'unpauseListSong',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'withdraw',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
     ],
     contractName: 'MusicMarket',
-    input: ['0x552092B922144030421C6ECaaa9EC7B92B31b9fF'],
+    input: ['0x4b137a387D2b4734013D6F78B4bC01aa25BD48bf'],
     path: 'music',
-  },
-  ChatMarket: {
-    address: '',
-    abi: [],
-    contractName: 'ChatMarket',
-    input: [],
-    path: 'chat',
-  },
-};
-
-export const ABI_CHAT = {
-  ChatMarket: {
-    address: '',
-    abi: [],
-    contractName: 'ChatMarket',
-    input: [],
-    path: 'chat',
-  },
-  Sticker: {
-    address: '',
-    abi: [],
-    contractName: 'ChatMarket',
-    input: [],
-    path: 'chat',
-  },
-  CID: {
-    address: '0xBbE87a8Bb35Cb3642Be7c663c5e75Fba8aBa10bF',
-    abi: [
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: false,
-            internalType: 'string',
-            name: 'cid',
-            type: 'string',
-          },
-        ],
-        name: 'AddCid',
-        type: 'event',
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'wallet',
-            type: 'address',
-          },
-          {
-            indexed: false,
-            internalType: 'string',
-            name: 'cid',
-            type: 'string',
-          },
-        ],
-        name: 'AddKey',
-        type: 'event',
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'previousOwner',
-            type: 'address',
-          },
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'newOwner',
-            type: 'address',
-          },
-        ],
-        name: 'OwnershipTransferred',
-        type: 'event',
-      },
-      {
-        inputs: [],
-        name: 'owner',
-        outputs: [{ internalType: 'address', name: '', type: 'address' }],
-        stateMutability: 'view',
-        type: 'function',
-      },
-      {
-        inputs: [],
-        name: 'renounceOwnership',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-      },
-      {
-        inputs: [{ internalType: 'address', name: 'newOwner', type: 'address' }],
-        name: 'transferOwnership',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-      },
-      {
-        inputs: [
-          { internalType: 'address', name: '_user', type: 'address' },
-          { internalType: 'string', name: '_cid', type: 'string' },
-        ],
-        name: 'addKey',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-      },
-      {
-        inputs: [{ internalType: 'string', name: '_cid', type: 'string' }],
-        name: 'storeCID',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-      },
-      {
-        inputs: [{ internalType: 'address', name: '_user', type: 'address' }],
-        name: 'getKeys',
-        outputs: [{ internalType: 'string', name: '', type: 'string' }],
-        stateMutability: 'view',
-        type: 'function',
-      },
-      {
-        inputs: [],
-        name: 'getCids',
-        outputs: [{ internalType: 'string[]', name: '', type: 'string[]' }],
-        stateMutability: 'view',
-        type: 'function',
-      },
-      {
-        inputs: [{ internalType: 'uint256', name: 'index', type: 'uint256' }],
-        name: 'getCid',
-        outputs: [{ internalType: 'string', name: '', type: 'string' }],
-        stateMutability: 'view',
-        type: 'function',
-      },
-    ],
-    contractName: 'DMTPCid',
   },
 };

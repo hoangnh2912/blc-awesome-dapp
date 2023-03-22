@@ -13,7 +13,6 @@ import {
   Image,
   Input,
   InputGroup,
-  InputLeftElement,
   InputRightElement,
   Link,
   Modal,
@@ -39,6 +38,9 @@ import {
   ChainId,
   ConnectWallet,
   useAddress,
+  useBalance,
+  useContract,
+  useContractWrite,
   useDisconnect,
   useNetwork,
   useSDK,
@@ -50,11 +52,15 @@ import { BsSearch } from "react-icons/bs";
 import { CgProfile } from "react-icons/cg";
 import { FaUser } from "react-icons/fa";
 import { FiMenu } from "react-icons/fi";
+import { RiMoneyDollarCircleLine } from "react-icons/ri";
 import { IoLogOut } from "react-icons/io5";
+import { ABI_MUSIC } from "../constants/abi";
 import { SideBarDataProps } from "../constants/data/sidebar";
 import backgroundImage from "../public/background.png";
 import { useStoreActions, useStoreState } from "../services/redux/hook";
 import SongNFTSmallComponent from "./song-nft-small";
+import { useModalTransaction } from "./modal-transaction";
+import LinkScan from "./link-scan";
 
 const PopoverTrigger = (props: FlexProps) => {
   return <ExPopoverTrigger {...props} />;
@@ -449,6 +455,41 @@ const AppNav = ({ onOpen }: AppNavProps) => {
       push(`/music/list?search=${search}`, undefined, { shallow: true });
     }
   };
+  const { data, refetch } = useBalance(ABI_MUSIC.MUC.address);
+
+  const sdk = useSDK();
+
+  const { onOpen: onOpenModalTx, setTxResult } = useModalTransaction();
+
+  const onFaucet = async () => {
+    if (sdk && onOpenModalTx) {
+      try {
+        const mucContract = await sdk.getContractFromAbi(
+          ABI_MUSIC.MUC.address,
+          ABI_MUSIC.MUC.abi
+        );
+        onOpenModalTx();
+        const res = await mucContract.call("faucet");
+        setTxResult({
+          reason: "",
+          content: [
+            {
+              title: "Transaction Hash",
+              value: <LinkScan transactionHash={res.receipt.transactionHash} />,
+            },
+          ],
+          txState: "success",
+        });
+        refetch();
+      } catch (error: any) {
+        setTxResult({
+          reason: error.message,
+          content: [],
+          txState: "error",
+        });
+      }
+    }
+  };
 
   return (
     <Stack
@@ -513,6 +554,32 @@ const AppNav = ({ onOpen }: AppNavProps) => {
           </PopoverBody>
           {address && (
             <>
+              <Stack
+                p="4"
+                borderTopWidth={1}
+                borderTopColor="rgba(0, 0, 0, 0.1)"
+                borderBottomColor="rgba(0, 0, 0, 0.1)"
+                borderBottomWidth={1}
+                _hover={{
+                  bg: "rgba(0, 0, 0, 0.1)",
+                }}
+                alignItems="center"
+                direction="row"
+              >
+                <RiMoneyDollarCircleLine />
+                <Text fontFamily={"mono"}>{data?.displayValue} MUC</Text>
+                <Button
+                  bg="#0D164D"
+                  color="white"
+                  _hover={{ bg: "#0D166D" }}
+                  onClick={onFaucet}
+                  style={{
+                    marginLeft: "1rem",
+                  }}
+                >
+                  Faucet
+                </Button>
+              </Stack>
               <Stack
                 cursor="pointer"
                 p="4"

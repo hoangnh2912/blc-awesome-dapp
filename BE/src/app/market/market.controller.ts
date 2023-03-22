@@ -47,4 +47,14 @@ export class MarketController extends Controller {
       return onError(NETWORK_STATUS_MESSAGE.INTERNAL_SERVER_ERROR);
     }
   }
+  @Get('list-my-market')
+  public async getMyMarket(@Query() address: string): Promise<OptionResponse<IMarket[]>> {
+    try {
+      return onSuccess(await Singleton.getMarketInstance().getMyMarket(`${address.toLowerCase()}`));
+    } catch (error) {
+      logger.error(error);
+      this.setStatus(NETWORK_STATUS_CODE.INTERNAL_SERVER_ERROR);
+      return onError(NETWORK_STATUS_MESSAGE.INTERNAL_SERVER_ERROR);
+    }
+  }
 }
