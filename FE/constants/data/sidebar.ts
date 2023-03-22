@@ -1,5 +1,10 @@
 import { IconType } from "react-icons";
-import { BsCoin, BsPeople, BsEmojiSunglasses } from "react-icons/bs";
+import {
+  BsCoin,
+  BsPeople,
+  BsEmojiSunglasses,
+  BsChatQuoteFill,
+} from "react-icons/bs";
 import { MdOutlineSwapHorizontalCircle } from "react-icons/md";
 import { GiPayMoney } from "react-icons/gi";
 import { RxBlendingMode } from "react-icons/rx";
@@ -19,6 +24,7 @@ export const SideBarData: Array<SideBarDataProps> = [
   { name: "DAO", icon: BsPeople, link: "/dao" },
   { name: "Steal Address", icon: BsEmojiSunglasses, link: "/steal-address" },
   { name: "Music marketplace", icon: CgMusic, link: "/music-marketplace" },
+  { name: "Chat", icon: BsChatQuoteFill, link: "/chat" },
 ];
 
 export const SideBarDataMusic: Array<SideBarDataProps> = [
