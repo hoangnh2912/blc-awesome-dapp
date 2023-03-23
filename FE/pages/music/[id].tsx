@@ -43,6 +43,8 @@ const Music = () => {
 
   const getData = async () => {
     try {
+      console.log(`here: ${id}`);
+
       if (!id) return;
       const res = await ApiServices.music.getMusic(id as string);
       setData(res.data.data);

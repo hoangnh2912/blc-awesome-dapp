@@ -1,77 +1,19 @@
-import { Avatar, Flex, Button } from "@chakra-ui/react";
-import { Text } from "@chakra-ui/layout";
-import { IconButton } from "@chakra-ui/button";
-import type { NextPage } from "next";
-import BaseLayout from "../layouts/base";
-import { ArrowLeftIcon } from "@chakra-ui/icons";
+import { ChakraProvider } from "@chakra-ui/react";
+import ChatSidebar from "../components/sidebar-chat";
+import HomeChat from "./chat/home";
+import type { AppProps } from "next/app";
+import { NextPage } from "next";
 
-const User = () => (
-  <Flex p={3} align={"center"} _hover={{ bg: "gray.100", cursor: "pointer" }}>
-    <Avatar src="" marginEnd={3} />
-    <Text>User 1</Text>
-  </Flex>
-);
+// function MyChat({ Component, pageProps }: AppProps) {
+//   return (
+//     <ChakraProvider>
+//       <ChatSidebar />
+//     </ChakraProvider>
+//   );
+// }
 
-const ChatSidebar: NextPage = () => (
-  <BaseLayout selectTabIndex={4}>
-    <Flex
-      // bg={"blue.100"}
-      w="300px"
-      h="81vh"
-      borderEnd={"1px solid"}
-      borderColor="gray.200"
-      direction={"column"}
-    >
-      <Flex
-        // bg="red.100"
-        h="81px"
-        w="100%"
-        align={"center"}
-        justifyContent="space-between"
-        p={3}
-        borderBottom="1px solid"
-        borderColor={"gray.200"}
-      >
-        <Flex align={"center"}>
-          <Avatar src="" marginEnd={3} />
-          <Text>Anders</Text>
-        </Flex>
+const MyChat: NextPage = () => {
+  return <HomeChat />;
+};
 
-        <IconButton
-          icon={<ArrowLeftIcon />}
-          aria-label={""}
-          size="sm"
-          isRound
-        />
-      </Flex>
-      <Button m={5} p={4}>
-        New Chat
-      </Button>
-      <Flex
-        overflow={"scroll"}
-        direction="column"
-        sx={{
-          "&::-webkit-scrollbar": {
-            width: "1px",
-          },
-        }}
-      >
-        <User />
-        <User />
-        <User />
-        <User />
-        <User />
-        <User />
-        <User />
-        <User />
-        <User />
-        <User />
-        <User />
-        <User />
-        <User />
-      </Flex>
-    </Flex>
-  </BaseLayout>
-);
-
-export default ChatSidebar;
+export default MyChat;
