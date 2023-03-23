@@ -32,7 +32,7 @@ function onSuccess<T>(data?: T, total: number = 1): SuccessResponse<T> {
     data: data || null,
     success: true,
     message: Constant.NETWORK_STATUS_MESSAGE.SUCCESS,
-    count: data ? ('length' in data ? (data as any).length : 1) : 0,
+    count: data ? (typeof data == 'object' && 'length' in data ? (data as any).length : 1) : 0,
     total,
   };
 }
