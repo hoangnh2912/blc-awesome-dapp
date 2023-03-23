@@ -102,12 +102,33 @@ export class MusicService {
     );
   }
 
-  public async getListSong(wallet_address: string) {
+  public async getListSong(wallet_address: string, page: number = 1, limit: number = 24) {
     const user = await User.findOne({ wallet_address });
-    if (!user) return [];
+    if (!user)
+      return {
+        total: 0,
+        music: [],
+      };
     const ids = user.ids;
-    const listMarket = await Market.find({ id: { $in: ids } });
-    if (!listMarket) return [];
-    return listMarket;
+    const query = {
+      id: { $in: ids },
+    };
+    const listMarket = await Market.find(
+      query,
+      {},
+      {
+        skip: (page - 1) * limit,
+        limit: limit,
+      },
+    );
+    if (!listMarket)
+      return {
+        total: 0,
+        music: [],
+      };
+    return {
+      total: await Market.countDocuments(query),
+      music: listMarket,
+    };
   }
 }

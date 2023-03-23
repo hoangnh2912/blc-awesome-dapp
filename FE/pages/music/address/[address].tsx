@@ -16,18 +16,23 @@ import {
   Thead,
   Tr,
 } from "@chakra-ui/react";
+
 import { useAddress } from "@thirdweb-dev/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { BsPauseFill } from "react-icons/bs";
-import { FaShareAlt, FaUserEdit } from "react-icons/fa";
-import { MdRemoveShoppingCart, MdSell } from "react-icons/md";
+import { FaPlay, FaShareAlt, FaUserEdit } from "react-icons/fa";
+import { MdSell } from "react-icons/md";
+import SongNFTSmallComponent from "../../../components/song-nft-small";
 import { NO_AVATAR } from "../../../constants/constants";
 import { ipfsToGateway } from "../../../constants/utils";
+import { useMusicIsPlayingView } from "../../../hooks/music";
 import MusicBaseLayout from "../../../layouts/music.base";
 import ApiServices from "../../../services/api";
 import { GetMarketOutput, GetUserOutput } from "../../../services/api/types";
 import { useStoreActions, useStoreState } from "../../../services/redux/hook";
+import Studio from "../../../components/studio";
+import Collection from "../../../components/collection";
 
 const Profile = () => {
   const router = useRouter();
@@ -37,15 +42,29 @@ const Profile = () => {
     address &&
     currentAddress &&
     currentAddress.toLowerCase() == `${address}`.toLowerCase();
+
   const playMusicAction = useStoreActions((state) => state.music.playMusic);
 
-  const { push, replace } = useRouter();
+  const currentSongState = useStoreState((state) => state.music.currentSong);
+  const isPlayingState = useStoreState((state) => state.music.isPlaying);
+
+  const isPlayView = useMusicIsPlayingView({
+    pauseComponent: <BsPauseFill size={"20px"} />,
+    playComponent: <FaPlay size={"20px"} />,
+    playMusicAction,
+    currentSongState,
+    isPlayingState,
+  });
+
+  const { push } = useRouter();
 
   const isLogin = useStoreState((state) => state.user.isLogin);
 
   const [userInfo, setUserInfo] = useState<GetUserOutput>();
   const [collection, setCollection] = useState<GetMarketOutput[]>([]);
+  const [totalCollection, setTotalCollection] = useState(0);
   const [studio, setStudio] = useState<GetMarketOutput[]>([]);
+  const [totalStudio, setTotalStudio] = useState(0);
 
   const getUserData = async () => {
     if (address && currentAddress) {
@@ -55,9 +74,11 @@ const Profile = () => {
         if (isMyProfile) {
           const resMyCollection = await ApiServices.music.getMyCollection();
           setCollection(resMyCollection.data.data);
+          setTotalCollection(resMyCollection.data.total);
         }
         const resStudio = await ApiServices.music.getMyMarket(`${address}`);
         setStudio(resStudio.data.data);
+        setTotalStudio(resStudio.data.total);
       } catch (error) {}
     }
   };
@@ -69,8 +90,8 @@ const Profile = () => {
   };
 
   useEffect(() => {
-    getUserData();
-  }, [address, currentAddress, isLogin]);
+    if (router.pathname == "/music/address/[address]") getUserData();
+  }, [address, currentAddress, isLogin, router.pathname]);
 
   if (!userInfo) {
     return (
@@ -218,7 +239,7 @@ const Profile = () => {
           Share
         </Button>
       </Stack>
-      <Tabs m="4" variant="line">
+      <Tabs my="2" variant="line">
         <TabList>
           <Tab
             _selected={{
@@ -231,7 +252,7 @@ const Profile = () => {
             fontWeight="bold"
             fontSize="16"
           >
-            Studio
+            Studio<Text color="#C2A822">{`(${totalStudio})`}</Text>
           </Tab>
           {isMyProfile && (
             <Tab
@@ -245,185 +266,17 @@ const Profile = () => {
               fontWeight="bold"
               fontSize="16"
             >
-              Collection
+              Collection <Text color="#C2A822">{`(${totalCollection})`}</Text>
             </Tab>
           )}
         </TabList>
         <TabPanels>
           <TabPanel>
-            <TableContainer>
-              <Table
-                display={{
-                  base: "none",
-                  md: "table",
-                }}
-                variant="simple"
-              >
-                <Thead>
-                  <Tr>
-                    <Th
-                      fontFamily="mono"
-                      fontWeight="bold"
-                      fontSize="16"
-                      color="#C2A822"
-                    >
-                      Title
-                    </Th>
-                    <Th
-                      fontFamily="mono"
-                      fontWeight="bold"
-                      fontSize="16"
-                      color="#C2A822"
-                    >
-                      Time
-                    </Th>
-                    <Th
-                      fontFamily="mono"
-                      fontWeight="bold"
-                      fontSize="16"
-                      color="#C2A822"
-                    >
-                      Price
-                    </Th>
-                    <Th
-                      fontFamily="mono"
-                      fontWeight="bold"
-                      fontSize="16"
-                      color="#C2A822"
-                    >
-                      Sold
-                    </Th>
-                    <Th></Th>
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  {studio.map((item, idx) => (
-                    <Tr
-                      fontFamily="mono"
-                      fontWeight="bold"
-                      key={idx}
-                      fontSize="16"
-                      color="white"
-                    >
-                      <Td>{item.name}</Td>
-                      <Td>
-                        {Math.floor(item.duration / 60)}:
-                        {Math.round(item.duration % 60)}
-                      </Td>
-                      <Td>{item.price} MUC</Td>
-                      <Td>
-                        {item.left}/{item.amount}
-                      </Td>
-                      <Td>
-                        <Stack
-                          direction="row"
-                          alignItems="center"
-                          justifyContent="space-evenly"
-                        >
-                          <BsPauseFill size={"30px"} />
-                          <MdSell size={"25px"} />
-                        </Stack>
-                      </Td>
-                    </Tr>
-                  ))}
-                </Tbody>
-              </Table>
-            </TableContainer>
-            <Stack
-              display={{
-                base: "flex",
-                md: "none",
-              }}
-            >
-              {/* <SongNFTComponent {...data} /> */}
-            </Stack>
+            <Studio studio={studio} address={`${address}`} />
           </TabPanel>
           {isMyProfile && (
             <TabPanel>
-              <TableContainer>
-                <Table
-                  display={{
-                    base: "none",
-                    md: "table",
-                  }}
-                  variant="simple"
-                >
-                  <Thead>
-                    <Tr>
-                      <Th
-                        fontFamily="mono"
-                        fontWeight="bold"
-                        fontSize="16"
-                        color="#C2A822"
-                      >
-                        Title
-                      </Th>
-                      <Th
-                        fontFamily="mono"
-                        fontWeight="bold"
-                        fontSize="16"
-                        color="#C2A822"
-                      >
-                        Time
-                      </Th>
-                      <Th
-                        fontFamily="mono"
-                        fontWeight="bold"
-                        fontSize="16"
-                        color="#C2A822"
-                      >
-                        Purchase Price
-                      </Th>
-                      <Th
-                        fontFamily="mono"
-                        fontWeight="bold"
-                        fontSize="16"
-                        color="#C2A822"
-                      >
-                        Date
-                      </Th>
-                      <Th></Th>
-                    </Tr>
-                  </Thead>
-                  <Tbody>
-                    {collection.map((item, idx) => (
-                      <Tr
-                        fontFamily="mono"
-                        fontWeight="bold"
-                        key={idx}
-                        fontSize="16"
-                        color="white"
-                      >
-                        <Td>{item.name}</Td>
-                        <Td>
-                          {Math.floor(item.duration / 60)}:
-                          {Math.round(item.duration % 60)}
-                        </Td>
-                        <Td>{item.price} MUC</Td>
-                        <Td>{new Date(item.created_at).toDateString()}</Td>
-                        <Td>
-                          <Stack
-                            direction="row"
-                            alignItems="center"
-                            justifyContent="space-evenly"
-                          >
-                            <BsPauseFill size={"30px"} />
-                            <MdSell size={"25px"} />
-                          </Stack>
-                        </Td>
-                      </Tr>
-                    ))}
-                  </Tbody>
-                </Table>
-              </TableContainer>
-              <Stack
-                display={{
-                  base: "flex",
-                  md: "none",
-                }}
-              >
-                {/* <SongNFTComponent {...data} /> */}
-              </Stack>
+              <Collection collection={collection} address={`${address}`} />
             </TabPanel>
           )}
         </TabPanels>
