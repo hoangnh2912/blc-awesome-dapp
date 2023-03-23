@@ -6,6 +6,7 @@ import {
   Stack,
   Text,
   Textarea,
+  useToast,
 } from "@chakra-ui/react";
 import { useAddress } from "@thirdweb-dev/react";
 import type { NextPage } from "next";
@@ -19,7 +20,7 @@ import { GetUserOutput } from "../../services/api/types";
 const EditProfile: NextPage = () => {
   const address = useAddress();
 
-  const { replace,push } = useRouter();
+  const { replace, back } = useRouter();
 
   const [userInfo, setUserInfo] = useState<GetUserOutput>();
   const image = userInfo?.avatar || null;
@@ -39,6 +40,8 @@ const EditProfile: NextPage = () => {
     }
   };
 
+  const toast = useToast();
+
   const updateUserData = async () => {
     if (address) {
       try {
@@ -54,10 +57,17 @@ const EditProfile: NextPage = () => {
           description,
           avatar: avatarUpload || image,
         });
-        await replace(`/music/address/${address}`, undefined, {
-          shallow: true,
+        back();
+      } catch (error: any) {
+        toast({
+          title: "Error",
+          description: error.message,
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+          position: "top-right",
         });
-      } catch (error) {}
+      }
     }
   };
 
