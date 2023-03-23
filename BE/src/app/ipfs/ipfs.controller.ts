@@ -16,7 +16,7 @@ export class IpfsController extends Controller {
   ): Promise<OptionResponse<String>> {
     try {
       const imageIPFS = await uploadFile(imageFile.buffer);
-      return onSuccess(`ipfs://${imageIPFS.path}`);
+      return onSuccess(`${process.env.IPFS_GATEWAY_URI}${imageIPFS.path}`);
     } catch (error) {
       logger.error(error);
       this.setStatus(NETWORK_STATUS_CODE.INTERNAL_SERVER_ERROR);
