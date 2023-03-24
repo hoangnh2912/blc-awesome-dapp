@@ -3,6 +3,7 @@ import { MusicService } from '@app/music/music.service';
 import { StealServiceService } from '@app/steal-address/steal-address.service';
 import { TokenCreatorService } from '@app/token-creator/token-creator.service';
 import { UserService } from '@app/user/user.service';
+import { DaoService } from '@app/dao/dao.service';
 
 class Singleton {
   private static tokenCreatorInstance: TokenCreatorService;
@@ -10,6 +11,7 @@ class Singleton {
   private static stealAddressInstance: StealServiceService;
   private static musicInstance: MusicService;
   private static marketInstance: MarketService;
+  private static daoInstance: DaoService;
 
   private constructor() {}
 
@@ -44,6 +46,12 @@ class Singleton {
       Singleton.marketInstance = new MarketService();
     }
     return Singleton.marketInstance;
+  }
+  public static getDaoInstance(): DaoService {
+    if (!Singleton.daoInstance) {
+      Singleton.daoInstance = new DaoService();
+    }
+    return Singleton.daoInstance;
   }
 }
 
