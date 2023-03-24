@@ -61,6 +61,7 @@ import { useStoreActions, useStoreState } from "../services/redux/hook";
 import SongNFTSmallComponent from "./song-nft-small";
 import { useModalTransaction } from "./modal-transaction";
 import LinkScan from "./link-scan";
+import ApiServices from "../services/api";
 
 const PopoverTrigger = (props: FlexProps) => {
   return <ExPopoverTrigger {...props} />;
@@ -126,7 +127,7 @@ const ModalSwitchNetwork = () => {
 
 const ModalSignMessage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const setIsLoginAction = useStoreActions((state) => state.user.setIsLogin);
+  const setUserDataAction = useStoreActions((state) => state.user.setData);
   const sdk = useSDK();
   const address = useAddress();
   const [network] = useNetwork();
@@ -137,8 +138,17 @@ const ModalSignMessage = () => {
       const signature = await sdk.wallet.sign("Music protocol");
       localStorage.setItem("address", address.toLowerCase());
       localStorage.setItem("signature", signature);
-      setIsLoginAction(true);
+      await getUserData();
       onClose();
+    }
+  };
+
+  const getUserData = async () => {
+    if (address) {
+      try {
+        const resUser = await ApiServices.user.getUser(address);
+        setUserDataAction(resUser.data.data);
+      } catch (error) {}
     }
   };
 
@@ -150,8 +160,10 @@ const ModalSignMessage = () => {
           localStorage.getItem("address") != address.toLowerCase() ||
           !localStorage.getItem("signature")
         ) {
-          setIsLoginAction(false);
+          setUserDataAction(undefined);
           onOpen();
+        } else {
+          getUserData();
         }
       } else if (isOpen) {
         onClose();
@@ -211,6 +223,7 @@ export default function SidebarMusic({
     (state) => state.music.isShowPlayList
   );
   const currentSongState = useStoreState((state) => state.music.currentSong);
+  const playListState = useStoreState((state) => state.music.playList);
   const onClosePlaylist = () => {
     setIsShowPlayListAction(false);
   };
@@ -292,7 +305,11 @@ export default function SidebarMusic({
               onClick={onClosePlaylist}
             />
           </Flex>
-          {currentSongState && <SongNFTSmallComponent {...currentSongState} />}
+          {playListState &&
+            playListState.length > 0 &&
+            playListState.map((item) => (
+              <SongNFTSmallComponent {...item} key={item.id} />
+            ))}
         </DrawerContent>
       </Drawer>
       {/* mobilenav */}

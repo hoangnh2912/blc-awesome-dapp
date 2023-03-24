@@ -3,36 +3,24 @@ import {
   Image,
   Stack,
   Tab,
-  Table,
-  TableContainer,
   TabList,
   TabPanel,
   TabPanels,
   Tabs,
-  Tbody,
-  Td,
   Text,
-  Th,
-  Thead,
-  Tr,
 } from "@chakra-ui/react";
-
 import { useAddress } from "@thirdweb-dev/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { BsPauseFill } from "react-icons/bs";
-import { FaPlay, FaShareAlt, FaUserEdit } from "react-icons/fa";
-import { MdSell } from "react-icons/md";
-import SongNFTSmallComponent from "../../../components/song-nft-small";
+import { FaShareAlt, FaUserEdit } from "react-icons/fa";
+import Collection from "../../../components/collection";
+import Studio from "../../../components/studio";
 import { NO_AVATAR } from "../../../constants/constants";
 import { ipfsToGateway } from "../../../constants/utils";
-import { useMusicIsPlayingView } from "../../../hooks/music";
 import MusicBaseLayout from "../../../layouts/music.base";
 import ApiServices from "../../../services/api";
 import { GetMarketOutput, GetUserOutput } from "../../../services/api/types";
-import { useStoreActions, useStoreState } from "../../../services/redux/hook";
-import Studio from "../../../components/studio";
-import Collection from "../../../components/collection";
+import { useStoreState } from "../../../services/redux/hook";
 
 const Profile = () => {
   const router = useRouter();
@@ -42,43 +30,27 @@ const Profile = () => {
     address &&
     currentAddress &&
     currentAddress.toLowerCase() == `${address}`.toLowerCase();
-
-  const playMusicAction = useStoreActions((state) => state.music.playMusic);
-
-  const currentSongState = useStoreState((state) => state.music.currentSong);
-  const isPlayingState = useStoreState((state) => state.music.isPlaying);
-
-  const isPlayView = useMusicIsPlayingView({
-    pauseComponent: <BsPauseFill size={"20px"} />,
-    playComponent: <FaPlay size={"20px"} />,
-    playMusicAction,
-    currentSongState,
-    isPlayingState,
-  });
-
   const { push } = useRouter();
 
-  const isLogin = useStoreState((state) => state.user.isLogin);
+  const userConnectData = useStoreState((state) => state.user.data);
 
   const [userInfo, setUserInfo] = useState<GetUserOutput>();
   const [collection, setCollection] = useState<GetMarketOutput[]>([]);
   const [totalCollection, setTotalCollection] = useState(0);
-  const [studio, setStudio] = useState<GetMarketOutput[]>([]);
   const [totalStudio, setTotalStudio] = useState(0);
 
-  const getUserData = async () => {
-    if (address && currentAddress) {
+  const getUserProfileData = async () => {
+    if (address) {
       try {
-        const resUser = await ApiServices.user.getUser();
-        setUserInfo(resUser.data.data);
         if (isMyProfile) {
           const resMyCollection = await ApiServices.music.getMyCollection();
           setCollection(resMyCollection.data.data);
           setTotalCollection(resMyCollection.data.total);
+          setUserInfo(userConnectData);
+        } else {
+          const resUser = await ApiServices.user.getUser(`${address}`);
+          setUserInfo(resUser.data.data);
         }
-        const resStudio = await ApiServices.music.getMyMarket(`${address}`);
-        setStudio(resStudio.data.data);
-        setTotalStudio(resStudio.data.total);
       } catch (error) {}
     }
   };
@@ -90,8 +62,8 @@ const Profile = () => {
   };
 
   useEffect(() => {
-    if (router.pathname == "/music/address/[address]") getUserData();
-  }, [address, currentAddress, isLogin, router.pathname]);
+    getUserProfileData();
+  }, [address, currentAddress, userConnectData]);
 
   if (!userInfo) {
     return (
@@ -271,11 +243,11 @@ const Profile = () => {
           )}
         </TabList>
         <TabPanels>
-          <TabPanel>
-            <Studio studio={studio} address={`${address}`} />
+          <TabPanel p={0}>
+            <Studio setTotalStudio={setTotalStudio} address={`${address}`} />
           </TabPanel>
           {isMyProfile && (
-            <TabPanel>
+            <TabPanel p={0}>
               <Collection collection={collection} address={`${address}`} />
             </TabPanel>
           )}

@@ -1,4 +1,5 @@
 import {
+  Center,
   Image,
   Stack,
   Table,
@@ -7,6 +8,7 @@ import {
   Td,
   Th,
   Thead,
+  Tooltip,
   Tr,
 } from "@chakra-ui/react";
 import {
@@ -27,6 +29,7 @@ import { useMusicIsPlayingView } from "../hooks/music";
 import { GetMarketOutput } from "../services/api/types";
 import { useStoreActions, useStoreState } from "../services/redux/hook";
 import SongNFTSmallComponent from "./song-nft-small";
+import { ABI_MUSIC } from "../constants/abi";
 
 const Collection = ({
   address,
@@ -54,12 +57,6 @@ const Collection = ({
     pagesCount: 12,
     initialState: { currentPage: 1 },
   });
-
-  const onClickEdit = () => {
-    push("/music/edit-profile", undefined, {
-      shallow: true,
-    });
-  };
 
   return (
     <>
@@ -117,7 +114,15 @@ const Collection = ({
                 fontSize="16"
                 color="white"
               >
-                <Td display="flex" alignItems="center" gap={3}>
+                <Td
+                  cursor="pointer"
+                  onClick={() => {
+                    push(`/music/${item.id}`);
+                  }}
+                  display="flex"
+                  alignItems="center"
+                  gap={3}
+                >
                   <Image
                     _hover={{
                       transform: "scale(1.2)",
@@ -147,7 +152,16 @@ const Collection = ({
                     justifyContent="space-evenly"
                   >
                     {isPlayView(item)}
-                    <MdSell size={"25px"} />
+                    <MdSell
+                      style={{ cursor: "pointer" }}
+                      onClick={() => {
+                        window.open(
+                          `https://testnets.opensea.io/assets/mumbai/${ABI_MUSIC.Music.address}/${item.id}`,
+                          `_blank`
+                        );
+                      }}
+                      size={"25px"}
+                    />
                   </Stack>
                 </Td>
               </Tr>
@@ -165,21 +179,6 @@ const Collection = ({
           <SongNFTSmallComponent {...item} key={idx} />
         ))}
       </Stack>
-      <Pagination
-        pagesCount={pagesCount}
-        currentPage={currentPage}
-        onPageChange={setCurrentPage}
-      >
-        <PaginationContainer>
-          <PaginationPrevious>Previous</PaginationPrevious>
-          <PaginationPageGroup>
-            {pages.map((page: number) => (
-              <PaginationPage key={`pagination_page_${page}`} page={page} />
-            ))}
-          </PaginationPageGroup>
-          <PaginationNext>Next</PaginationNext>
-        </PaginationContainer>
-      </Pagination>
     </>
   );
 };

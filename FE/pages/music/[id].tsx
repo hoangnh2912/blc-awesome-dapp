@@ -22,6 +22,7 @@ import { MdOutlineSell } from "react-icons/md";
 import { TiMediaPause } from "react-icons/ti";
 import { ABI_MUSIC } from "../../constants/abi";
 import { ipfsToGateway } from "../../constants/utils";
+import { useBuyMusic } from "../../hooks/music";
 import MusicBaseLayout from "../../layouts/music.base";
 import ApiServices from "../../services/api";
 import { GetMarketOutput } from "../../services/api/types";
@@ -40,6 +41,7 @@ const Music = () => {
   const [isOwnNft, setIsOwnNft] = useState(false);
 
   const sdk = useSDK();
+  const { onBuy } = useBuyMusic();
 
   const getData = async () => {
     try {
@@ -201,6 +203,9 @@ const Music = () => {
                 fontWeight="bold"
                 alignItems="center"
                 fontSize="3xl"
+                onClick={() => {
+                  onBuy(data.price,data.id);
+                 }}
                 gap={2}
               >
                 <BsCart4 size="0.8em" />

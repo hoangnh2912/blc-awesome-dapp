@@ -146,7 +146,12 @@ const ApiServices = {
       }),
   },
   user: {
-    getUser: () => AxiosGet<GetUserOutput>("/user/get-user"),
+    getUser: (address: string) =>
+      AxiosGet<GetUserOutput>("/user/get-user", {
+        params: {
+          address,
+        },
+      }),
     createUser: (payload: any) =>
       AxiosPost<GetUserOutput>("/user/create-user", payload),
   },

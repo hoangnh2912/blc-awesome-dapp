@@ -1,4 +1,5 @@
 import {
+  Center,
   Image,
   Stack,
   Table,
@@ -13,8 +14,9 @@ import { useRouter } from "next/router";
 import { BsPauseFill } from "react-icons/bs";
 import { FaPlay } from "react-icons/fa";
 import { MdSell } from "react-icons/md";
+import { GrFormPrevious, GrFormNext } from "react-icons/gr";
 import { ipfsToGateway } from "../constants/utils";
-import { useMusicIsPlayingView } from "../hooks/music";
+import { useBuyMusic, useMusicIsPlayingView } from "../hooks/music";
 import { GetMarketOutput } from "../services/api/types";
 import { useStoreActions, useStoreState } from "../services/redux/hook";
 import SongNFTSmallComponent from "./song-nft-small";
@@ -26,18 +28,57 @@ import {
   PaginationPrevious,
   PaginationContainer,
   PaginationPageGroup,
+  PaginationSeparator,
 } from "@ajna/pagination";
+import { useEffect, useState } from "react";
+import ApiServices from "../services/api";
+import { GiShoppingCart } from "react-icons/gi";
+import { useAddress } from "@thirdweb-dev/react";
 const Studio = ({
   address,
-  studio,
+  setTotalStudio,
 }: {
   address: string;
-  studio: GetMarketOutput[];
+  setTotalStudio: any;
 }) => {
   const playMusicAction = useStoreActions((state) => state.music.playMusic);
+  const { onBuy } = useBuyMusic();
 
+  const currentAddress = useAddress();
+  const isMyProfile = currentAddress === address;
   const currentSongState = useStoreState((state) => state.music.currentSong);
   const isPlayingState = useStoreState((state) => state.music.isPlaying);
+  const [studio, setStudio] = useState<GetMarketOutput[]>([]);
+  const [total, setTotal] = useState(0);
+  const { currentPage, setCurrentPage, pagesCount, pages } = usePagination({
+    total,
+    initialState: {
+      currentPage: 1,
+      pageSize: 24,
+    },
+    limits: {
+      inner: 1,
+      outer: 1,
+    },
+  });
+
+  const getData = async () => {
+    if (address) {
+      try {
+        const resStudio = await ApiServices.music.getMyMarket(
+          `${address}`,
+          currentPage
+        );
+        setStudio(resStudio.data.data);
+        setTotal(resStudio.data.total);
+        setTotalStudio(resStudio.data.total);
+      } catch (error) {}
+    }
+  };
+
+  useEffect(() => {
+    getData();
+  }, [currentPage]);
 
   const isPlayView = useMusicIsPlayingView({
     pauseComponent: <BsPauseFill size={"20px"} />,
@@ -48,17 +89,6 @@ const Studio = ({
   });
 
   const { push } = useRouter();
-
-  const { currentPage, setCurrentPage, pagesCount, pages } = usePagination({
-    pagesCount: 12,
-    initialState: { currentPage: 1 },
-  });
-
-  const onClickEdit = () => {
-    push("/music/edit-profile", undefined, {
-      shallow: true,
-    });
-  };
 
   return (
     <>
@@ -116,7 +146,15 @@ const Studio = ({
                 fontSize="16"
                 color="white"
               >
-                <Td display="flex" alignItems="center" gap={3}>
+                <Td
+                  cursor="pointer"
+                  onClick={() => {
+                    push(`/music/${item.id}`);
+                  }}
+                  display="flex"
+                  alignItems="center"
+                  gap={3}
+                >
                   <Image
                     _hover={{
                       transform: "scale(1.2)",
@@ -148,7 +186,17 @@ const Studio = ({
                     justifyContent="space-evenly"
                   >
                     {isPlayView(item)}
-                    <MdSell size={"25px"} />
+                    {!isMyProfile && (
+                      <GiShoppingCart
+                        style={{
+                          cursor: "pointer",
+                        }}
+                        onClick={() => {
+                          onBuy(item.price, item.id);
+                        }}
+                        size={"25px"}
+                      />
+                    )}
                   </Stack>
                 </Td>
               </Tr>
@@ -166,21 +214,51 @@ const Studio = ({
           <SongNFTSmallComponent {...item} key={idx} />
         ))}
       </Stack>
-      <Pagination
-        pagesCount={pagesCount}
-        currentPage={currentPage}
-        onPageChange={setCurrentPage}
-      >
-        <PaginationContainer>
-          <PaginationPrevious>Previous</PaginationPrevious>
-          <PaginationPageGroup>
-            {pages.map((page: number) => (
-              <PaginationPage key={`pagination_page_${page}`} page={page} />
-            ))}
-          </PaginationPageGroup>
-          <PaginationNext>Next</PaginationNext>
-        </PaginationContainer>
-      </Pagination>
+      <Center mt={"10"}>
+        <Pagination
+          pagesCount={pagesCount}
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
+        >
+          <PaginationContainer gap={2}>
+            {currentPage > 1 && (
+              <PaginationPrevious>
+                <GrFormPrevious />
+              </PaginationPrevious>
+            )}
+            <PaginationPageGroup
+              separator={
+                <PaginationSeparator
+                  onClick={() => console.warn("I'm clicking the separator")}
+                  bg="white"
+                />
+              }
+              gap={1}
+            >
+              {pages.map((page: number) => (
+                <PaginationPage
+                  _hover={{
+                    bg: "#C2A822",
+                  }}
+                  w={["30px"]}
+                  bg={page === currentPage ? "#C2A822" : "white"}
+                  key={`pagination_page_${page}`}
+                  page={page}
+                  _current={{
+                    bg: "#C2A822",
+                    color: "white",
+                  }}
+                />
+              ))}
+            </PaginationPageGroup>
+            {currentPage < pagesCount && (
+              <PaginationNext>
+                <GrFormNext />
+              </PaginationNext>
+            )}
+          </PaginationContainer>
+        </Pagination>
+      </Center>
     </>
   );
 };
