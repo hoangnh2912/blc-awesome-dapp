@@ -283,6 +283,7 @@ class RoomService {
           };
         }),
       );
+      console.log(`here`);
 
       // console.log(listRoomWithRole)
 

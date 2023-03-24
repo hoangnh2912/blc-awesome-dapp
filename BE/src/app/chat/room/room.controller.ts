@@ -36,7 +36,7 @@ const { NETWORK_STATUS_CODE, NETWORK_STATUS_MESSAGE } = Constant;
 export class RoomController extends Controller {
   private roomService = Singleton.getRoomInstance();
 
-  @Get('get-room-list-v2')
+  @Get('get-room-list')
   public async getRoomListV2(
     @Request() req: exRequest,
     @Query() page?: number,

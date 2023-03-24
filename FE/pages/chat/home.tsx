@@ -1,6 +1,5 @@
 import {
   Box,
-  ChakraProvider,
   Text,
   Center,
   Stat,
@@ -11,28 +10,143 @@ import {
   StatGroup,
 } from "@chakra-ui/react";
 import ChatSidebar from "../../components/sidebar-chat";
-import type { AppProps } from "next/app";
 import Head from "next/head";
 import { NextPage } from "next";
 import { Flex, Heading } from "@chakra-ui/layout";
+import { InfoIcon } from "@chakra-ui/icons";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Filler,
+  Legend,
+} from "chart.js";
+import { Line } from "react-chartjs-2";
+import { faker } from "@faker-js/faker";
 
-// function MyChat({ Component, pageProps }: AppProps) {
-//   return (
-//     <ChakraProvider>
-//       <ChatSidebar />
-//     </ChakraProvider>
-//   );
-// }
+const ChartMiddle = () => {
+  ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Filler,
+    Legend
+  );
+
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: "top" as const,
+      },
+      title: {
+        display: true,
+        text: "Chart.js Line Chart",
+      },
+    },
+  };
+
+  const labels = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+  ];
+
+  const data = {
+    labels,
+    datasets: [
+      {
+        fill: true,
+        label: "Dataset 2",
+        data: labels.map(() => faker.datatype.number({ min: 0, max: 1000 })),
+        borderColor: "rgb(53, 162, 235)",
+        backgroundColor: "rgba(53, 162, 235, 0.5)",
+      },
+    ],
+  };
+  return (
+    <Flex flex={1} h={"45vh"} align={"center"} justifyContent={"center"}>
+      <Line options={options} data={data} />
+    </Flex>
+  );
+};
 
 const Topbar = () => (
-  <Flex bg={"gray.100"} h="81px" w={"100%"} align="center">
-    <Flex direction={"column"} align="center">
-      <Heading size={"lg"} alignContent="center">
-        Statisic
-      </Heading>
+  <Flex
+    bg={"gray.100"}
+    h="81px"
+    w={"100%"}
+    align="center"
+    p={3}
+    justifyContent={"center"}
+  >
+    <Flex>
+      <Heading size={"lg"}>Statisic</Heading>
     </Flex>
   </Flex>
 );
+
+const Statistic = () => {
+  return (
+    <StatGroup p={3} flex={2}>
+      <Flex>
+        <Flex p={16}>
+          <Stat>
+            <StatLabel>Sent</StatLabel>
+            <StatNumber>345,670</StatNumber>
+            <StatHelpText>
+              <StatArrow type="increase" />
+              23.36%
+            </StatHelpText>
+          </Stat>
+        </Flex>
+
+        <Flex p={16}>
+          <Stat>
+            <StatLabel>Clicked</StatLabel>
+            <StatNumber>45</StatNumber>
+            <StatHelpText>
+              <StatArrow type="decrease" />
+              9.05%
+            </StatHelpText>
+          </Stat>
+        </Flex>
+        <Flex p={16}>
+          <Stat>
+            <StatLabel>Clicked</StatLabel>
+            <StatNumber>45</StatNumber>
+            <StatHelpText>
+              <StatArrow type="decrease" />
+              9.05%
+            </StatHelpText>
+          </Stat>
+        </Flex>
+      </Flex>
+    </StatGroup>
+  );
+};
+
+const Bottomtext = () => {
+  return (
+    <Box textAlign="center" py={10} px={6} flex={1}>
+      <InfoIcon boxSize={"50px"} color={"blue.400"} />
+      <Heading as="h2" size="md" mt={6} mb={2}>
+        Select a conversation to start chatting now!
+      </Heading>
+    </Box>
+  );
+};
 
 const HomeChat: NextPage = () => {
   return (
@@ -51,28 +165,14 @@ const HomeChat: NextPage = () => {
 
       <Flex h="100vh">
         <ChatSidebar />
-        <Flex flex={1} direction="column" p={3} pt={0}>
+        <Flex flex={1} direction="column">
           <Topbar />
 
-          <StatGroup>
-            <Stat alignSelf={"flex-start"}>
-              <StatLabel>Sent</StatLabel>
-              <StatNumber>345,670</StatNumber>
-              <StatHelpText>
-                <StatArrow type="increase" />
-                23.36%
-              </StatHelpText>
-            </Stat>
+          <Statistic />
 
-            <Stat alignSelf={"flex-end"}>
-              <StatLabel>Clicked</StatLabel>
-              <StatNumber>45</StatNumber>
-              <StatHelpText>
-                <StatArrow type="decrease" />
-                9.05%
-              </StatHelpText>
-            </Stat>
-          </StatGroup>
+          <ChartMiddle />
+
+          <Bottomtext />
         </Flex>
       </Flex>
     </div>

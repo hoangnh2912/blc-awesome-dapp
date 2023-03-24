@@ -11,6 +11,7 @@ import {
   GetStealAddressOutput,
   GetMarketOutput,
   GetUserOutput,
+  GetRoomList,
 } from "./types";
 type SuccessResponse<T> = {
   data: T;
@@ -148,6 +149,9 @@ const ApiServices = {
           "Content-Type": "multipart/form-data",
         },
       }),
+  },
+  roomChat: {
+    getRoomList: () => AxiosGet<GetRoomList[]>("/room/get-room-list"),
   },
 };
 

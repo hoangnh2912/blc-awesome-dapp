@@ -102,6 +102,59 @@ interface GetMarketOutput {
   deleted_at?: Date;
 }
 
+interface GetRoomList {
+  _id: string;
+  name: string;
+  avatar: string;
+  description: string;
+  users: [string];
+  hidden: [string];
+  cid: string;
+  user_read: [
+    {
+      user: {
+        wallet_address: string;
+      };
+      message_id: string;
+      at: Date;
+      unread_count: number;
+    }
+  ];
+  user_receive: [
+    {
+      user: {
+        wallet_address: string;
+      };
+      message_id: string;
+      at: Date;
+      unread_count: number;
+    }
+  ];
+  created_at: Date;
+  creator: string;
+  both_init: true;
+  only_view: true;
+  admins: [string];
+  sub_admins: [string];
+  nft_contracts: [
+    {
+      chain_id: string;
+      address: string;
+      contract_name: string;
+    }
+  ];
+  shared_key: string;
+  updated_at: Date;
+  deleted_at: Date;
+  room_type: string;
+  last_message: {
+    message_data: string;
+    at: Date;
+    shared_key: string;
+  };
+  is_disable: [string];
+}
+
 export type {
   ERC20Input,
   TokenCreatorOutput,
@@ -116,4 +169,5 @@ export type {
   GetStealAddressOutput,
   GetMarketOutput,
   GetUserOutput,
+  GetRoomList,
 };
