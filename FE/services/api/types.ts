@@ -155,6 +155,29 @@ interface GetRoomList {
   is_disable: [string];
 }
 
+interface GetChatUserOutput {
+  wallet_address: string;
+  active_points: number;
+  avatar: string;
+  created_at: Date;
+  description: string;
+  dmtp: string;
+  friend_requests: [string];
+  friends: [string];
+  is_stake_eth: false;
+  name: string;
+  session: [string];
+  stickers: [string];
+  updated_at: Date;
+  wallet_score: number;
+  link_addresses: [string];
+  invitation_url: string;
+  api_key: string;
+  stdmtp: string;
+  matic: string;
+  is_minter: boolean;
+}
+
 export type {
   ERC20Input,
   TokenCreatorOutput,
@@ -170,4 +193,5 @@ export type {
   GetMarketOutput,
   GetUserOutput,
   GetRoomList,
+  GetChatUserOutput,
 };

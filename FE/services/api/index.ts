@@ -12,6 +12,7 @@ import {
   GetMarketOutput,
   GetUserOutput,
   GetRoomList,
+  GetChatUserOutput,
 } from "./types";
 type SuccessResponse<T> = {
   data: T;
@@ -166,6 +167,9 @@ const ApiServices = {
   },
   roomChat: {
     getRoomList: () => AxiosGet<GetRoomList[]>("/room/get-room-list"),
+  },
+  chatUser: {
+    userInfo: () => AxiosGet<GetChatUserOutput>("/chat-user/user-info"),
   },
 };
 

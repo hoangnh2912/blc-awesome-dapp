@@ -1,6 +1,10 @@
 import { Action } from "easy-peasy";
 import AudioPlayer from "react-h5-audio-player";
-import { GetMarketOutput, GetUserOutput } from "../api/types";
+import {
+  GetMarketOutput,
+  GetUserOutput,
+  GetChatUserOutput,
+} from "../api/types";
 
 interface Music {
   currentSong: GetMarketOutput | undefined;
@@ -21,9 +25,15 @@ interface User {
   setData: Action<User, GetUserOutput | undefined>;
 }
 
+interface ChatUser {
+  data: GetChatUserOutput | undefined;
+  setData: Action<ChatUser, GetChatUserOutput | undefined>;
+}
+
 interface StoreModel {
   music: Music;
   user: User;
+  chatUser: ChatUser;
 }
 
 export type { Music };

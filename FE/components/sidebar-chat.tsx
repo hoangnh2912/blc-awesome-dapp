@@ -116,7 +116,8 @@ const ModalSwitchNetwork = () => {
 
 const ModalSignMessage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const setIsLoginAction = useStoreActions((state) => state.user.setIsLogin);
+  const setUserDataAction = useStoreActions((state) => state.chatUser.setData);
+  
   const sdk = useSDK();
   const address = useAddress();
   const [network] = useNetwork();
@@ -127,8 +128,17 @@ const ModalSignMessage = () => {
       const signature = await sdk.wallet.sign("Music protocol");
       localStorage.setItem("address", address.toLowerCase());
       localStorage.setItem("signature", signature);
-      setIsLoginAction(true);
+      await getUserData();
       onClose();
+    }
+  };
+
+  const getUserData = async () => {
+    if (address) {
+      try {
+        const resUser = await ApiServices.chatUser.userInfo();
+        setUserDataAction(resUser.data.data);
+      } catch (error) {}
     }
   };
 
@@ -140,8 +150,11 @@ const ModalSignMessage = () => {
           localStorage.getItem("address") != address.toLowerCase() ||
           !localStorage.getItem("signature")
         ) {
-          setIsLoginAction(false);
+          setUserDataAction(undefined);
           onOpen();
+        }
+        else {
+          getUserData()
         }
       } else if (isOpen) {
         onClose();

@@ -20,8 +20,8 @@ import {
 
 const { NETWORK_STATUS_CODE, NETWORK_STATUS_MESSAGE } = Constant;
 
-@Tags('User')
-@Route('users')
+@Tags('Chat-User')
+@Route('chat-user')
 @Security({
   authorize: [],
   address: [],
