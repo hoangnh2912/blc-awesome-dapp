@@ -12,6 +12,8 @@ interface Music {
   playList: GetMarketOutput[];
   addToPlayList: Action<Music, GetMarketOutput>;
   removeFromPlayList: Action<Music, GetMarketOutput>;
+  playNext: Action<Music>;
+  playPrevious: Action<Music>;
   isShowPlayList: boolean;
   setIsShowPlayList: Action<Music, boolean>;
 }
@@ -19,6 +21,8 @@ interface Music {
 interface User {
   data: GetUserOutput | undefined;
   setData: Action<User, GetUserOutput | undefined>;
+  isCheckConnect: boolean;
+  setIsCheckConnect: Action<User, boolean>;
 }
 
 interface StoreModel {

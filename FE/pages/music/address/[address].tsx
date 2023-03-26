@@ -19,7 +19,7 @@ import { NO_AVATAR } from "../../../constants/constants";
 import { ipfsToGateway } from "../../../constants/utils";
 import MusicBaseLayout from "../../../layouts/music.base";
 import ApiServices from "../../../services/api";
-import { GetMarketOutput, GetUserOutput } from "../../../services/api/types";
+import { GetUserOutput } from "../../../services/api/types";
 import { useStoreState } from "../../../services/redux/hook";
 
 const Profile = () => {
@@ -35,7 +35,6 @@ const Profile = () => {
   const userConnectData = useStoreState((state) => state.user.data);
 
   const [userInfo, setUserInfo] = useState<GetUserOutput>();
-  const [collection, setCollection] = useState<GetMarketOutput[]>([]);
   const [totalCollection, setTotalCollection] = useState(0);
   const [totalStudio, setTotalStudio] = useState(0);
 
@@ -43,9 +42,6 @@ const Profile = () => {
     if (address) {
       try {
         if (isMyProfile) {
-          const resMyCollection = await ApiServices.music.getMyCollection();
-          setCollection(resMyCollection.data.data);
-          setTotalCollection(resMyCollection.data.total);
           setUserInfo(userConnectData);
         } else {
           const resUser = await ApiServices.user.getUser(`${address}`);
@@ -248,7 +244,10 @@ const Profile = () => {
           </TabPanel>
           {isMyProfile && (
             <TabPanel p={0}>
-              <Collection collection={collection} address={`${address}`} />
+              <Collection
+                setTotalCollection={setTotalCollection}
+                address={`${address}`}
+              />
             </TabPanel>
           )}
         </TabPanels>
