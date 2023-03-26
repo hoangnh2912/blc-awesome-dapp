@@ -6,6 +6,7 @@ import {
   Stack,
   Text,
   Textarea,
+  useToast,
 } from "@chakra-ui/react";
 import { useAddress } from "@thirdweb-dev/react";
 import type { NextPage } from "next";
@@ -16,12 +17,14 @@ import { ipfsToGateway } from "../../constants/utils";
 import MusicBaseLayout from "../../layouts/music.base";
 import ApiServices from "../../services/api";
 import { GetUserOutput } from "../../services/api/types";
+import { useStoreActions, useStoreState } from "../../services/redux/hook";
 const EditProfile: NextPage = () => {
   const address = useAddress();
 
-  const { replace,push } = useRouter();
+  const { back } = useRouter();
 
-  const [userInfo, setUserInfo] = useState<GetUserOutput>();
+  const userInfo = useStoreState((state) => state.user.data);
+  const setUserInfo = useStoreActions((state) => state.user.setData);
   const image = userInfo?.avatar || null;
   const [file, setFile] = useState<File | null>(null);
   const [username, setUsername] = useState<string>(userInfo?.name || "");
@@ -31,13 +34,15 @@ const EditProfile: NextPage = () => {
   const getUserData = async () => {
     if (address) {
       try {
-        const res = await ApiServices.user.getUser();
+        const res = await ApiServices.user.getUser(`${address}`);
         setUserInfo(res.data.data);
         setUsername(res.data.data.name == "Unnamed" ? "" : res.data.data.name);
         setDescription(res.data.data.description);
       } catch (error) {}
     }
   };
+
+  const toast = useToast();
 
   const updateUserData = async () => {
     if (address) {
@@ -54,10 +59,17 @@ const EditProfile: NextPage = () => {
           description,
           avatar: avatarUpload || image,
         });
-        await replace(`/music/address/${address}`, undefined, {
-          shallow: true,
+        back();
+      } catch (error: any) {
+        toast({
+          title: "Error",
+          description: error.message,
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+          position: "top-right",
         });
-      } catch (error) {}
+      }
     }
   };
 

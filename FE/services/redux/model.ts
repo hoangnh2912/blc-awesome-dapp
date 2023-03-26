@@ -1,6 +1,6 @@
 import { Action } from "easy-peasy";
 import AudioPlayer from "react-h5-audio-player";
-import { GetMarketOutput } from "../api/types";
+import { GetMarketOutput, GetUserOutput } from "../api/types";
 
 interface Music {
   currentSong: GetMarketOutput | undefined;
@@ -17,8 +17,8 @@ interface Music {
 }
 
 interface User {
-  isLogin: boolean;
-  setIsLogin: Action<User, boolean>;
+  data: GetUserOutput | undefined;
+  setData: Action<User, GetUserOutput | undefined>;
 }
 
 interface StoreModel {

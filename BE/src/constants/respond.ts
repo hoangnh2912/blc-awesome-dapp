@@ -3,6 +3,8 @@ type SuccessResponse<T> = {
   data: T | any;
   message: string;
   success: boolean;
+  count: number;
+  total: number;
 };
 
 type Some<T> = {
@@ -31,26 +33,32 @@ function onError(error: any, message?: string): ErrorResponse {
   };
 }
 
-function onSuccess<T>(data?: T): SuccessResponse<T> {
+function onSuccess<T>(data?: T, total: number = 1): SuccessResponse<T> {
   return {
     data: data || null,
     success: true,
     message: Constant.NETWORK_STATUS_MESSAGE.SUCCESS,
+    count: data ? (typeof data == 'object' && 'length' in data ? (data as any).length : 1) : 0,
+    total,
   };
 }
 
-function onSuccessArray<T>(data: T[]): SuccessResponse<T[]> {
+function onSuccessArray<T>(data: T[], total: number = 1): SuccessResponse<T[]> {
   if (data && data.length != 0) {
     return {
       data,
       success: true,
       message: Constant.NETWORK_STATUS_MESSAGE.SUCCESS,
+      count: data.length,
+      total,
     };
   }
   return {
     data: [],
     success: true,
     message: Constant.NETWORK_STATUS_MESSAGE.EMPTY,
+    count: 0,
+    total: 0,
   };
 }
 

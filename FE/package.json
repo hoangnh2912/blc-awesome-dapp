@@ -11,6 +11,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ajna/pagination": "^1.4.19",
     "@chakra-ui/card": "^2.1.6",
     "@chakra-ui/icons": "^2.0.17",
     "@chakra-ui/react": "^1.8.8",
