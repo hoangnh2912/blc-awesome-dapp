@@ -85,10 +85,10 @@ const ChartMiddle = () => {
 const Topbar = () => (
   <Flex
     bg={"gray.100"}
-    h="81px"
+    h={"81px"}
     w={"100%"}
     align="center"
-    p={3}
+    p={5}
     justifyContent={"center"}
   >
     <Flex>
@@ -99,7 +99,7 @@ const Topbar = () => (
 
 const Statistic = () => {
   return (
-    <StatGroup p={3} flex={2}>
+    <StatGroup p={3} flex={1}>
       <Flex>
         <Flex p={16}>
           <Stat>

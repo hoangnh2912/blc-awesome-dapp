@@ -56,6 +56,64 @@ const PopoverTrigger = (props: FlexProps) => {
   return <ExPopoverTrigger {...props} />;
 };
 
+const ModalSwitchNetwork = () => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [network, setNetwork] = useNetwork();
+  const disconnect = useDisconnect();
+  const switchNetwork = async () => {
+    if (network.data.chain?.id == ChainId.Mumbai && isOpen) {
+      onClose();
+    } else if (setNetwork) {
+      await setNetwork(ChainId.Mumbai);
+    }
+  };
+
+  useEffect(() => {
+    if (network.data.chain) {
+      const currentChainId = network.data.chain.id;
+      if (currentChainId !== ChainId.Mumbai && !isOpen) {
+        onOpen();
+      } else if (currentChainId == ChainId.Mumbai && isOpen) {
+        onClose();
+      }
+    }
+  }, [network.data.chain?.id]);
+
+  return (
+    <Modal
+      isCentered
+      isOpen={isOpen}
+      closeOnOverlayClick
+      onClose={() => {
+        disconnect();
+        onClose();
+      }}
+      scrollBehavior="inside"
+    >
+      <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(10px) " />
+      <ModalContent>
+        <ModalHeader>Wrong network</ModalHeader>
+        <ModalCloseButton />
+        <ModalBody>
+          <Text>Current network not support</Text>
+          <Center mt={4}>
+            <Button
+              onClick={switchNetwork}
+              _hover={{ bg: "#3443DD" }}
+              color="white"
+              bg="#3443A0"
+            >
+              Switch to Mumbai network
+            </Button>
+          </Center>
+        </ModalBody>
+
+        <ModalFooter />
+      </ModalContent>
+    </Modal>
+  );
+};
+
 const ModalSignMessage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const setIsLoginAction = useStoreActions((state) => state.user.setIsLogin);
@@ -124,10 +182,10 @@ const ModalSignMessage = () => {
   );
 };
 
-const User = () => (
+const User = ({name, avatar}: {name: string, avatar: string}) => (
   <Flex p={3} align={"center"} _hover={{ bg: "gray.100", cursor: "pointer" }}>
-    <Avatar src="" marginEnd={3} />
-    <Text>User 1</Text>
+    <Avatar src={avatar} marginEnd={3} />
+    <Text>{name}</Text>
   </Flex>
 );
 
@@ -267,13 +325,27 @@ const LoginButton = () => {
   );
 };
 
-const ListUser = async () => {
-  const user = await ApiServices.roomChat.getRoomList();
-  const [listUser, setListUser] = useState<GetRoomList[]>([]);
-  return user;
-};
 
-const ChatSidebar: NextPage = () => (
+
+const ChatSidebar: NextPage = () => {
+  const [listUser, setListUser] = useState<GetRoomList[]>();
+
+  const getListUser = async () => {
+    try {
+      const user = await ApiServices.roomChat.getRoomList();
+      console.log(user);
+      
+      setListUser(user.data.data);
+    
+    } catch (error) {}
+    
+  };
+  useEffect(() => {
+    
+    getListUser()
+  }, [])
+  
+  return (
   <Flex
     // bg={"blue.100"}
     w="300px"
@@ -282,6 +354,8 @@ const ChatSidebar: NextPage = () => (
     borderColor="gray.200"
     direction={"column"}
   >
+    <ModalSwitchNetwork />
+    <ModalSignMessage />
     <Flex
       // bg="red.100"
       h="81px"
@@ -315,21 +389,12 @@ const ChatSidebar: NextPage = () => (
       flex={1}
       //   sx={{ scrollbarWidth: "none" }}
     >
-      <User />
-      <User />
-      <User />
-      <User />
-      <User />
-      <User />
-      <User />
-      <User />
-      <User />
-      <User />
-      <User />
-      <User />
-      <User />
+      {listUser?.map((item ) => {
+        return <User name={item.name} avatar={item.avatar}/>
+      })}
+      
     </Flex>
   </Flex>
-);
+)};
 
 export default ChatSidebar;
