@@ -181,4 +181,27 @@ export class MarketService {
     }
     return null;
   }
+  public async getNextId() {
+    const lastId = await Market.aggregate([
+      {
+        $addFields: {
+          idNumber: {
+            $toInt: '$id',
+          },
+        },
+      },
+      {
+        $sort: {
+          idNumber: -1,
+        },
+      },
+      {
+        $limit: 1,
+      },
+    ]);
+    if (lastId.length > 0) {
+      return lastId[0].idNumber + 1;
+    }
+    return 1;
+  }
 }

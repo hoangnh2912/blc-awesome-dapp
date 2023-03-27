@@ -77,24 +77,31 @@ const ModalCheckConnect = () => {
   );
   const { isOpen, onOpen, onClose } = useDisclosure({
     onClose: () => {
-      setIsCheckConnectAction(false);
+      setIsCheckConnectAction({
+        isCheckConnect: false,
+        args: undefined,
+        callback: undefined,
+      });
     },
   });
   const [{ data }] = useConnect();
-  const isCheckConnectState = useStoreState(
-    (state) => state.user.isCheckConnect
+  const isCheckConnectDataState = useStoreState(
+    (state) => state.user.isCheckConnectData
   );
   const connectWithMetamask = useMetamask();
   const connectWithWalletConnect = useWalletConnect();
   const connectCoinbase = useCoinbaseWallet();
 
   useEffect(() => {
-    if (!data.connected && isCheckConnectState) {
+    if (!data.connected && isCheckConnectDataState.isCheckConnect) {
       onOpen();
     } else {
+      if (isCheckConnectDataState.args && isCheckConnectDataState.callback) {
+        isCheckConnectDataState.callback(...isCheckConnectDataState.args);
+      }
       onClose();
     }
-  }, [data.connected, isCheckConnectState]);
+  }, [data.connected, isCheckConnectDataState.isCheckConnect]);
 
   return (
     <Modal
@@ -636,7 +643,7 @@ const AppNav = ({ onOpen }: AppNavProps) => {
             _hover={{ bg: "transparent" }}
             boxShadow={"2xl"}
           >
-            <CgProfile size={30} color={"#C2A822"} />
+            <CgProfile size={30} color={"#fcae00"} />
           </Button>
         </PopoverTrigger>
         <PopoverContent>

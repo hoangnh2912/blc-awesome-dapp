@@ -144,6 +144,7 @@ const ApiServices = {
           limit,
         },
       }),
+    getNextId: () => AxiosGet<number>("/market/next-id"),
   },
   user: {
     getUser: (address: string) =>
@@ -162,6 +163,8 @@ const ApiServices = {
           "Content-Type": "multipart/form-data",
         },
       }),
+    uploadJson: (payload: any) =>
+      AxiosPost<string>("/ipfs/upload-json", payload),
   },
 };
 

@@ -148,7 +148,7 @@ const EditProfile: NextPage = () => {
             _hover={{
               bg: "#0D166D",
             }}
-            border="3px solid #C2A822"
+            border="3px solid #fcae00"
             bg="#0D164D"
             style={{
               aspectRatio: "1",
@@ -243,7 +243,7 @@ const EditProfile: NextPage = () => {
             fontFamily="mono"
             onClick={updateUserData}
             fontWeight="bold"
-            color="#C2A822"
+            color="#fcae00"
             bg="#3443A0"
             w={{
               base: "100%",

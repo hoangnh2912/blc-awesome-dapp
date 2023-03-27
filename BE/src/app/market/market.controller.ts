@@ -66,4 +66,16 @@ export class MarketController extends Controller {
       return onError(NETWORK_STATUS_MESSAGE.INTERNAL_SERVER_ERROR);
     }
   }
+
+  @Get('next-id')
+  public async getNextId(): Promise<OptionResponse<number>> {
+    try {
+      const lastId = await Singleton.getMarketInstance().getNextId();
+      return onSuccess(lastId);
+    } catch (error) {
+      logger.error(error);
+      this.setStatus(NETWORK_STATUS_CODE.INTERNAL_SERVER_ERROR);
+      return onError(NETWORK_STATUS_MESSAGE.INTERNAL_SERVER_ERROR);
+    }
+  }
 }

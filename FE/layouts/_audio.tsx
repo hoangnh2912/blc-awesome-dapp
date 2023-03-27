@@ -2,6 +2,7 @@ import { Box, Center, Image, Stack, Text } from "@chakra-ui/react";
 import { useCallback } from "react";
 import AudioPlayer from "react-h5-audio-player";
 import { MdOutlineQueueMusic } from "react-icons/md";
+import { NO_IMAGE } from "../constants/constants";
 import { useStoreActions, useStoreState } from "../services/redux/hook";
 const AudioLayout = ({ children }: { children: React.ReactNode }) => {
   const audioState = useStoreState((state) => state.music.audio);
@@ -67,7 +68,9 @@ const AudioLayout = ({ children }: { children: React.ReactNode }) => {
             >
               <Image
                 alt="music"
-                src={currentSongState?.image}
+                src={
+                  currentSongState?.image ? currentSongState?.image : NO_IMAGE
+                }
                 h={"100px"}
                 w={"100px"}
                 borderRadius="lg"

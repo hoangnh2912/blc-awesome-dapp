@@ -6,6 +6,7 @@ interface Music {
   currentSong: GetMarketOutput | undefined;
   isPlaying: boolean;
   playMusic: Action<Music, GetMarketOutput>;
+  updateMusicMetadata: Action<Music, GetMarketOutput>;
   audio: AudioPlayer | undefined;
   setAudio: Action<Music, AudioPlayer>;
   setIsPlaying: Action<Music, boolean>;
@@ -21,8 +22,19 @@ interface Music {
 interface User {
   data: GetUserOutput | undefined;
   setData: Action<User, GetUserOutput | undefined>;
-  isCheckConnect: boolean;
-  setIsCheckConnect: Action<User, boolean>;
+  isCheckConnectData: {
+    isCheckConnect: boolean;
+    callback?: (...args: any) => any;
+    args?: any;
+  };
+  setIsCheckConnect: Action<
+    User,
+    {
+      isCheckConnect: boolean;
+      callback?: (...args: any) => any;
+      args?: any;
+    }
+  >;
 }
 
 interface StoreModel {
