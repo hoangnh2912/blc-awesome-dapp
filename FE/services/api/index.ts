@@ -136,6 +136,10 @@ const ApiServices = {
         },
       }),
   },
+  renting: {
+    erc4907: (payload: ERC721Input) =>
+      AxiosPost<TokenCreatorOutput>("renting/erc4907", payload)
+  },
   user: {
     getUser: () => AxiosGet<GetUserOutput>("/user/get-user"),
     createUser: (payload: any) =>

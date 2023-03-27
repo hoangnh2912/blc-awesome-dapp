@@ -1,15 +1,25 @@
 import { Constant, logger, onError, onSuccess, OptionResponse } from '@constants';
-import { SignatureMiddleware } from '@middlewares';
+// import { SignatureMiddleware } from '@middlewares';
 import { Singleton } from '@providers';
 import { IUser } from '@schemas';
-import { Body, Controller, Get, Middlewares, Post, Request, Route, Security, Tags } from 'tsoa';
+import {
+  Body,
+  Controller,
+  Get,
+  // Middlewares,
+  Post,
+  Request,
+  Route,
+  Security,
+  Tags,
+} from 'tsoa';
 import { CreateUserInput } from './user';
 
 const { NETWORK_STATUS_CODE, NETWORK_STATUS_MESSAGE } = Constant;
 @Tags('user')
 @Route('user')
 @Security('authorize')
-@Middlewares([SignatureMiddleware])
+// @Middlewares([SignatureMiddleware])
 export class UserController extends Controller {
   @Post('create-user')
   public async createUser(

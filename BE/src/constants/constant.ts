@@ -123,7 +123,7 @@ const Constant = {
     NOT_ENOUGH_RIGHT: 'Not Enough Rights',
   },
   CONFIG_CONTRACT,
-  ROOT_PATH: __dirname.replace('build/src/constants', ''),
+  ROOT_PATH: __dirname.replace('build\\src\\constants', ''),
   MUSIC_MARKET_EVENT: {
     ListSong: 'ListSong',
     BuySong: 'BuySong',
