@@ -13,8 +13,6 @@ import {
   Security,
   Tags,
   Request,
-  Patch,
-  Delete,
 } from 'tsoa';
 import { Constant, logger, onError, onSuccess, onSuccessArray, OptionResponse } from '@constants';
 import { SignatureMiddleware } from '@middlewares';
@@ -32,8 +30,8 @@ const { NETWORK_STATUS_CODE, NETWORK_STATUS_MESSAGE } = Constant;
 export class MessageController extends Controller {
   private messageService = Singleton.getMessageInstance();
 
-  @Get('get-message-in-room-v2')
-  public async getMessageV2(
+  @Get('get-message-in-room')
+  public async getMessage(
     @Request() req: exRequest,
     @Query() room_id: string,
     @Query() page: number,
@@ -65,8 +63,8 @@ export class MessageController extends Controller {
     }
   }
 
-  @Patch('update-message-v2')
-  public async updateMessageV2(
+  @Post('update-message')
+  public async updateMessage(
     @Request() req: exRequest,
     @Body()
     data: {
@@ -86,7 +84,7 @@ export class MessageController extends Controller {
     }
   }
 
-  @Patch('react-message')
+  @Post('react-message')
   public async reactMessage(
     @Request() req: exRequest,
     @Body() inputParam: { message_id: string; emoji: string },
@@ -107,7 +105,7 @@ export class MessageController extends Controller {
     }
   }
 
-  @Patch('remove-reaction')
+  @Post('remove-reaction')
   public async removeReact(
     @Request() req: exRequest,
     @Body()
@@ -132,7 +130,7 @@ export class MessageController extends Controller {
     }
   }
 
-  @Delete('delete-message')
+  @Post('delete-message')
   public async deleteMessage(
     @Request() req: exRequest,
     @Body()

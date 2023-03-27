@@ -50,7 +50,7 @@ import { FaUser } from "react-icons/fa";
 import { useRouter } from "next/router";
 import { IoLogOut } from "react-icons/io5";
 import ApiServices from "../services/api";
-import { GetRoomList } from "../services/api/types";
+import { GetRoomInfo } from "../services/api/types";
 
 const PopoverTrigger = (props: FlexProps) => {
   return <ExPopoverTrigger {...props} />;
@@ -117,7 +117,7 @@ const ModalSwitchNetwork = () => {
 const ModalSignMessage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const setUserDataAction = useStoreActions((state) => state.chatUser.setData);
-  
+
   const sdk = useSDK();
   const address = useAddress();
   const [network] = useNetwork();
@@ -152,9 +152,8 @@ const ModalSignMessage = () => {
         ) {
           setUserDataAction(undefined);
           onOpen();
-        }
-        else {
-          getUserData()
+        } else {
+          getUserData();
         }
       } else if (isOpen) {
         onClose();
@@ -195,7 +194,7 @@ const ModalSignMessage = () => {
   );
 };
 
-const User = ({name, avatar}: {name: string, avatar: string}) => (
+const User = ({ name, avatar }: { name: string; avatar: string }) => (
   <Flex p={3} align={"center"} _hover={{ bg: "gray.100", cursor: "pointer" }}>
     <Avatar src={avatar} marginEnd={3} />
     <Text>{name}</Text>
@@ -338,76 +337,76 @@ const LoginButton = () => {
   );
 };
 
-
-
 const ChatSidebar: NextPage = () => {
-  const [listUser, setListUser] = useState<GetRoomList[]>();
+  const [listUser, setListUser] = useState<GetRoomInfo[]>();
 
   const getListUser = async () => {
     try {
       const user = await ApiServices.roomChat.getRoomList();
       console.log(user);
-      
+
       setListUser(user.data.data);
-    
     } catch (error) {}
-    
   };
   useEffect(() => {
-    
-    getListUser()
-  }, [])
-  
+    getListUser();
+  }, []);
+
   return (
-  <Flex
-    // bg={"blue.100"}
-    w="300px"
-    h="100%"
-    borderEnd={"1px solid"}
-    borderColor="gray.200"
-    direction={"column"}
-  >
-    <ModalSwitchNetwork />
-    <ModalSignMessage />
     <Flex
-      // bg="red.100"
-      h="81px"
-      w="100%"
-      align={"center"}
-      justifyContent="space-between"
-      p={3}
-      borderBottom="1px solid"
-      borderColor={"gray.200"}
+      // bg={"blue.100"}
+      w="300px"
+      h="100%"
+      borderEnd={"1px solid"}
+      borderColor="gray.200"
+      direction={"column"}
     >
-      <Flex align={"center"}>
-        {/* <Avatar src="" marginEnd={3} /> */}
-        <LoginButton />
+      <ModalSwitchNetwork />
+      <ModalSignMessage />
+      <Flex
+        // bg="red.100"
+        h="81px"
+        w="100%"
+        align={"center"}
+        justifyContent="space-between"
+        p={3}
+        borderBottom="1px solid"
+        borderColor={"gray.200"}
+      >
+        <Flex align={"center"}>
+          {/* <Avatar src="" marginEnd={3} /> */}
+          <LoginButton />
 
-        <Text>Anders</Text>
+          <Text>Anders</Text>
+        </Flex>
+
+        <IconButton
+          icon={<ArrowLeftIcon />}
+          aria-label={""}
+          size="sm"
+          isRound
+        />
       </Flex>
-
-      <IconButton icon={<ArrowLeftIcon />} aria-label={""} size="sm" isRound />
+      <Button m={5} p={4}>
+        New Chat
+      </Button>
+      <Flex
+        overflowX={"scroll"}
+        direction="column"
+        sx={{
+          "&::-webkit-scrollbar": {
+            width: "1px",
+          },
+        }}
+        flex={1}
+        //   sx={{ scrollbarWidth: "none" }}
+      >
+        {listUser?.map((item) => {
+          return <User name={item.name} avatar={item.avatar} />;
+        })}
+      </Flex>
     </Flex>
-    <Button m={5} p={4}>
-      New Chat
-    </Button>
-    <Flex
-      overflowX={"scroll"}
-      direction="column"
-      sx={{
-        "&::-webkit-scrollbar": {
-          width: "1px",
-        },
-      }}
-      flex={1}
-      //   sx={{ scrollbarWidth: "none" }}
-    >
-      {listUser?.map((item ) => {
-        return <User name={item.name} avatar={item.avatar}/>
-      })}
-      
-    </Flex>
-  </Flex>
-)};
+  );
+};
 
 export default ChatSidebar;

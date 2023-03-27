@@ -283,7 +283,6 @@ class RoomService {
           };
         }),
       );
-      console.log(`here`);
 
       // console.log(listRoomWithRole)
 
@@ -668,7 +667,7 @@ class RoomService {
     }
   }
 
-  public async hiddenRoom(roomId: string, address: string): Promise<Some<IRoom>> {
+  public async hideRoom(roomId: string, address: string): Promise<Some<IRoom>> {
     try {
       const filter = {
         _id: roomId,

@@ -102,7 +102,7 @@ interface GetMarketOutput {
   deleted_at?: Date;
 }
 
-interface GetRoomList {
+interface GetRoomInfo {
   _id: string;
   name: string;
   avatar: string;
@@ -178,6 +178,33 @@ interface GetChatUserOutput {
   is_minter: boolean;
 }
 
+interface GetMessageOutput {
+  _id: string;
+  room_id: string;
+  sender_user: {
+    avatar: string;
+    wallet_address: string;
+    name: string;
+  };
+  message_data: string;
+  is_forwarded: boolean;
+  created_at: Date;
+  message_status: string;
+  is_notification: boolean;
+  reaction: [
+    {
+      emoji: string;
+      users: [
+        {
+          wallet_address: string;
+        }
+      ];
+      at: Date;
+    }
+  ];
+  cid: string;
+}
+
 export type {
   ERC20Input,
   TokenCreatorOutput,
@@ -192,6 +219,7 @@ export type {
   GetStealAddressOutput,
   GetMarketOutput,
   GetUserOutput,
-  GetRoomList,
+  GetRoomInfo,
   GetChatUserOutput,
+  GetMessageOutput,
 };

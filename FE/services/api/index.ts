@@ -11,8 +11,9 @@ import {
   GetStealAddressOutput,
   GetMarketOutput,
   GetUserOutput,
-  GetRoomList,
+  GetRoomInfo,
   GetChatUserOutput,
+  GetMessageOutput,
 } from "./types";
 type SuccessResponse<T> = {
   data: T;
@@ -166,10 +167,107 @@ const ApiServices = {
       }),
   },
   roomChat: {
-    getRoomList: () => AxiosGet<GetRoomList[]>("/room/get-room-list"),
+    getRoomList: (page: number = 0, limit: number = 15) =>
+      AxiosGet<GetRoomInfo[]>("/room/get-room-list", {
+        params: { page, limit },
+      }),
+    getRoomInfo: (page: number = 0, limit: number = 15) =>
+      AxiosGet<GetRoomInfo>("/room/get-room-info", { params: { page, limit } }),
+    getPublicRoomList: (
+      page: number = 0,
+      limit: number = 15,
+      filter?: string
+    ) =>
+      AxiosGet<GetRoomInfo[]>("/room/get-public-room-list", {
+        params: { page, limit, filter },
+      }),
+    getAllEncryptedMessageWithDmtp: () =>
+      AxiosGet<GetRoomInfo[]>("/room/get-all-encrypted-message-with-dmtp"),
+    createRoom: (payload: any) =>
+      AxiosPost<GetRoomInfo>("/room/create-room", payload),
+    addUserOfRoom: (payload: any) =>
+      AxiosPost<GetRoomInfo>("/room/add-user-of-room", payload),
+    hideRoom: (payload: any) =>
+      AxiosPost<GetRoomInfo>("/room/hide-room", payload),
+    joinPublicRoom: (payload: any) =>
+      AxiosPost<GetRoomInfo>("/room/join-public-room", payload),
+    removeUserOfRoom: (payload: any) =>
+      AxiosPost<GetRoomInfo>("/room/remove-user-of-room", payload),
+    setRoleOfRoom: (payload: any) =>
+      AxiosPost<GetRoomInfo>("/room/set-role-of-room", payload),
+    removeRoom: (payload: any) =>
+      AxiosPost<GetRoomInfo>("/room/remove-room", payload),
+    updateRoom: (payload: any) =>
+      AxiosPost<GetRoomInfo>("/room/update-room", payload),
+    readMessage: (payload: any) =>
+      AxiosPost<GetRoomInfo>("/room/read-message", payload),
   },
   chatUser: {
     userInfo: () => AxiosGet<GetChatUserOutput>("/chat-user/user-info"),
+    getUserByAddress: (address: string) =>
+      AxiosGet<GetChatUserOutput>("/chat-user/get-user-by-address", {
+        params: { address },
+      }),
+    getUsersByName: (name: string) =>
+      AxiosGet<GetChatUserOutput>("/chat-user/get-user-by-name", {
+        params: { name },
+      }),
+    createOrUpdateUserInfo: (payload: any) =>
+      AxiosPost<GetChatUserOutput>(
+        "/chat-user/create-or-update-user-info",
+        payload
+      ),
+    createUserAddress: (payload: any) =>
+      AxiosPost<GetChatUserOutput>("/chat-user/create-user-address", payload),
+    sendFriendRequest: (payload: any) =>
+      AxiosPost<GetChatUserOutput>("/chat-user/send-friend-request", payload),
+    getFriendRequests: () =>
+      AxiosGet<GetChatUserOutput>("/chat-user/get-friend-requests"),
+    acceptFriendRequest: (payload: any) =>
+      AxiosPost<GetChatUserOutput>("/chat-user/accept-friend-request", payload),
+    getFriendList: (filter: string) =>
+      AxiosGet<GetChatUserOutput>("/chat-user/get-friend-list", {
+        params: { filter },
+      }),
+    deleteFriendRequest: (payload: any) =>
+      AxiosPost<GetChatUserOutput>("/chat-user/delete-friend-request", payload),
+    cancelFriendRequest: (payload: any) =>
+      AxiosPost<GetChatUserOutput>("/chat-user/cancel-friend-request", payload),
+    unfriend: (payload: any) =>
+      AxiosPost<GetChatUserOutput>("/chat-user/unfriend", payload),
+    getTotalUnread: (addressList: string) =>
+      AxiosGet<GetChatUserOutput>("/chat-user/get-total-unread", {
+        params: { addressList },
+      }),
+    getAvatarOfWallet: (wallet_address: string) =>
+      AxiosGet<GetChatUserOutput>("/chat-user/avatar", {
+        params: { wallet_address },
+      }),
+    submitKeyPair: (payload: any) =>
+      AxiosPost<GetChatUserOutput>("/chat-user/submit-key-pair", payload),
+    generateApiKey: (payload: any) =>
+      AxiosPost<GetChatUserOutput>("/chat-user/generate-api-key", payload),
+  },
+  privateMessage: {
+    getMessage: (
+      room_id: string,
+      page?: number,
+      limit?: number,
+      isDescending?: boolean
+    ) =>
+      AxiosGet<GetMessageOutput>("/message/get-message-in-room", {
+        params: { room_id, page, limit, isDescending },
+      }),
+
+    updateMessage: (payload: any) =>
+      AxiosPost<GetMessageOutput>("/message/update-message", payload),
+
+    reactMessage: (payload: any) =>
+      AxiosPost<GetMessageOutput>("/message/react-message", payload),
+    removeReact: (payload: any) =>
+      AxiosPost<GetMessageOutput>("/message/remove-reaction", payload),
+    renewMessage: (payload: any) =>
+      AxiosPost<GetMessageOutput>("/message/renew-message", payload),
   },
 };
 

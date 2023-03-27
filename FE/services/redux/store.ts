@@ -70,6 +70,12 @@ const store = createStore<StoreModel>({
       state.isCheckConnect = payload;
     }),
   },
+  chatUser: {
+    data: undefined,
+    setData: action((state, payload) => {
+      state.data = payload;
+    }),
+  },
 });
 
 export default store;

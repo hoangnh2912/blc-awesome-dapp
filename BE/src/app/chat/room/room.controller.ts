@@ -180,7 +180,7 @@ export class RoomController extends Controller {
     }
   }
 
-  @Post('hidden-room')
+  @Post('hide-room')
   public async hiddenRoom(
     @Request() req: exRequest,
     @Body() inputParam: { roomId: string },
@@ -188,7 +188,7 @@ export class RoomController extends Controller {
     try {
       const address = req.headers.address as string;
 
-      const updatedRoom = await this.roomService.hiddenRoom(inputParam.roomId, address);
+      const updatedRoom = await this.roomService.hideRoom(inputParam.roomId, address);
       if (!updatedRoom.status) {
         this.setStatus(NETWORK_STATUS_CODE.BAD_REQUEST);
         return onError(updatedRoom.message);
