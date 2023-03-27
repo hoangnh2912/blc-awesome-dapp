@@ -1,30 +1,23 @@
-import { Box, Image, Spinner, Stack, Text, useToast } from "@chakra-ui/react";
-import { useAddress, useSDK } from "@thirdweb-dev/react";
-import { ethers } from "ethers";
+import { Box, Image, Stack, Text } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { FaPlay } from "react-icons/fa";
 import { TiMediaPause } from "react-icons/ti";
-import { ABI_MUSIC } from "../constants/abi";
 import { ipfsToGateway } from "../constants/utils";
 import { GetMarketOutput } from "../services/api/types";
 import { useStoreActions, useStoreState } from "../services/redux/hook";
-import LinkScan from "./link-scan";
-import { signERC2612Permit } from "eth-permit";
-import { useModalTransaction } from "./modal-transaction";
+import { useBuyMusic } from "../hooks/music";
 
-const SongNFTComponent = ({
-  image,
-  name,
-  singer,
-  price,
-  id,
-  audio,
-  ...rest
-}: GetMarketOutput) => {
+const SongNFTComponent = (props: GetMarketOutput) => {
+  const { image, name, singer, price, id, audio, ...rest } = props;
   const playMusicAction = useStoreActions((state) => state.music.playMusic);
+  const addToPlayListAction = useStoreActions(
+    (state) => state.music.addToPlayList
+  );
   const currentSongState = useStoreState((state) => state.music.currentSong);
   const isPlayingState = useStoreState((state) => state.music.isPlaying);
+  const userInfoData = useStoreState((state) => state.user.data);
 
+  const isOwnNft = userInfoData?.ids?.includes(id);
   const onPlayMusic = () => {
     playMusicAction({
       audio: ipfsToGateway(audio),
@@ -49,128 +42,7 @@ const SongNFTComponent = ({
     );
   };
 
-  const sdk = useSDK();
-  const address = useAddress();
-  const { onOpen: onOpenModalTx, setTxResult } = useModalTransaction();
-
-  const toast = useToast();
-
-  const permitMuc = async (priceMuc: string) => {
-    if (!sdk) return;
-    if (!onOpenModalTx) return;
-    if (!address) return;
-    const mucContract = await sdk.getContractFromAbi(
-      ABI_MUSIC.MUC.address,
-      ABI_MUSIC.MUC.abi
-    );
-    const { value } = await mucContract.erc20.balanceOf(address);
-
-    if (value.lt(priceMuc)) {
-      toast({
-        title: "Insufficient balance",
-        description: "Please top up your MUC balance",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-        position: "top-right",
-      });
-      return;
-    }
-
-    onOpenModalTx();
-
-    const allowance = await mucContract.erc20.allowance(
-      ABI_MUSIC.MusicMarket.address
-    );
-
-    if (allowance.value.gte(priceMuc)) return;
-
-    const result = await signERC2612Permit(
-      window.ethereum,
-      ABI_MUSIC.MUC.address,
-      address,
-      ABI_MUSIC.MusicMarket.address,
-      priceMuc
-    );
-    setTxResult({
-      reason: "",
-      content: [
-        {
-          title: "Approve Signature",
-          value: result.r + result.s + result.v,
-        },
-        {
-          title: "Buy Transaction Hash",
-          value: <Spinner colorScheme="green.500" />,
-        },
-      ],
-      txState: "success",
-    });
-    return result;
-    // await mucContract.call(
-    //   "permit",
-    //   result.owner,
-    //   result.spender,
-    //   result.value,
-    //   result.deadline,
-    //   result.v,
-    //   result.r,
-    //   result.s
-    // );
-    // const res = await mucContract.call(
-    //   "approve",
-    //   ABI_MUSIC.MusicMarket.address,
-    //   priceMuc
-    // );
-  };
-
-  const onBuy = async () => {
-    if (sdk && onOpenModalTx && address) {
-      try {
-        const musicMarketContract = await sdk.getContractFromAbi(
-          ABI_MUSIC.MusicMarket.address,
-          ABI_MUSIC.MusicMarket.abi
-        );
-
-        const approveMuc = await permitMuc(
-          ethers.utils.parseEther(price).toString()
-        );
-        if (!approveMuc) return;
-        onOpenModalTx();
-        const res = await musicMarketContract.call(
-          "buySong",
-          ABI_MUSIC.Music.address,
-          id,
-          approveMuc.deadline,
-          approveMuc.v,
-          approveMuc.r,
-          approveMuc.s
-        );
-        setTxResult({
-          reason: "",
-          content: [
-            ...[
-              approveMuc && {
-                title: "Approve Transaction Hash",
-                value: approveMuc.r + approveMuc.s + approveMuc.v,
-              },
-            ],
-            {
-              title: "Transaction Hash",
-              value: <LinkScan transactionHash={res.receipt.transactionHash} />,
-            },
-          ],
-          txState: "success",
-        });
-      } catch (error: any) {
-        setTxResult({
-          reason: error.message,
-          content: [],
-          txState: "error",
-        });
-      }
-    }
-  };
+  const { onBuy } = useBuyMusic();
 
   return (
     <Box
@@ -235,21 +107,41 @@ const SongNFTComponent = ({
             justifyContent="space-between"
             direction="row"
           >
-            <Text
-              onClick={onBuy}
-              cursor="pointer"
-              fontWeight="bold"
-              color="white"
-              borderRadius="3xl"
-              backgroundColor="#0D164D"
-              p="1"
-              px="2"
-              fontSize="sm"
-              borderWidth="2px"
-              letterSpacing="widest"
-            >
-              Buy now
-            </Text>
+            {!isOwnNft ? (
+              <Text
+                onClick={() => onBuy(price, id)}
+                cursor="pointer"
+                fontWeight="bold"
+                color="white"
+                borderRadius="3xl"
+                backgroundColor="#0D164D"
+                p="1"
+                px="2"
+                fontSize="sm"
+                borderWidth="2px"
+                letterSpacing="widest"
+              >
+                Buy now
+              </Text>
+            ) : (
+              <Text
+                onClick={() => {
+                  addToPlayListAction(props);
+                }}
+                cursor="pointer"
+                fontWeight="bold"
+                color="white"
+                borderRadius="3xl"
+                backgroundColor="#C2A822"
+                p="1"
+                px="2"
+                fontSize="sm"
+                borderWidth="2px"
+                letterSpacing="widest"
+              >
+                Add to playlist
+              </Text>
+            )}
             <Box
               w="40px"
               cursor="pointer"

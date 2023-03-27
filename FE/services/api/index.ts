@@ -16,6 +16,7 @@ type SuccessResponse<T> = {
   data: T;
   message: string;
   success: boolean;
+  total: number;
 };
 const BASE_URL =
   process.env.NODE_ENV == "development"
@@ -128,11 +129,19 @@ const ApiServices = {
           id,
         },
       }),
-    getMyCollection: () => AxiosGet<GetMarketOutput[]>("/music/list-song"),
-    getMyMarket: (address: string) =>
+    getMyCollection: (page: number = 1, limit: number = 24) =>
+      AxiosGet<GetMarketOutput[]>("/music/list-song", {
+        params: {
+          page,
+          limit,
+        },
+      }),
+    getMyMarket: (address: string, page: number = 1, limit: number = 24) =>
       AxiosGet<GetMarketOutput[]>("/market/list-my-market", {
         params: {
           address,
+          page,
+          limit,
         },
       }),
   },
@@ -141,7 +150,12 @@ const ApiServices = {
       AxiosPost<TokenCreatorOutput>("renting/erc4907", payload)
   },
   user: {
-    getUser: () => AxiosGet<GetUserOutput>("/user/get-user"),
+    getUser: (address: string) =>
+      AxiosGet<GetUserOutput>("/user/get-user", {
+        params: {
+          address,
+        },
+      }),
     createUser: (payload: any) =>
       AxiosPost<GetUserOutput>("/user/create-user", payload),
   },

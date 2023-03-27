@@ -8,6 +8,7 @@ import {
   Get,
   // Middlewares,
   Post,
+  Query,
   Request,
   Route,
   Security,
@@ -43,10 +44,9 @@ export class UserController extends Controller {
   }
 
   @Get('get-user')
-  public async getUser(@Request() request: any): Promise<OptionResponse<IUser>> {
+  public async getUser(@Query() address: string): Promise<OptionResponse<IUser>> {
     try {
-      const address = request.headers.address;
-      return onSuccess(await Singleton.getUserInstance().getUser(address));
+      return onSuccess(await Singleton.getUserInstance().getUser(`${address}`.toLowerCase()));
     } catch (error) {
       logger.error(error);
       this.setStatus(NETWORK_STATUS_CODE.INTERNAL_SERVER_ERROR);

@@ -101,14 +101,27 @@ export class MarketService {
     ]);
   }
 
-  public async getMyMarket(seller: string) {
-    return await Market.aggregate([
+  public async getMyMarket(seller: string, page: number = 1, limit: number = 24) {
+    const market = await Market.aggregate([
       {
         $match: {
           seller,
         },
       },
+      {
+        $skip: (page - 1) * limit,
+      },
+      {
+        $limit: limit,
+      },
     ]);
+
+    return {
+      market,
+      total: await Market.countDocuments({
+        seller,
+      }),
+    };
   }
 
   public async getHomeMarket() {

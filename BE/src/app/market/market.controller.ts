@@ -48,9 +48,18 @@ export class MarketController extends Controller {
     }
   }
   @Get('list-my-market')
-  public async getMyMarket(@Query() address: string): Promise<OptionResponse<IMarket[]>> {
+  public async getMyMarket(
+    @Query() address: string,
+    @Query() page: number = 1,
+    @Query() limit: number = 24,
+  ): Promise<OptionResponse<IMarket[]>> {
     try {
-      return onSuccess(await Singleton.getMarketInstance().getMyMarket(`${address.toLowerCase()}`));
+      const { market, total } = await Singleton.getMarketInstance().getMyMarket(
+        `${address.toLowerCase()}`,
+        page,
+        limit,
+      );
+      return onSuccess(market, total);
     } catch (error) {
       logger.error(error);
       this.setStatus(NETWORK_STATUS_CODE.INTERNAL_SERVER_ERROR);

@@ -39,11 +39,15 @@ import {
   ConnectWallet,
   useAddress,
   useBalance,
+  useCoinbaseWallet,
+  useConnect,
   useContract,
   useContractWrite,
   useDisconnect,
+  useMetamask,
   useNetwork,
   useSDK,
+  useWalletConnect,
 } from "@thirdweb-dev/react";
 import { useRouter } from "next/router";
 import React, { ReactNode, useEffect, useState } from "react";
@@ -61,15 +65,89 @@ import { useStoreActions, useStoreState } from "../services/redux/hook";
 import SongNFTSmallComponent from "./song-nft-small";
 import { useModalTransaction } from "./modal-transaction";
 import LinkScan from "./link-scan";
+import ApiServices from "../services/api";
 
 const PopoverTrigger = (props: FlexProps) => {
   return <ExPopoverTrigger {...props} />;
 };
 
+const ModalCheckConnect = () => {
+  const setIsCheckConnectAction = useStoreActions(
+    (state) => state.user.setIsCheckConnect
+  );
+  const { isOpen, onOpen, onClose } = useDisclosure({
+    onClose: () => {
+      setIsCheckConnectAction(false);
+    },
+  });
+  const [{ data }] = useConnect();
+  const isCheckConnectState = useStoreState(
+    (state) => state.user.isCheckConnect
+  );
+  const connectWithMetamask = useMetamask();
+  const connectWithWalletConnect = useWalletConnect();
+  const connectCoinbase = useCoinbaseWallet();
+
+  useEffect(() => {
+    if (!data.connected && isCheckConnectState) {
+      onOpen();
+    } else {
+      onClose();
+    }
+  }, [data.connected, isCheckConnectState]);
+
+  return (
+    <Modal
+      isCentered
+      isOpen={isOpen}
+      closeOnOverlayClick
+      onClose={onClose}
+      scrollBehavior="inside"
+    >
+      <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(10px) " />
+      <ModalContent>
+        <ModalHeader>Wallet connect</ModalHeader>
+        <ModalCloseButton />
+        <ModalBody>
+          <Text>Connect your wallet to using this app</Text>
+          <Stack mt={4}>
+            <Button
+              onClick={connectWithMetamask}
+              _hover={{ bg: "#3443DD" }}
+              color="white"
+              bg="#3443A0"
+            >
+              Metamask
+            </Button>
+            <Button
+              onClick={connectWithWalletConnect}
+              _hover={{ bg: "#3443DD" }}
+              color="white"
+              bg="#3443A0"
+            >
+              WalletConnect
+            </Button>
+            <Button
+              onClick={connectCoinbase}
+              _hover={{ bg: "#3443DD" }}
+              color="white"
+              bg="#3443A0"
+            >
+              Coinbase
+            </Button>
+          </Stack>
+        </ModalBody>
+
+        <ModalFooter />
+      </ModalContent>
+    </Modal>
+  );
+};
+
 const ModalSwitchNetwork = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [network, setNetwork] = useNetwork();
   const disconnect = useDisconnect();
+  const [network, setNetwork] = useNetwork();
   const switchNetwork = async () => {
     if (network.data.chain?.id == ChainId.Mumbai && isOpen) {
       onClose();
@@ -125,20 +203,29 @@ const ModalSwitchNetwork = () => {
 };
 
 const ModalSignMessage = () => {
+  const disconnect = useDisconnect();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const setIsLoginAction = useStoreActions((state) => state.user.setIsLogin);
+  const setUserDataAction = useStoreActions((state) => state.user.setData);
   const sdk = useSDK();
   const address = useAddress();
   const [network] = useNetwork();
-  const disconnect = useDisconnect();
 
   const signMessage = async () => {
     if (sdk && address) {
       const signature = await sdk.wallet.sign("Music protocol");
       localStorage.setItem("address", address.toLowerCase());
       localStorage.setItem("signature", signature);
-      setIsLoginAction(true);
+      await getUserData();
       onClose();
+    }
+  };
+
+  const getUserData = async () => {
+    if (address) {
+      try {
+        const resUser = await ApiServices.user.getUser(address);
+        setUserDataAction(resUser.data.data);
+      } catch (error) {}
     }
   };
 
@@ -150,8 +237,10 @@ const ModalSignMessage = () => {
           localStorage.getItem("address") != address.toLowerCase() ||
           !localStorage.getItem("signature")
         ) {
-          setIsLoginAction(false);
+          setUserDataAction(undefined);
           onOpen();
+        } else {
+          getUserData();
         }
       } else if (isOpen) {
         onClose();
@@ -210,7 +299,7 @@ export default function SidebarMusic({
   const isOpenPlaylistState = useStoreState(
     (state) => state.music.isShowPlayList
   );
-  const currentSongState = useStoreState((state) => state.music.currentSong);
+  const playListState = useStoreState((state) => state.music.playList);
   const onClosePlaylist = () => {
     setIsShowPlayListAction(false);
   };
@@ -228,6 +317,7 @@ export default function SidebarMusic({
       minH="100vh"
       pb={"200px"}
     >
+      <ModalCheckConnect />
       <ModalSwitchNetwork />
       <ModalSignMessage />
       <SidebarContent
@@ -292,7 +382,11 @@ export default function SidebarMusic({
               onClick={onClosePlaylist}
             />
           </Flex>
-          {currentSongState && <SongNFTSmallComponent {...currentSongState} />}
+          {playListState &&
+            playListState.length > 0 &&
+            playListState.map((item) => (
+              <SongNFTSmallComponent {...item} key={item.id} />
+            ))}
         </DrawerContent>
       </Drawer>
       {/* mobilenav */}
