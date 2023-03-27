@@ -215,49 +215,51 @@ const Studio = ({
         ))}
       </Stack>
       <Center mt={"10"}>
-        <Pagination
-          pagesCount={pagesCount}
-          currentPage={currentPage}
-          onPageChange={setCurrentPage}
-        >
-          <PaginationContainer gap={2}>
-            {currentPage > 1 && (
-              <PaginationPrevious>
-                <GrFormPrevious />
-              </PaginationPrevious>
-            )}
-            <PaginationPageGroup
-              separator={
-                <PaginationSeparator
-                  onClick={() => console.warn("I'm clicking the separator")}
-                  bg="white"
-                />
-              }
-              gap={1}
-            >
-              {pages.map((page: number) => (
-                <PaginationPage
-                  _hover={{
-                    bg: "#C2A822",
-                  }}
-                  w={["30px"]}
-                  bg={page === currentPage ? "#C2A822" : "white"}
-                  key={`pagination_page_${page}`}
-                  page={page}
-                  _current={{
-                    bg: "#C2A822",
-                    color: "white",
-                  }}
-                />
-              ))}
-            </PaginationPageGroup>
-            {currentPage < pagesCount && (
-              <PaginationNext>
-                <GrFormNext />
-              </PaginationNext>
-            )}
-          </PaginationContainer>
-        </Pagination>
+        {pagesCount > 1 && (
+          <Pagination
+            pagesCount={pagesCount}
+            currentPage={currentPage}
+            onPageChange={setCurrentPage}
+          >
+            <PaginationContainer gap={2}>
+              {currentPage > 1 && (
+                <PaginationPrevious>
+                  <GrFormPrevious />
+                </PaginationPrevious>
+              )}
+              <PaginationPageGroup
+                separator={
+                  <PaginationSeparator
+                    onClick={() => console.warn("I'm clicking the separator")}
+                    bg="white"
+                  />
+                }
+                gap={1}
+              >
+                {pages.map((page: number) => (
+                  <PaginationPage
+                    _hover={{
+                      bg: "#C2A822",
+                    }}
+                    w={["30px"]}
+                    bg={page === currentPage ? "#C2A822" : "white"}
+                    key={`pagination_page_${page}`}
+                    page={page}
+                    _current={{
+                      bg: "#C2A822",
+                      color: "white",
+                    }}
+                  />
+                ))}
+              </PaginationPageGroup>
+              {currentPage < pagesCount && (
+                <PaginationNext>
+                  <GrFormNext />
+                </PaginationNext>
+              )}
+            </PaginationContainer>
+          </Pagination>
+        )}
       </Center>
     </>
   );

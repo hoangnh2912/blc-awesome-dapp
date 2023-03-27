@@ -19,6 +19,7 @@ import {
   PaginationPrevious,
   PaginationContainer,
   PaginationPageGroup,
+  PaginationSeparator,
 } from "@ajna/pagination";
 import { useRouter } from "next/router";
 import { BsPauseFill } from "react-icons/bs";
@@ -30,18 +31,50 @@ import { GetMarketOutput } from "../services/api/types";
 import { useStoreActions, useStoreState } from "../services/redux/hook";
 import SongNFTSmallComponent from "./song-nft-small";
 import { ABI_MUSIC } from "../constants/abi";
+import { GrFormNext, GrFormPrevious } from "react-icons/gr";
+import { useEffect, useState } from "react";
+import ApiServices from "../services/api";
 
 const Collection = ({
   address,
-  collection,
+  setTotalCollection,
 }: {
   address: string;
-  collection: GetMarketOutput[];
+  setTotalCollection: any;
 }) => {
   const playMusicAction = useStoreActions((state) => state.music.playMusic);
 
   const currentSongState = useStoreState((state) => state.music.currentSong);
   const isPlayingState = useStoreState((state) => state.music.isPlaying);
+  const [collection, setCollection] = useState<GetMarketOutput[]>([]);
+
+  const [total, setTotal] = useState(0);
+  const { currentPage, setCurrentPage, pagesCount, pages } = usePagination({
+    total,
+    initialState: {
+      currentPage: 1,
+      pageSize: 24,
+    },
+    limits: {
+      inner: 1,
+      outer: 1,
+    },
+  });
+
+  const getData = async () => {
+    if (address) {
+      try {
+        const resStudio = await ApiServices.music.getMyCollection(currentPage);
+        setCollection(resStudio.data.data);
+        setTotal(resStudio.data.total);
+        setTotalCollection(resStudio.data.total);
+      } catch (error) {}
+    }
+  };
+
+  useEffect(() => {
+    getData();
+  }, [currentPage]);
 
   const isPlayView = useMusicIsPlayingView({
     pauseComponent: <BsPauseFill size={"20px"} />,
@@ -52,11 +85,6 @@ const Collection = ({
   });
 
   const { push } = useRouter();
-
-  const { currentPage, setCurrentPage, pagesCount, pages } = usePagination({
-    pagesCount: 12,
-    initialState: { currentPage: 1 },
-  });
 
   return (
     <>
@@ -179,6 +207,53 @@ const Collection = ({
           <SongNFTSmallComponent {...item} key={idx} />
         ))}
       </Stack>
+      <Center mt={"10"}>
+        {pagesCount > 1 && (
+          <Pagination
+            pagesCount={pagesCount}
+            currentPage={currentPage}
+            onPageChange={setCurrentPage}
+          >
+            <PaginationContainer gap={2}>
+              {currentPage > 1 && (
+                <PaginationPrevious>
+                  <GrFormPrevious />
+                </PaginationPrevious>
+              )}
+              <PaginationPageGroup
+                separator={
+                  <PaginationSeparator
+                    onClick={() => console.warn("I'm clicking the separator")}
+                    bg="white"
+                  />
+                }
+                gap={1}
+              >
+                {pages.map((page: number) => (
+                  <PaginationPage
+                    _hover={{
+                      bg: "#C2A822",
+                    }}
+                    w={["30px"]}
+                    bg={page === currentPage ? "#C2A822" : "white"}
+                    key={`pagination_page_${page}`}
+                    page={page}
+                    _current={{
+                      bg: "#C2A822",
+                      color: "white",
+                    }}
+                  />
+                ))}
+              </PaginationPageGroup>
+              {currentPage < pagesCount && (
+                <PaginationNext>
+                  <GrFormNext />
+                </PaginationNext>
+              )}
+            </PaginationContainer>
+          </Pagination>
+        )}
+      </Center>
     </>
   );
 };

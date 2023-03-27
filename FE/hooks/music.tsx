@@ -47,7 +47,9 @@ const useBuyMusic = () => {
 
   const { onOpen: onOpenModalTx, setTxResult } = useModalTransaction();
   const toast = useToast();
-
+  const setIsCheckConnectAction = useStoreActions(
+    (state) => state.user.setIsCheckConnect
+  );
   const permitMuc = async (priceMuc: string) => {
     if (!sdk) return;
     if (!onOpenModalTx) return;
@@ -103,6 +105,7 @@ const useBuyMusic = () => {
   };
 
   const onBuy = async (price: string, id: string) => {
+    setIsCheckConnectAction(true);
     if (sdk && onOpenModalTx && address) {
       try {
         const musicMarketContract = await sdk.getContractFromAbi(

@@ -13,6 +13,10 @@ const AudioLayout = ({ children }: { children: React.ReactNode }) => {
     (state) => state.music.setIsShowPlayList
   );
   const setAudioAction = useStoreActions((state) => state.music.setAudio);
+  const playNextAction = useStoreActions((state) => state.music.playNext);
+  const playPreviousAction = useStoreActions(
+    (state) => state.music.playPrevious
+  );
   const setIsPlayingAction = useStoreActions(
     (state) => state.music.setIsPlaying
   );
@@ -96,6 +100,15 @@ const AudioLayout = ({ children }: { children: React.ReactNode }) => {
                 src={currentSongState?.audio}
                 onPlay={(e) => setIsPlayingAction(true)}
                 onPause={(e) => setIsPlayingAction(false)}
+                onEnded={(e) => {
+                  playNextAction();
+                }}
+                onClickNext={(e) => {
+                  playNextAction();
+                }}
+                onClickPrevious={(e) => {
+                  playPreviousAction();
+                }}
               />
             </Stack>
             <Stack flex={0.7} justifyContent="center" alignItems="center">
