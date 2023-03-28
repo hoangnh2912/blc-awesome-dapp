@@ -8,10 +8,6 @@ import {
   AccordionIcon,
   AccordionItem,
   AccordionPanel,
-  Tab,
-  Tabs,
-  TabList,
-  TabPanels,
 } from "@chakra-ui/react";
 import { GiCardAceHearts } from "react-icons/gi";
 import { AiTwotoneShop } from "react-icons/ai";
@@ -19,6 +15,9 @@ import type { NextPage } from "next";
 import BaseLayout from "../layouts/base";
 import Erc721Renting from "./renting/erc721-renting";
 import RentMarket from "./renting/rent-market";
+import ContractDeployed from "./renting/contract-deployed";
+import ContractUsage from "./renting/contract-usage";
+import SciRentMarket from "./renting/sci-rent-market";
 
 const Renting: NextPage = () => {
   return (
@@ -87,18 +86,30 @@ const Renting: NextPage = () => {
             mt={5}
             width={"50%"}
           >
-            <Box>Deployed</Box>
+            <ContractDeployed />
           </Stack>
         </Stack>
-        <Stack
-          direction={"row"}
-          flex={1}
-          boxShadow="lg"
-          bg={"white"}
-          borderRadius={5}
-          p={5}
-        >
-          <Box>Usage</Box>
+        <Stack direction={"row"}>
+          <Stack
+            flex={1}
+            boxShadow="lg"
+            bg={"white"}
+            borderRadius={5}
+            p={5}
+            width={"50%"}
+          >
+            <SciRentMarket />
+          </Stack>
+          <Stack
+            flex={1}
+            boxShadow="lg"
+            bg={"white"}
+            borderRadius={5}
+            p={5}
+            width={"50%"}
+          >
+            <ContractUsage />
+          </Stack>
         </Stack>
       </Stack>
     </BaseLayout>

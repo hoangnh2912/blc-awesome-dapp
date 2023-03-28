@@ -1,7 +1,7 @@
 import { Constant, uuid } from '@constants';
-import { AxiosGet, compile, verify } from '@providers';
+import { compile } from '@providers';
 import fs from 'fs';
-import { ERC4907Input, VerifyInput, GetAbiInput } from './renting';
+import { ERC4907Input, RentMarketInput } from './renting';
 
 export class RentingService {
     async Erc4907({
@@ -94,8 +94,7 @@ export class RentingService {
                 ) internal override(ERC721, ERC4907) whenNotPaused {
                     super._beforeTokenTransfer(from, to, firstTokenId, batchSize);
                 }`);
-            }
-            else {
+            } else {
                 contractBody.push(`function _beforeTokenTransfer(
                 address from,
                 address to,
@@ -105,7 +104,6 @@ export class RentingService {
                     super._beforeTokenTransfer(from, to, firstTokenId, batchSize);
                 }`);
             }
-
         }
         // else {
         //     contractBody.push(`function _beforeTokenTransfer(address from, address to, uint256 tokenId, uint256 batchSize)
@@ -174,7 +172,7 @@ export class RentingService {
         ${contractBody}
     }`;
         const finalContract = topContract + importLibraries + contractBase;
-        const { bytecode, nameUnique, abi } = await this.compileContract(contractName, finalContract);
+        const { bytecode, nameUnique, abi } = await this.CompileContract(contractName, finalContract);
 
         return {
             bytecode: bytecode,
@@ -184,7 +182,154 @@ export class RentingService {
         };
     }
 
-    private async compileContract(contractName: string, contractContent: string) {
+    async RentMarket({
+        fee_percentage,
+        admin_wallet,
+        token_address,
+        is_updatable_fee,
+        is_updatable_admin,
+    }: RentMarketInput) {
+        const topContract = `// SPDX-License-Identifier: MIT\npragma solidity ^0.8.9;\n`;
+        let importLibraries: Array<string> | string = [`./Rent/RentToken.sol`];
+        importLibraries.push(`./Rent/MUC.sol`);
+
+        if (is_updatable_fee || is_updatable_admin)
+            importLibraries.push(`@openzeppelin/contracts/access/Ownable.sol`);
+        importLibraries = [...new Set(importLibraries)].map(e => `import "${e}";`).join('\n');
+
+        let initBody: Array<string> | string = [];
+        initBody.push(`event TokenRented(
+            uint256 indexed tokenId,
+            address renter,
+            uint256 rentalPrice
+        );`);
+
+        initBody.push(`RentToken private _rent;
+        MUC private _token;
+        mapping(uint256 => uint256) private _rentalPrice;
+        mapping(uint256 => uint256) private _rentalExpires;
+        uint256 private _platformFeePercentage;
+        address private _platformFeeAddress;`);
+
+        initBody = [...new Set(initBody)].map(e => e.trim()).join('\n');
+
+        let contractBody: Array<string> | string = [];
+        contractBody.push(`function addRentOrder(
+            uint256 tokenId,
+            uint256 rentalPrice,
+            uint256 rentalExpires
+        ) public {
+            require(
+                _rent.userOf(tokenId) == address(0),
+                "RentMarket: token being rented"
+            );
+            require(
+                _rent.isApprovedForAll(msg.sender, address(this)),
+                "RentMarket: not approve for all to market"
+            );
+            _rentalPrice[tokenId] = rentalPrice;
+            _rentalExpires[tokenId] = rentalExpires;
+        }`);
+
+        contractBody.push(`function rent(uint256 tokenId) public {
+            uint256 price = _rentalPrice[tokenId];
+            require(
+                _token.allowance(msg.sender, address(this)) >= price,
+                "RentMarket: allowance not enough"
+            );
+            require(
+                _rent.userOf(tokenId) == address(0),
+                "RentMarket: token being rented"
+            );
+    
+            uint256 fee = (price * _platformFeePercentage) / 100;
+            _token.transferFrom(msg.sender, _platformFeeAddress, fee);
+            _token.transferFrom(msg.sender, _rent.ownerOf(tokenId), price - fee);
+            _rent.setUser(
+                tokenId,
+                msg.sender,
+                block.timestamp + _rentalExpires[tokenId]
+            );
+    
+            emit TokenRented(tokenId, msg.sender, price);
+        }`);
+
+        contractBody.push(`function getOrder(
+            uint256 tokenId
+        )
+            public
+            view
+            returns (address owner, address renter, uint256 price, bool isRented)
+        {
+            return (
+                _rent.ownerOf(tokenId),
+                _rent.userOf(tokenId),
+                _rentalPrice[tokenId],
+                _rent.userOf(tokenId) == address(0) ? false : true
+            );
+        }`);
+
+        if (is_updatable_fee) {
+            contractBody.push(`function getPlatformFeePercentage() public view returns (uint256) {
+                return _platformFeePercentage;
+            }`);
+            contractBody.push(`function setPlatformFeePercentage(
+                uint256 newFeePercentage
+            ) public onlyOwner {
+                _platformFeePercentage = newFeePercentage;
+            }`);
+        }
+
+        if (is_updatable_admin) {
+            contractBody.push(`function getPlatformFeeAddress() public view returns (address) {
+                return _platformFeeAddress;
+            }`);
+            contractBody.push(`function setPlatformFeeAddress(address newFeeAddress) public onlyOwner {
+                _platformFeeAddress = newFeeAddress;
+            }`);
+        }
+
+        contractBody = [...new Set(contractBody)].map(e => e.trim()).join('\n');
+
+        const contractName = 'RentMarket';
+        let contractBase = ``;
+        if (is_updatable_fee || is_updatable_admin) {
+            contractBase = `\ncontract ${contractName} is Ownable {
+                ${initBody}
+                constructor() {
+                    _platformFeePercentage = ${fee_percentage};
+                    _platformFeeAddress = ${admin_wallet};
+                    _rent = RentToken(${token_address});
+                    _token = MUC(0x4b137a387D2b4734013D6F78B4bC01aa25BD48bf);
+                }
+                ${contractBody}
+            }`;
+        }
+        else {
+            contractBase = `\ncontract ${contractName} {
+                ${initBody}
+                constructor() {
+                    _platformFeePercentage = ${fee_percentage};
+                    _platformFeeAddress = ${admin_wallet};
+                    _rent = RentToken(${token_address});
+                    _token = MUC(0x4b137a387D2b4734013D6F78B4bC01aa25BD48bf);
+                }
+                ${contractBody}
+            }`;
+        }
+
+        const finalContract = topContract + importLibraries + contractBase;
+        const { bytecode, nameUnique, abi } = await this.CompileContract(contractName, finalContract);
+
+        return {
+            bytecode: bytecode,
+            name: contractName,
+            uuid: nameUnique,
+            abi,
+        };
+    }
+
+    private async CompileContract(contractName: string, contractContent: string) {
         const nameUnique = uuid();
         fs.mkdirSync(`${Constant.ROOT_PATH}/contracts`, { recursive: true });
         fs.writeFileSync(`${Constant.ROOT_PATH}/contracts/${nameUnique}.sol`, contractContent, 'utf8');
@@ -207,36 +352,6 @@ export class RentingService {
             bytecode: jsonCompiled.bytecode,
             nameUnique,
             abi: jsonCompiled.abi,
-        };
-    }
-
-    async verifyContract(payload: VerifyInput) {
-        const verifyUrl = await verify(payload.uuid, payload.name, payload.address);
-        if (verifyUrl) {
-            fs.unlinkSync(`${Constant.ROOT_PATH}/contracts/${payload.uuid}.sol`);
-            fs.rmSync(`${Constant.ROOT_PATH}/cache`, {
-                recursive: true,
-                force: true,
-            });
-            fs.rmSync(`${Constant.ROOT_PATH}/artifacts/contracts/${payload.uuid}.sol`, {
-                recursive: true,
-                force: true,
-            });
-        }
-        return verifyUrl;
-    }
-
-    async getAbi(payload: GetAbiInput) {
-        const res = await AxiosGet<string>('https://api-testnet.polygonscan.com/api', {
-            params: {
-                module: 'contract',
-                action: 'getabi',
-                address: payload.address,
-                apikey: process.env.API_KEY,
-            },
-        });
-        return {
-            abi: JSON.parse(res.data.result),
         };
     }
 }

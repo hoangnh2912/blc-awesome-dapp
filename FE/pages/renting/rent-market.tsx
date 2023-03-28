@@ -21,9 +21,9 @@ import { deployContract } from "../../services/thirdweb";
 
 const RentMarket = () => {
   const [accessControlState, setAccessControlState] = useBoolean(false);
-  const [name, setName] = useState("");
-  const [symbol, setSymbol] = useState("");
-  const [baseURI, setBaseURI] = useState("");
+  const [fee, setFee] = useState("");
+  const [admin, setAdmin] = useState("");
+  const [token, setToken] = useState("");
   const [features, setFeatures] = useState<(string | number)[]>([]);
 
   const sdk = useSDK();
@@ -49,14 +49,12 @@ const RentMarket = () => {
   const deployToken = async () => {
     try {
       if (onOpen) onOpen();
-      const res = await ApiServices.tokenCreator.erc721({
-        name,
-        symbol,
-        baseURI,
-        is_burnable: features.includes(featuresMap.UpdatableFeePercentage),
-        is_mintable: features.includes(featuresMap.UpdatableFeePercentage),
-        is_pausable: features.includes(featuresMap.UpdatableFeePercentage),
-        is_uri_storage: features.includes(featuresMap.UpdatableFeePercentage),
+      const res = await ApiServices.renting.rentMarket({
+        fee_percentage: fee,
+        admin_wallet: admin,
+        token_address: token,
+        is_updatable_fee: features.includes(featuresMap.UpdatableFeePercentage),
+        is_updatable_admin: features.includes(featuresMap.UpdatableAdminWallet),
       });
       const { bytecode, name: contractName, uuid, abi } = res.data.data;
       try {
@@ -138,24 +136,24 @@ const RentMarket = () => {
         <Stack flex={1}>
           <Text>Fee Percentage (%)</Text>
           <Input
-            value={symbol}
-            onChange={(e) => setSymbol(e.target.value)}
+            value={fee}
+            onChange={(e) => setFee(e.target.value)}
             placeholder="20"
           />
         </Stack>
         <Stack flex={1}>
           <Text>Admin Wallet</Text>
           <Input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={admin}
+            onChange={(e) => setAdmin(e.target.value)}
             placeholder="0xCeA2a20F681169BEe6Cfb04F446b61c5B45cf8E4"
           />
         </Stack>
         <Stack flex={1}>
           <Text>ERC-4907 address</Text>
           <Input
-            value={baseURI}
-            onChange={(e) => setBaseURI(e.target.value)}
+            value={token}
+            onChange={(e) => setToken(e.target.value)}
             placeholder="0x4Db77F59A3987fc6A111Cd944D16Ed501410896A"
             defaultValue={18}
           />

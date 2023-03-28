@@ -182,6 +182,7 @@ const Erc721Renting = () => {
         <Checkbox
           onChange={onChangeCheckBoxAccessControl}
           isChecked={accessControlState}
+          colorScheme={"purple"}
         />
       </Stack>
       <Stack direction={["column", "row"]}>

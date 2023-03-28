@@ -1,5 +1,3 @@
-// import { AbiItem } from 'web3-utils';
-
 interface ERC4907Input {
     name: string;
     symbol: string;
@@ -9,19 +7,18 @@ interface ERC4907Input {
     is_pausable: boolean;
     is_uri_storage: boolean;
 }
-interface TokenCreatorOutput {
+interface RentMarketInput {
+    fee_percentage: string;
+    admin_wallet: string;
+    token_address: string;
+    is_updatable_fee: boolean;
+    is_updatable_admin: boolean;
+}
+interface ContractCreatorOutput {
     bytecode: string;
     name: string;
     uuid: string;
     abi: any;
 }
-interface VerifyInput {
-    uuid: string;
-    name: string;
-    address: string;
-}
-interface GetAbiInput {
-    address: string;
-}
 
-export { ERC4907Input, TokenCreatorOutput, VerifyInput, GetAbiInput };
+export { ERC4907Input, RentMarketInput, ContractCreatorOutput };
