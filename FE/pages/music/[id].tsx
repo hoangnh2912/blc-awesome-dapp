@@ -135,14 +135,14 @@ const Music = () => {
             >
               Creator: {data.seller}
             </Text>
-            <Text color="#C2A822" fontSize="20" fontWeight="bold">
+            <Text color="#fcae00" fontSize="20" fontWeight="bold">
               {data.singer}
             </Text>
             <Text
               fontFamily="mono"
               fontWeight="bold"
               fontSize="40"
-              color="#C2A822"
+              color="#fcae00"
             >
               {data.price} MUC
             </Text>
@@ -170,7 +170,7 @@ const Music = () => {
           <Stack justifyContent="space-evenly" gap={1} direction={"row"}>
             <Button
               bg="#3443A0BB"
-              color="#C2A822"
+              color="#fcae00"
               flex={1}
               boxShadow="5px 5px 5px 5px rgba(0,0,0,0.15)"
               alignItems="center"
@@ -196,7 +196,7 @@ const Music = () => {
             {!isSameSeller && !isOwnNft && (
               <Button
                 color="#3443A0"
-                bg="#C2A822BB"
+                bg="#fcae00BB"
                 boxShadow="5px 5px 5px 5px rgba(0,0,0,0.15)"
                 flex={1}
                 height="80px"
@@ -204,8 +204,8 @@ const Music = () => {
                 alignItems="center"
                 fontSize="3xl"
                 onClick={() => {
-                  onBuy(data.price,data.id);
-                 }}
+                  onBuy(data.price, data.id);
+                }}
                 gap={2}
               >
                 <BsCart4 size="0.8em" />
@@ -215,7 +215,7 @@ const Music = () => {
             {isOwnNft && !isSameSeller && (
               <Button
                 color="#3443A0"
-                bg="#C2A822BB"
+                bg="#fcae00BB"
                 boxShadow="5px 5px 5px 5px rgba(0,0,0,0.15)"
                 flex={1}
                 height="80px"
@@ -258,7 +258,7 @@ const Music = () => {
                   <Text color="white" fontSize="20" fontWeight="bold">
                     {attr.trait_type}
                   </Text>
-                  <Text color="#C2A822" fontSize="20" fontWeight="bold">
+                  <Text color="#fcae00" fontSize="20" fontWeight="bold">
                     {attr.value}
                   </Text>
                 </Stack>
@@ -268,7 +268,7 @@ const Music = () => {
         </Stack>
       </Stack>
       <Text
-        color="#C2A822"
+        color="#fcae00"
         fontSize="24"
         style={{
           marginTop: "1.5rem",

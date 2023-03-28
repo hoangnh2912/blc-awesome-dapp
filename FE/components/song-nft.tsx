@@ -132,7 +132,7 @@ const SongNFTComponent = (props: GetMarketOutput) => {
                 fontWeight="bold"
                 color="white"
                 borderRadius="3xl"
-                backgroundColor="#C2A822"
+                backgroundColor="#fcae00"
                 p="1"
                 px="2"
                 fontSize="sm"

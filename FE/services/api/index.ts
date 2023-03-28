@@ -144,6 +144,7 @@ const ApiServices = {
           limit,
         },
       }),
+    getNextId: () => AxiosGet<number>("/market/next-id"),
   },
   renting: {
     erc4907: (payload: ERC721Input) =>
@@ -166,6 +167,8 @@ const ApiServices = {
           "Content-Type": "multipart/form-data",
         },
       }),
+    uploadJson: (payload: any) =>
+      AxiosPost<string>("/ipfs/upload-json", payload),
   },
 };
 

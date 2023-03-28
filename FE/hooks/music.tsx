@@ -105,7 +105,14 @@ const useBuyMusic = () => {
   };
 
   const onBuy = async (price: string, id: string) => {
-    setIsCheckConnectAction(true);
+    setIsCheckConnectAction({
+      isCheckConnect: true,
+      args: [price, id],
+      callback: onBuyCallBack,
+    });
+  };
+
+  const onBuyCallBack = async (price: string, id: string) => {
     if (sdk && onOpenModalTx && address) {
       try {
         const musicMarketContract = await sdk.getContractFromAbi(
@@ -155,5 +162,68 @@ const useBuyMusic = () => {
 
   return { onBuy };
 };
+const useListMusic = () => {
+  const sdk = useSDK();
+  const address = useAddress();
+  const { onOpen: onOpenModalTx, setTxResult } = useModalTransaction();
+  const setIsCheckConnectAction = useStoreActions(
+    (state) => state.user.setIsCheckConnect
+  );
 
-export { useMusicIsPlayingView, useBuyMusic };
+  const onList = async (
+    id: string,
+    price: string,
+    amount: string,
+    uri: string
+  ) => {
+    setIsCheckConnectAction({
+      isCheckConnect: true,
+      args: [id, price, amount, uri],
+      callback: onListCallBack,
+    });
+  };
+
+  const onListCallBack = async (
+    id: string,
+    price: string,
+    amount: string,
+    uri: string
+  ) => {
+    if (sdk && onOpenModalTx && address) {
+      try {
+        const musicMarketContract = await sdk.getContractFromAbi(
+          ABI_MUSIC.MusicMarket.address,
+          ABI_MUSIC.MusicMarket.abi
+        );
+
+        onOpenModalTx();
+        const res = await musicMarketContract.call(
+          "listSong",
+          id,
+          price,
+          amount,
+          uri
+        );
+        setTxResult({
+          reason: "",
+          content: [
+            {
+              title: "Transaction Hash",
+              value: <LinkScan transactionHash={res.receipt.transactionHash} />,
+            },
+          ],
+          txState: "success",
+        });
+      } catch (error: any) {
+        setTxResult({
+          reason: error.message,
+          content: [],
+          txState: "error",
+        });
+      }
+    }
+  };
+
+  return { onList };
+};
+export { useMusicIsPlayingView, useBuyMusic, useListMusic };

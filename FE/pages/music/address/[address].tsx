@@ -81,7 +81,7 @@ const Profile = () => {
           src={userInfo.avatar ? ipfsToGateway(userInfo.avatar) : NO_AVATAR}
           style={{
             boxShadow: "5px 5px 5px 5px rgba(0,0,0,0.15)",
-            border: "3px solid #C2A822",
+            border: "3px solid #fcae00",
             aspectRatio: "1/1",
           }}
         />
@@ -91,7 +91,7 @@ const Profile = () => {
           </Text>
           <Text
             wordBreak="break-word"
-            color="#C2A822"
+            color="#fcae00"
             fontSize="16"
             fontWeight="bold"
           >
@@ -131,7 +131,7 @@ const Profile = () => {
               justifyContent="space-around"
               width="120px"
               onClick={onClickEdit}
-              border="2px solid #C2A822"
+              border="2px solid #fcae00"
             >
               <FaUserEdit />
               Edit
@@ -147,7 +147,7 @@ const Profile = () => {
             color="white"
             width="120px"
             justifyContent="space-around"
-            border="2px solid #C2A822"
+            border="2px solid #fcae00"
           >
             <FaShareAlt />
             Share
@@ -183,7 +183,7 @@ const Profile = () => {
           borderRadius="lg"
           fontSize="16"
           color="white"
-          border="2px solid #C2A822"
+          border="2px solid #fcae00"
           flex={1}
           onClick={onClickEdit}
           gap={5}
@@ -201,7 +201,7 @@ const Profile = () => {
           color="white"
           flex={1}
           gap={5}
-          border="2px solid #C2A822"
+          border="2px solid #fcae00"
         >
           <FaShareAlt />
           Share
@@ -211,8 +211,8 @@ const Profile = () => {
         <TabList>
           <Tab
             _selected={{
-              color: "#C2A822",
-              borderBottomColor: "#C2A822",
+              color: "#fcae00",
+              borderBottomColor: "#fcae00",
               borderBottomWidth: "5px",
             }}
             color="white"
@@ -220,13 +220,13 @@ const Profile = () => {
             fontWeight="bold"
             fontSize="16"
           >
-            Studio<Text color="#C2A822">{`(${totalStudio})`}</Text>
+            Studio<Text color="#fcae00">{`(${totalStudio})`}</Text>
           </Tab>
           {isMyProfile && (
             <Tab
               _selected={{
-                color: "#C2A822",
-                borderBottomColor: "#C2A822",
+                color: "#fcae00",
+                borderBottomColor: "#fcae00",
                 borderBottomWidth: "5px",
               }}
               color="white"
@@ -234,7 +234,7 @@ const Profile = () => {
               fontWeight="bold"
               fontSize="16"
             >
-              Collection <Text color="#C2A822">{`(${totalCollection})`}</Text>
+              Collection <Text color="#fcae00">{`(${totalCollection})`}</Text>
             </Tab>
           )}
         </TabList>

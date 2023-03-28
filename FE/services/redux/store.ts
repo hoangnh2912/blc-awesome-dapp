@@ -18,9 +18,15 @@ const store = createStore<StoreModel>({
         }
       } else {
         state.currentSong = payload;
-        if (!state.playList.find((item) => item.id === payload.id))
+        if (
+          payload.id &&
+          !state.playList.find((item) => item.id === payload.id)
+        )
           state.playList.push(payload);
       }
+    }),
+    updateMusicMetadata: action((state, payload) => {
+      state.currentSong = payload;
     }),
     audio: undefined,
     setAudio: action((state, payload) => {
@@ -65,9 +71,11 @@ const store = createStore<StoreModel>({
     setData: action((state, payload) => {
       state.data = payload;
     }),
-    isCheckConnect: false,
+    isCheckConnectData: {
+      isCheckConnect: false,
+    },
     setIsCheckConnect: action((state, payload) => {
-      state.isCheckConnect = payload;
+      state.isCheckConnectData = payload;
     }),
   },
 });

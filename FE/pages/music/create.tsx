@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Image,
   Input,
@@ -9,35 +10,123 @@ import {
 } from "@chakra-ui/react";
 import type { NextPage } from "next";
 import { useEffect, useState } from "react";
+import { FaPlay } from "react-icons/fa";
 import { MdLibraryMusic, MdPhotoLibrary } from "react-icons/md";
+import { TiMediaPause } from "react-icons/ti";
+import { useModalTransaction } from "../../components/modal-transaction";
+import { GENRE, INSTRUMENT, MOOD } from "../../constants/constants";
+import { useListMusic } from "../../hooks/music";
 import MusicBaseLayout from "../../layouts/music.base";
-import { useStoreActions } from "../../services/redux/hook";
+import ApiServices from "../../services/api";
+import { useStoreActions, useStoreState } from "../../services/redux/hook";
 const Create: NextPage = () => {
   const [image, setImage] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [audio, setAudio] = useState<File | null>(null);
   const [url, setUrl] = useState<string | null>(null);
   const [title, setTitle] = useState<string>("");
   const [singer, setSinger] = useState<string>("");
+  const [genre, setGenre] = useState<string>(GENRE[0]);
+  const [mood, setMood] = useState<string>(MOOD[0]);
+  const [instrument, setInstrument] = useState<string>(INSTRUMENT[0]);
   const [price, setPrice] = useState<string>("");
   const [quantity, setQuantity] = useState<string>("");
   const [description, setDescription] = useState<string>("");
-  const playMusicAction = useStoreActions((state) => state.music.playMusic);
+  const updateMusicMetadataAction = useStoreActions(
+    (state) => state.music.updateMusicMetadata
+  );
+  const { onOpen: onOpenModalTx, setTxResult } = useModalTransaction();
+  const { onList } = useListMusic();
+  const getAudioInfo = async () => {
+    if (!audio)
+      return {
+        duration: 0,
+        bitrate: 0,
+      };
+    const audioContext = new AudioContext();
+    const audioData = await audioContext.decodeAudioData(
+      await audio.arrayBuffer()
+    );
+    return {
+      duration: audioData.duration,
+      bitrate: audioData.sampleRate,
+    };
+  };
 
   useEffect(() => {
     if (audio && url) {
-      // playMusicAction({
-      //   name: title,
-      //   image: image || "",
-      //   singer,
-      //   audio: url,
-      // });
+      updateMusicMetadataAction({
+        name: title,
+        image: image || "",
+        singer,
+        audio: url,
+      } as any);
     }
   }, [audio, image, title, singer]);
 
-  const setAudioFile = (file: File | null) => {
+  const onSetAudioFile = (file: File | null) => {
     if (file && file.type.includes("audio")) {
       setAudio(file);
       setUrl(URL.createObjectURL(file));
+    }
+  };
+
+  const onSetImageFile = (file: File | null) => {
+    if (file && file.type.includes("image")) {
+      setImageFile(file);
+      setImage(URL.createObjectURL(file));
+    }
+  };
+
+  const onCreate = async () => {
+    try {
+      if (!audio) return;
+      if (!imageFile) return;
+      if (onOpenModalTx) onOpenModalTx();
+      const resNextId = await ApiServices.music.getNextId();
+      const id = resNextId.data.data;
+      const { duration, bitrate } = await getAudioInfo();
+      const formDataImage = new FormData();
+      formDataImage.append("imageFile", imageFile);
+      const resImage = await ApiServices.ipfs.uploadImage(formDataImage);
+
+      const formDataAudio = new FormData();
+      formDataAudio.append("imageFile", audio);
+      const resAudio = await ApiServices.ipfs.uploadImage(formDataAudio);
+
+      const payload = {
+        id,
+        name: title,
+        singer,
+        image: resImage.data.data,
+        animation_url: resAudio.data.data,
+        external_url: `http://scimta.com/music/${id}`,
+        attributes: [
+          {
+            trait_type: "Genre",
+            value: genre,
+          },
+          {
+            trait_type: "Mood",
+            value: mood,
+          },
+          {
+            trait_type: "Instrument",
+            value: instrument,
+          },
+        ],
+        description,
+        duration,
+        bitrate,
+      };
+      const resJson = await ApiServices.ipfs.uploadJson(payload);
+      await onList(`${id}`, price, quantity, resJson.data.data);
+    } catch (error: any) {
+      setTxResult({
+        reason: error.message,
+        content: [],
+        txState: "error",
+      });
     }
   };
 
@@ -83,14 +172,18 @@ const Create: NextPage = () => {
           File types supported: MP4, WEBM, MP3, WAV. Max size: 100 MB
         </Text>
         <Stack
+          w={{
+            base: "100%",
+            md: "50%",
+          }}
           onClick={() => {
             let input = document.createElement("input");
             input.hidden = true;
             input.type = "file";
             input.accept = "audio/*";
             input.onchange = (e: any) => {
-              let file = e.target?.files?.item(0);
-              setAudioFile(file);
+              const file = e.target?.files?.item(0);
+              onSetAudioFile(file);
               input.remove();
             };
             input.click();
@@ -101,12 +194,8 @@ const Create: NextPage = () => {
           onDrop={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            let file = e.dataTransfer.files.item(0);
-            setAudioFile(file);
-          }}
-          w={{
-            base: "100%",
-            md: "50%",
+            const file = e.dataTransfer.files.item(0);
+            onSetAudioFile(file);
           }}
           height="80px"
           justifyContent="center"
@@ -161,9 +250,8 @@ const Create: NextPage = () => {
             input.type = "file";
             input.accept = "image/*";
             input.onchange = (e: any) => {
-              let file = e.target?.files?.item(0);
-              if (file && file.type.includes("image"))
-                setImage(URL.createObjectURL(file));
+              const file = e.target?.files?.item(0);
+              onSetImageFile(file);
               input.remove();
             };
             input.click();
@@ -192,9 +280,8 @@ const Create: NextPage = () => {
           onDrop={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            let file = e.dataTransfer.files.item(0);
-            if (file && file.type.includes("image"))
-              setImage(URL.createObjectURL(file));
+            const file = e.dataTransfer.files.item(0);
+            onSetImageFile(file);
           }}
         >
           {image ? (
@@ -264,19 +351,21 @@ const Create: NextPage = () => {
               fontSize={"16"}
               color="white"
             >
-              Category
+              Genre
             </Text>
             <Select
               borderColor="gray.300"
               color="white"
-              value={"option1"}
+              value={genre}
               onChange={(e) => {
-                console.log(e.target.value);
+                setGenre(e.target.value);
               }}
             >
-              <option value="option1">Option 1</option>
-              <option value="option2">Option 2</option>
-              <option value="option3">Option 3</option>
+              {GENRE.map((item, idx) => (
+                <option key={idx} value={item}>
+                  {item}
+                </option>
+              ))}
             </Select>
           </Stack>
           <Stack>
@@ -291,14 +380,16 @@ const Create: NextPage = () => {
             <Select
               borderColor="gray.300"
               color="white"
-              value={"option1"}
+              value={mood}
               onChange={(e) => {
-                console.log(e.target.value);
+                setMood(e.target.value);
               }}
             >
-              <option value="option1">Option 1</option>
-              <option value="option2">Option 2</option>
-              <option value="option3">Option 3</option>
+              {MOOD.map((item, idx) => (
+                <option key={idx} value={item}>
+                  {item}
+                </option>
+              ))}
             </Select>
           </Stack>
           <Stack>
@@ -313,19 +404,21 @@ const Create: NextPage = () => {
             <Select
               borderColor="gray.300"
               color="white"
-              value={"option1"}
+              value={instrument}
               onChange={(e) => {
-                console.log(e.target.value);
+                setInstrument(e.target.value);
               }}
             >
-              <option value="option1">Option 1</option>
-              <option value="option2">Option 2</option>
-              <option value="option3">Option 3</option>
+              {INSTRUMENT.map((item, idx) => (
+                <option key={idx} value={item}>
+                  {item}
+                </option>
+              ))}
             </Select>
           </Stack>
         </Stack>
         <Text fontFamily="mono" fontWeight="bold" fontSize={"20"} color="white">
-          Price
+          Price (MUC)
         </Text>
         <Input
           value={price}
@@ -378,8 +471,9 @@ const Create: NextPage = () => {
           fontSize={"24"}
           fontFamily="mono"
           fontWeight="bold"
-          color="#C2A822"
+          color="#fcae00"
           bg="#3443A0"
+          onClick={onCreate}
           w={{
             base: "100%",
             md: "20%",

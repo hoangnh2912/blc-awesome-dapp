@@ -106,7 +106,7 @@ const Studio = ({
                 fontFamily="mono"
                 fontWeight="bold"
                 fontSize="16"
-                color="#C2A822"
+                color="#fcae00"
               >
                 Title
               </Th>
@@ -114,7 +114,7 @@ const Studio = ({
                 fontFamily="mono"
                 fontWeight="bold"
                 fontSize="16"
-                color="#C2A822"
+                color="#fcae00"
               >
                 Time
               </Th>
@@ -122,7 +122,7 @@ const Studio = ({
                 fontFamily="mono"
                 fontWeight="bold"
                 fontSize="16"
-                color="#C2A822"
+                color="#fcae00"
               >
                 Price
               </Th>
@@ -130,7 +130,7 @@ const Studio = ({
                 fontFamily="mono"
                 fontWeight="bold"
                 fontSize="16"
-                color="#C2A822"
+                color="#fcae00"
               >
                 Sold
               </Th>
@@ -239,14 +239,14 @@ const Studio = ({
                 {pages.map((page: number) => (
                   <PaginationPage
                     _hover={{
-                      bg: "#C2A822",
+                      bg: "#fcae00",
                     }}
                     w={["30px"]}
-                    bg={page === currentPage ? "#C2A822" : "white"}
+                    bg={page === currentPage ? "#fcae00" : "white"}
                     key={`pagination_page_${page}`}
                     page={page}
                     _current={{
-                      bg: "#C2A822",
+                      bg: "#fcae00",
                       color: "white",
                     }}
                   />
