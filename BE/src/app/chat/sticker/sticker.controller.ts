@@ -130,7 +130,7 @@ export class StickerController extends Controller {
   }
 
   @Post('upload-image')
-  @Middlewares([MinterMiddleware])
+  // @Middlewares([MinterMiddleware])
   public async uploadImage(
     @UploadedFile()
     imageFile: Express.Multer.File,

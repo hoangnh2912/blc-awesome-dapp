@@ -47,6 +47,7 @@ class ChatUserService {
     const authorized = await Authorized.findOne({
       wallet_addresses: lowerAddress,
     });
+    console.log(`address: ${address}`);
 
     return Object.assign(user?.toObject() as any, {
       link_addresses: authorized?.wallet_addresses || [lowerAddress],

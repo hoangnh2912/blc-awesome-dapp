@@ -14,6 +14,7 @@ const SignatureMiddleware = async (req: Request, res: Response, next: NextFuncti
     authorize = authorize as string;
     const [message, signature] = authorize.split(':');
     const address = web3.eth.accounts.recover(message, signature);
+
     req.headers.address = address.toLowerCase();
     req.headers.signature = signature;
     return next();

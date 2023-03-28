@@ -515,6 +515,8 @@ class RoomService {
       // }
 
       const newRoom = await Room.create(createField);
+      console.log(`newRoom: ${newRoom}`);
+
       // let roomWithNftContract = null;
       // let shared_key = null;
       // if (room_type == ChatConstant.ROOM_TYPE.LIMITED) {

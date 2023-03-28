@@ -31,7 +31,9 @@ interface User {
 
 interface ChatUser {
   data: GetChatUserOutput | undefined;
+  isLogin: boolean;
   setData: Action<ChatUser, GetChatUserOutput | undefined>;
+  logout: Action<ChatUser>;
 }
 
 interface StoreModel {

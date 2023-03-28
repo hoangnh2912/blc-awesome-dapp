@@ -72,8 +72,13 @@ const store = createStore<StoreModel>({
   },
   chatUser: {
     data: undefined,
+    isLogin: false,
     setData: action((state, payload) => {
       state.data = payload;
+      state.isLogin = true;
+    }),
+    logout: action((state) => {
+      state.isLogin = false;
     }),
   },
 });
