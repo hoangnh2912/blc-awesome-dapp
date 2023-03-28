@@ -11,6 +11,7 @@ import {
   GetStealAddressOutput,
   GetMarketOutput,
   GetUserOutput,
+  RentMarketInput,
 } from "./types";
 type SuccessResponse<T> = {
   data: T;
@@ -145,6 +146,12 @@ const ApiServices = {
         },
       }),
     getNextId: () => AxiosGet<number>("/market/next-id"),
+  },
+  renting: {
+    erc4907: (payload: ERC721Input) =>
+      AxiosPost<TokenCreatorOutput>("renting/erc4907", payload),
+    rentMarket: (payload: RentMarketInput) =>
+      AxiosPost<TokenCreatorOutput>("renting/rent-market", payload),
   },
   user: {
     getUser: (address: string) =>

@@ -7,6 +7,7 @@
     "contract:verify": "node ./scripts/verify.js",
     "contract:deploy:steal-address": "yarn compile && hardhat run --network mumbai ./scripts/deploy-steal-address.js",
     "contract:deploy:music": "yarn compile && hardhat run --network mumbai ./scripts/deploy-music.js",
+    "contract:deploy:rent": "yarn compile && hardhat run --network mumbai ./scripts/deploy-rent.js",
     "contract:init-data:music": "yarn compile && hardhat run --network mumbai ./scripts/init-data-music.js"
   },
   "author": "",

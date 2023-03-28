@@ -3,6 +3,7 @@ import { MusicService } from '@app/music/music.service';
 import { StealServiceService } from '@app/steal-address/steal-address.service';
 import { TokenCreatorService } from '@app/token-creator/token-creator.service';
 import { UserService } from '@app/user/user.service';
+import { RentingService } from '@app/renting/renting.service';
 
 class Singleton {
   private static tokenCreatorInstance: TokenCreatorService;
@@ -10,8 +11,9 @@ class Singleton {
   private static stealAddressInstance: StealServiceService;
   private static musicInstance: MusicService;
   private static marketInstance: MarketService;
+  private static rentingInstance: RentingService;
 
-  private constructor() {}
+  private constructor() { }
 
   public static getTokenCreatorInstance(): TokenCreatorService {
     if (!Singleton.tokenCreatorInstance) {
@@ -44,6 +46,12 @@ class Singleton {
       Singleton.marketInstance = new MarketService();
     }
     return Singleton.marketInstance;
+  }
+  public static getRentingInstance(): RentingService {
+    if (!Singleton.rentingInstance) {
+      Singleton.rentingInstance = new RentingService();
+    }
+    return Singleton.rentingInstance;
   }
 }
 
