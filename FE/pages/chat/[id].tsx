@@ -2,14 +2,15 @@ import { Flex, Heading } from "@chakra-ui/layout";
 import { Avatar } from "@chakra-ui/avatar";
 import { useRouter } from "next/router";
 
-// import Sidebar from "../../components/sidebar";
-// import { SideBarData } from "../../constants/data/sidebar";
-// import BaseLayout from "../../layouts/base";
 import ChatSidebar from "../../components/sidebar-chat";
 import { Input, Text } from "@chakra-ui/react";
 import { FormControl } from "@chakra-ui/form-control";
 import { Button } from "@chakra-ui/button";
 import Head from "next/head";
+import React, { ReactNode, useEffect, useState } from "react";
+import { useStoreActions, useStoreState } from "../../services/redux/hook";
+import ApiServices from "../../services/api";
+import { GetMessageOutput } from "../../services/api/types";
 
 const Topbar = () => (
   <Flex bg={"gray.100"} h="81px" w={"100%"} align="center" p={5}>
@@ -29,7 +30,7 @@ const Bottombar = () => {
   );
 };
 
-const MessageA = () => {
+const MessageFromOther = ({ message }: { message: string }) => {
   const color = "green.100";
 
   return (
@@ -41,11 +42,11 @@ const MessageA = () => {
       p={3}
       m={1}
     >
-      <Text>this is dummy message</Text>
+      <Text>{message}</Text>
     </Flex>
   );
 };
-const MessageB = () => {
+const MessageFromUser = ({ message }: { message: string }) => {
   const color = "blue.100";
   const align = "flex-end";
 
@@ -59,14 +60,62 @@ const MessageB = () => {
       m={1}
       alignSelf={align}
     >
-      <Text>this is dummy message</Text>
+      <Text>{message}</Text>
     </Flex>
   );
 };
 
 const detail = () => {
+  const userStateData = useStoreState((state) => state.chatUser.data);
   const router = useRouter();
   const { id } = router.query;
+
+  const [messageList, setMessageList] = useState<GetMessageOutput[]>();
+
+  const getMessage = async () => {
+    try {
+      console.log(`id: ${id}`);
+
+      const message = await ApiServices.privateMessage.getMessage(
+        id?.toString() || "",
+        0
+      );
+      setMessageList(message.data.data.messages);
+    } catch (error) {}
+  };
+
+  const GetMessageOfRoom = () => {
+    if (userStateData && messageList) {
+      return (
+        <>
+          {messageList.map((message) => {
+            if (
+              message.sender_user.wallet_address == userStateData.wallet_address
+            ) {
+              return (
+                <MessageFromUser
+                  key={Math.random()}
+                  message={message.message_data}
+                />
+              );
+            }
+            return (
+              <MessageFromOther
+                key={Math.random()}
+                message={message.message_data}
+              />
+            );
+          })}
+        </>
+      );
+    }
+
+    return <></>;
+  };
+
+  useEffect(() => {
+    getMessage();
+  }, [id]);
 
   return (
     <Flex h="100vh">
@@ -100,31 +149,7 @@ const detail = () => {
             },
           }}
         >
-          <MessageA />
-          <MessageA />
-          <MessageB />
-          <MessageA />
-          <MessageB />
-          <MessageA />
-          <MessageA />
-          <MessageB />
-          <MessageA />
-          <MessageB />
-          <MessageA />
-          <MessageA />
-          <MessageB />
-          <MessageA />
-          <MessageB />
-          <MessageA />
-          <MessageA />
-          <MessageB />
-          <MessageA />
-          <MessageB />
-          <MessageA />
-          <MessageA />
-          <MessageB />
-          <MessageA />
-          <MessageB />
+          <GetMessageOfRoom />
         </Flex>
 
         <Bottombar />

@@ -169,7 +169,7 @@ class RoomService {
     }
   }
 
-  public async getRoomOfUserV2(address: string, page: number = 0, limit: number = 15) {
+  public async getRoomOfUser(address: string, page: number = 0, limit: number = 15) {
     try {
       // const roomOfficial =
       //   (
@@ -211,7 +211,7 @@ class RoomService {
 
       const lookup = {
         $lookup: {
-          from: 'users',
+          from: 'chatusers',
           localField: 'users',
           foreignField: 'wallet_address',
           as: 'users',

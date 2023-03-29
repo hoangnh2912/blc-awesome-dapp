@@ -251,13 +251,16 @@ const ApiServices = {
   privateMessage: {
     getMessage: (
       room_id: string,
-      page?: number,
+      page: number,
       limit?: number,
       isDescending?: boolean
     ) =>
-      AxiosGet<GetMessageOutput>("/message/get-message-in-room", {
-        params: { room_id, page, limit, isDescending },
-      }),
+      AxiosGet<{ messages: GetMessageOutput[]; is_friend: boolean }>(
+        "/message/get-message-in-room",
+        {
+          params: { room_id, page, limit, isDescending },
+        }
+      ),
 
     updateMessage: (payload: any) =>
       AxiosPost<GetMessageOutput>("/message/update-message", payload),

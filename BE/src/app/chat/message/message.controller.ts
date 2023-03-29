@@ -150,8 +150,8 @@ export class MessageController extends Controller {
     }
   }
 
-  @Post('send-message-v2')
-  public async sendMessageV2(
+  @Post('send-message')
+  public async sendMessage(
     @Request() req: exRequest,
     @Body()
     inputParam: {
@@ -173,7 +173,7 @@ export class MessageController extends Controller {
         is_promotion,
         is_notification,
       } = inputParam;
-      const updatedMessage = await this.messageService.sendMessageV2(
+      const updatedMessage = await this.messageService.sendMessage(
         address,
         room_id,
         message_data,

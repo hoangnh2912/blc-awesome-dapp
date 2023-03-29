@@ -23,11 +23,13 @@ import {
   Stack,
 } from "@chakra-ui/react";
 
+import { CONSTANT } from "../constants/chat-constant";
 import { Text } from "@chakra-ui/layout";
 import { IconButton } from "@chakra-ui/button";
 import type { NextPage } from "next";
 import BaseLayout from "../layouts/base";
 import { ArrowLeftIcon } from "@chakra-ui/icons";
+import { AiFillHome, AiOutlineHome } from "react-icons/ai";
 import {
   ChainId,
   ConnectWallet,
@@ -50,7 +52,11 @@ import { FaUser } from "react-icons/fa";
 import { useRouter } from "next/router";
 import { IoLogOut } from "react-icons/io5";
 import ApiServices from "../services/api";
-import { GetChatUserOutput, GetRoomInfo } from "../services/api/types";
+import {
+  GetChatUserOutput,
+  GetRoomInfo,
+  UserOfRoom,
+} from "../services/api/types";
 // import { redirect } from "next/dist/server/api-utils";
 
 const PopoverTrigger = (props: FlexProps) => {
@@ -207,6 +213,11 @@ const addNewChat = async () => {
   await ApiServices.roomChat.createRoom(payload);
 };
 
+const userAvatarGetter = ({ avatar }: { avatar: string }) => {
+  const avatarURL = CONSTANT.API_PREFIX + avatar;
+  return avatarURL;
+};
+
 const ChatSidebar: NextPage = () => {
   const userStateData = useStoreState((state) => state.chatUser.data);
   const isLoginState = useStoreState((state) => state.chatUser.isLogin);
@@ -217,8 +228,7 @@ const ChatSidebar: NextPage = () => {
   const router = useRouter();
 
   const LoginButton = ({ avatar }: { avatar: string }) => {
-    const avatarURL =
-      "http://localhost:3001/chat-user" + avatar.split("/users")[1];
+    const avatarURL = userAvatarGetter({ avatar });
 
     const address = useAddress();
     const { data, refetch } = useBalance(ABI_MUSIC.MUC.address);
@@ -362,25 +372,42 @@ const ChatSidebar: NextPage = () => {
     );
   };
 
-  const User = ({
+  const Room = ({
     name,
     avatar,
     id,
+    room_type,
+    users,
   }: {
     name: string;
     avatar: string;
     id: string;
-  }) => (
-    <Flex
-      p={3}
-      align={"center"}
-      _hover={{ bg: "gray.100", cursor: "pointer" }}
-      onClick={() => redirect(id)}
-    >
-      <Avatar src={avatar} marginEnd={3} />
-      <Text>{name}</Text>
-    </Flex>
-  );
+    room_type: string;
+    users: [UserOfRoom];
+  }) => {
+    let roomName = name;
+    let roomAvatar = avatar;
+    if (room_type === CONSTANT.ROOM_TYPE.PRIVATE && userStateData) {
+      const theOtherOne = users.filter(
+        (user) => user.wallet_address != userStateData.wallet_address
+      )[0];
+      roomName = theOtherOne.name || "";
+
+      roomAvatar = theOtherOne.avatar || "";
+    }
+
+    return (
+      <Flex
+        p={3}
+        align={"center"}
+        _hover={{ bg: "gray.100", cursor: "pointer" }}
+        onClick={() => redirect(id)}
+      >
+        <Avatar src={userAvatarGetter({ avatar: roomAvatar })} marginEnd={3} />
+        <Text>{roomName}</Text>
+      </Flex>
+    );
+  };
 
   const getListRoom = async () => {
     try {
@@ -402,8 +429,10 @@ const ChatSidebar: NextPage = () => {
   };
 
   useEffect(() => {
-    getListRoom();
-    getUser();
+    if (isLoginState) {
+      getListRoom();
+      getUser();
+    }
   }, [isLoginState]);
 
   return (
@@ -435,10 +464,12 @@ const ChatSidebar: NextPage = () => {
         </Flex>
 
         <IconButton
-          icon={<ArrowLeftIcon />}
+          // icon={<ArrowLeftIcon />}
+          icon={<AiOutlineHome />}
           aria-label={""}
           size="sm"
           isRound
+          onClick={() => router.push("/chat")}
         />
       </Flex>
       <Button m={5} p={4} onClick={() => addNewChat()}>
@@ -456,7 +487,16 @@ const ChatSidebar: NextPage = () => {
         //   sx={{ scrollbarWidth: "none" }}
       >
         {listRoom?.map((item) => {
-          return <User name={item.name} avatar={item.avatar} id={item._id} />;
+          return (
+            <Room
+              key={Math.random()}
+              name={item.name}
+              avatar={CONSTANT.IPFS_PREFIX + item.avatar}
+              id={item._id}
+              room_type={CONSTANT.ROOM_TYPE.PRIVATE}
+              users={item.users}
+            />
+          );
         })}
       </Flex>
     </Flex>

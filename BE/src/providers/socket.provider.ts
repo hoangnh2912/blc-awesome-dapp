@@ -67,7 +67,7 @@ io.use(async (socket, next) => {
       }
 
       await usersService.setSessionId(address.toLowerCase(), socket.id);
-      const listRooms = await roomService.getRoomOfUserV2(address);
+      const listRooms = await roomService.getRoomOfUser(address);
       const user = await usersService.get(address);
 
       await Promise.all(

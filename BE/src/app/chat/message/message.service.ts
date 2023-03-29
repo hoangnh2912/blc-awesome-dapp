@@ -94,7 +94,7 @@ class MessageService {
     };
   }
 
-  public async sendMessageV2(
+  public async sendMessage(
     address: string,
     room_id: string,
     message_data: string,

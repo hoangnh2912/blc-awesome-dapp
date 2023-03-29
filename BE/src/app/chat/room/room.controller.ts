@@ -37,7 +37,7 @@ export class RoomController extends Controller {
   private roomService = Singleton.getRoomInstance();
 
   @Get('get-room-list')
-  public async getRoomListV2(
+  public async getRoomList(
     @Request() req: exRequest,
     @Query() page?: number,
     @Query() limit?: number,
@@ -45,7 +45,7 @@ export class RoomController extends Controller {
     try {
       const address = req.headers.address as string;
       // const address = "0x3408d73f50977cec63e32bc64f7d8705add19638"
-      const roomList = await this.roomService.getRoomOfUserV2(address, page, limit);
+      const roomList = await this.roomService.getRoomOfUser(address, page, limit);
       return onSuccess(roomList);
     } catch (error) {
       logger.error(error);

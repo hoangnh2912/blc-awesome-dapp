@@ -102,12 +102,22 @@ interface GetMarketOutput {
   deleted_at?: Date;
 }
 
+interface UserOfRoom {
+  _id: string;
+  wallet_address: string;
+  avatar: string;
+  friends: [string];
+  name: string;
+  dmtp_pub_key: string;
+  role: string;
+}
+
 interface GetRoomInfo {
   _id: string;
   name: string;
   avatar: string;
   description: string;
-  users: [string];
+  users: [UserOfRoom];
   hidden: [string];
   cid: string;
   user_read: [
@@ -222,4 +232,5 @@ export type {
   GetRoomInfo,
   GetChatUserOutput,
   GetMessageOutput,
+  UserOfRoom,
 };

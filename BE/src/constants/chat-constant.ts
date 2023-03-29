@@ -94,8 +94,7 @@ const ChatConstant = {
   TOKEN_ERC20,
   MEMBER_OF_ROOM_TYPE,
   KEY_PAIR,
-  DEFAULT_AVATAR:
-    'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
+  DEFAULT_AVATAR: 'QmVejCPBURdUexikvNTKMxYr5nuvb22VKZraF2TnP4fJqj',
   NOTIFICATION_TYPE,
   RANDOM_COMPLEXITY: 10000000,
   FRIEND_STATUS,

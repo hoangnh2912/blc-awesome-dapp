@@ -47,7 +47,6 @@ class ChatUserService {
     const authorized = await Authorized.findOne({
       wallet_addresses: lowerAddress,
     });
-    console.log(`address: ${address}`);
 
     return Object.assign(user?.toObject() as any, {
       link_addresses: authorized?.wallet_addresses || [lowerAddress],
@@ -199,7 +198,7 @@ class ChatUserService {
         },
         {
           wallet_address: inputUser.wallet_address,
-          url: inputUser.avatar,
+          cid: inputUser.avatar,
         },
         {
           upsert: true,
@@ -221,7 +220,7 @@ class ChatUserService {
       {
         ...payload,
         ...(inputUser.avatar && {
-          avatar: `/users/avatar?wallet_address=${inputUser.wallet_address}`,
+          avatar: `chat-user/avatar?wallet_address=${inputUser.wallet_address}`,
         }),
       },
       {
@@ -261,7 +260,7 @@ class ChatUserService {
       {
         ...payloadUpdate,
         ...(inputUser.avatar && {
-          avatar: `/users/avatar?wallet_address=${inputUser.wallet_address}`,
+          avatar: `chat-user/avatar?wallet_address=${inputUser.wallet_address}`,
         }),
         updatedAt: new Date(),
       },
