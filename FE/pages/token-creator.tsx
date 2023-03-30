@@ -13,6 +13,7 @@ import {
 import Erc20 from "./token-creator/erc20";
 import Erc721 from "./token-creator/erc721";
 import Erc1155 from "./token-creator/erc1155";
+import Erc4907 from "./token-creator/erc4907";
 import ContractDeployed from "./token-creator/contract-deployed";
 import ContractUsage from "./token-creator/contract-usage";
 
@@ -29,6 +30,7 @@ const TokenCreator: NextPage = () => {
                 <Tab>ERC20</Tab>
                 <Tab>ERC721</Tab>
                 <Tab>ERC1155</Tab>
+                <Tab>ERC4907</Tab>
               </TabList>
               <TabPanels>
                 <TabPanel>
@@ -39,6 +41,9 @@ const TokenCreator: NextPage = () => {
                 </TabPanel>
                 <TabPanel>
                   <Erc1155 />
+                </TabPanel>
+                <TabPanel>
+                  <Erc4907 />
                 </TabPanel>
               </TabPanels>
             </Tabs>

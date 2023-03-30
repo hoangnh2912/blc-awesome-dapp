@@ -150,7 +150,7 @@ const RentMarket = () => {
           />
         </Stack>
         <Stack flex={1}>
-          <Text>ERC-4907 address</Text>
+          <Text>ERC4907 address</Text>
           <Input
             value={token}
             onChange={(e) => setToken(e.target.value)}

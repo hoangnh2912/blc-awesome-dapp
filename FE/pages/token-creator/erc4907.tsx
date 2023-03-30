@@ -19,7 +19,7 @@ import { useModalTransaction } from "../../components/modal-transaction";
 import ApiServices from "../../services/api";
 import { deployContract } from "../../services/thirdweb";
 
-const Erc721Renting = () => {
+const Erc4907 = () => {
   const [accessControlState, setAccessControlState] = useBoolean(false);
   const [name, setName] = useState("MyToken");
   const [symbol, setSymbol] = useState("mtk");
@@ -168,7 +168,7 @@ const Erc721Renting = () => {
       <CheckboxGroup
         value={features}
         onChange={setFeatures}
-        colorScheme="purple"
+        colorScheme="green"
       >
         <Stack spacing={[1, 5]} direction={["column", "row"]}>
           <Checkbox value={featuresMap.Mintable}>Mintable</Checkbox>
@@ -182,13 +182,13 @@ const Erc721Renting = () => {
         <Checkbox
           onChange={onChangeCheckBoxAccessControl}
           isChecked={accessControlState}
-          colorScheme={"purple"}
+          colorScheme={"green"}
         />
       </Stack>
       <Stack direction={["column", "row"]}>
         <RadioGroup
           isDisabled={!accessControlState}
-          colorScheme={"purple"}
+          colorScheme={"green"}
           defaultValue="Ownable"
         >
           <Stack spacing={5} direction={["column", "row"]}>
@@ -200,7 +200,7 @@ const Erc721Renting = () => {
       <Button
         leftIcon={<IoIosSettings />}
         onClick={deployToken}
-        colorScheme={"purple"}
+        colorScheme={"teal"}
         variant="solid"
       >
         Deploy Token
@@ -209,4 +209,4 @@ const Erc721Renting = () => {
   );
 };
 
-export default Erc721Renting;
+export default Erc4907;
