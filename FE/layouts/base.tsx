@@ -1,9 +1,9 @@
+import { useActiveChain, useSwitchChain } from "@thirdweb-dev/react";
 import Head from "next/head";
-import styles from "../styles/Home.module.css";
-import { SideBarData } from "../constants/data/sidebar";
 import { useEffect, useState } from "react";
 import Sidebar from "../components/sidebar";
-import { ChainId, useNetwork, useSDK } from "@thirdweb-dev/react";
+import { SideBarData } from "../constants/data/sidebar";
+import styles from "../styles/Home.module.css";
 
 const BaseLayout = ({
   children,
@@ -13,11 +13,11 @@ const BaseLayout = ({
   selectTabIndex?: number;
 }) => {
   const [isBrowser, setIsBrowser] = useState(false);
-  const [currentNetwork, switchNetwork] = useNetwork();
+  const currentNetwork = useActiveChain();
 
   useEffect(() => {
     setIsBrowser(true);
-  }, [switchNetwork, currentNetwork]);
+  }, [currentNetwork]);
 
   if (typeof window === "undefined" || !isBrowser) {
     return <></>;

@@ -1,4 +1,3 @@
-import { Text } from "@chakra-ui/react";
 import type { NextPage } from "next";
 import { useEffect, useState } from "react";
 import ListMusicComponent from "../../components/list-music";

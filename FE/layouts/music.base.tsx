@@ -1,11 +1,9 @@
-import { Skeleton } from "@chakra-ui/react";
-import { useNetwork } from "@thirdweb-dev/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import SidebarMusic from "../components/sidebar-music";
 import { SideBarDataMusic } from "../constants/data/sidebar";
-import { useStoreActions, useStoreState } from "../services/redux/hook";
+import { useStoreState } from "../services/redux/hook";
 import styles from "../styles/Home.module.css";
 const MusicBaseLayout = ({
   children,

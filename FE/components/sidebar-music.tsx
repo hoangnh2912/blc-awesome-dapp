@@ -37,16 +37,15 @@ import {
 import {
   ChainId,
   ConnectWallet,
+  useActiveChain,
   useAddress,
   useBalance,
   useCoinbaseWallet,
-  useConnect,
-  useContract,
-  useContractWrite,
+  useConnectionStatus,
   useDisconnect,
   useMetamask,
-  useNetwork,
   useSDK,
+  useSwitchChain,
   useWalletConnect,
 } from "@thirdweb-dev/react";
 import { useRouter } from "next/router";
@@ -56,16 +55,16 @@ import { BsSearch } from "react-icons/bs";
 import { CgProfile } from "react-icons/cg";
 import { FaUser } from "react-icons/fa";
 import { FiMenu } from "react-icons/fi";
-import { RiMoneyDollarCircleLine } from "react-icons/ri";
 import { IoLogOut } from "react-icons/io5";
+import { RiMoneyDollarCircleLine } from "react-icons/ri";
 import { ABI_MUSIC } from "../constants/abi";
 import { SideBarDataProps } from "../constants/data/sidebar";
 import backgroundImage from "../public/background.png";
-import { useStoreActions, useStoreState } from "../services/redux/hook";
-import SongNFTSmallComponent from "./song-nft-small";
-import { useModalTransaction } from "./modal-transaction";
-import LinkScan from "./link-scan";
 import ApiServices from "../services/api";
+import { useStoreActions, useStoreState } from "../services/redux/hook";
+import LinkScan from "./link-scan";
+import { useModalTransaction } from "./modal-transaction";
+import SongNFTSmallComponent from "./song-nft-small";
 
 const PopoverTrigger = (props: FlexProps) => {
   return <ExPopoverTrigger {...props} />;
@@ -84,7 +83,8 @@ const ModalCheckConnect = () => {
       });
     },
   });
-  const [{ data }] = useConnect();
+  const connectionStatus = useConnectionStatus();
+
   const isCheckConnectDataState = useStoreState(
     (state) => state.user.isCheckConnectData
   );
@@ -92,8 +92,17 @@ const ModalCheckConnect = () => {
   const connectWithWalletConnect = useWalletConnect();
   const connectCoinbase = useCoinbaseWallet();
 
+  const disconnect = useDisconnect();
+
   useEffect(() => {
-    if (!data.connected && isCheckConnectDataState.isCheckConnect) {
+    disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (
+      connectionStatus != "connected" &&
+      isCheckConnectDataState.isCheckConnect
+    ) {
       onOpen();
     } else {
       if (isCheckConnectDataState.args && isCheckConnectDataState.callback) {
@@ -101,7 +110,7 @@ const ModalCheckConnect = () => {
       }
       onClose();
     }
-  }, [data.connected, isCheckConnectDataState.isCheckConnect]);
+  }, [connectionStatus, isCheckConnectDataState.isCheckConnect]);
 
   return (
     <Modal
@@ -119,7 +128,7 @@ const ModalCheckConnect = () => {
           <Text>Connect your wallet to using this app</Text>
           <Stack mt={4}>
             <Button
-              onClick={connectWithMetamask}
+              onClick={() => connectWithMetamask()}
               _hover={{ bg: "#3443DD" }}
               color="white"
               bg="#3443A0"
@@ -127,7 +136,7 @@ const ModalCheckConnect = () => {
               Metamask
             </Button>
             <Button
-              onClick={connectWithWalletConnect}
+              onClick={() => connectWithWalletConnect()}
               _hover={{ bg: "#3443DD" }}
               color="white"
               bg="#3443A0"
@@ -135,7 +144,7 @@ const ModalCheckConnect = () => {
               WalletConnect
             </Button>
             <Button
-              onClick={connectCoinbase}
+              onClick={() => connectCoinbase()}
               _hover={{ bg: "#3443DD" }}
               color="white"
               bg="#3443A0"
@@ -154,9 +163,11 @@ const ModalCheckConnect = () => {
 const ModalSwitchNetwork = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const disconnect = useDisconnect();
-  const [network, setNetwork] = useNetwork();
+  const network = useActiveChain();
+  const setNetwork = useSwitchChain();
+
   const switchNetwork = async () => {
-    if (network.data.chain?.id == ChainId.Mumbai && isOpen) {
+    if (network?.chainId == ChainId.Mumbai && isOpen) {
       onClose();
     } else if (setNetwork) {
       await setNetwork(ChainId.Mumbai);
@@ -164,15 +175,15 @@ const ModalSwitchNetwork = () => {
   };
 
   useEffect(() => {
-    if (network.data.chain) {
-      const currentChainId = network.data.chain.id;
+    if (network && network?.chainId) {
+      const currentChainId = network.chainId;
       if (currentChainId !== ChainId.Mumbai && !isOpen) {
         onOpen();
       } else if (currentChainId == ChainId.Mumbai && isOpen) {
         onClose();
       }
     }
-  }, [network.data.chain?.id]);
+  }, [network?.chainId]);
 
   return (
     <Modal
@@ -215,7 +226,8 @@ const ModalSignMessage = () => {
   const setUserDataAction = useStoreActions((state) => state.user.setData);
   const sdk = useSDK();
   const address = useAddress();
-  const [network] = useNetwork();
+  const network = useActiveChain();
+  const setNetwork = useSwitchChain();
 
   const signMessage = async () => {
     if (sdk && address) {
@@ -237,8 +249,8 @@ const ModalSignMessage = () => {
   };
 
   useEffect(() => {
-    if (network.data.chain && sdk) {
-      const currentChainId = network.data.chain.id;
+    if (network?.chainId && sdk) {
+      const currentChainId = network.chainId;
       if (currentChainId == ChainId.Mumbai && address) {
         if (
           localStorage.getItem("address") != address.toLowerCase() ||
@@ -253,7 +265,7 @@ const ModalSignMessage = () => {
         onClose();
       }
     }
-  }, [sdk, network.data.chain?.id, address]);
+  }, [sdk, network?.chainId, address]);
 
   return (
     <Modal

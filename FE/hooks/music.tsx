@@ -125,15 +125,14 @@ const useBuyMusic = () => {
         );
         if (!approveMuc) return;
         onOpenModalTx();
-        const res = await musicMarketContract.call(
-          "buySong",
+        const res = await musicMarketContract.call("buySong", [
           ABI_MUSIC.Music.address,
           id,
           approveMuc.deadline,
           approveMuc.v,
           approveMuc.r,
-          approveMuc.s
-        );
+          approveMuc.s,
+        ]);
         setTxResult({
           reason: "",
           content: [
@@ -197,13 +196,12 @@ const useListMusic = () => {
         );
 
         onOpenModalTx();
-        const res = await musicMarketContract.call(
-          "listSong",
+        const res = await musicMarketContract.call("listSong", [
           id,
           price,
           amount,
-          uri
-        );
+          uri,
+        ]);
         setTxResult({
           reason: "",
           content: [

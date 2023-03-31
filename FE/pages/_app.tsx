@@ -1,5 +1,11 @@
 import { ChakraProvider } from "@chakra-ui/react";
-import { ChainId, ThirdwebProvider } from "@thirdweb-dev/react";
+import {
+  metamaskWallet,
+  ThirdwebProvider,
+  walletConnect,
+  walletConnectV1,
+} from "@thirdweb-dev/react";
+import { Mumbai } from "@thirdweb-dev/chains";
 import { StoreProvider } from "easy-peasy";
 import type { AppProps } from "next/app";
 import { ModalTransactionProvider } from "../contexts/modal-transaction";
@@ -14,8 +20,8 @@ function App({ Component, pageProps }: AppProps) {
       <ChakraProvider>
         <AudioLayout>
           <ThirdwebProvider
-            desiredChainId={ChainId.Mumbai}
-            supportedChains={[ChainId.Mumbai]}
+            activeChain={Mumbai}
+            supportedWallets={[metamaskWallet(), walletConnect()]}
           >
             <ModalTransactionProvider>
               <Component {...pageProps} />
