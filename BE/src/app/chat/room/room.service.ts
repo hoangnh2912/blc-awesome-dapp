@@ -94,7 +94,7 @@ class RoomService {
       };
       const lookup = {
         $lookup: {
-          from: 'users',
+          from: 'chatusers',
           localField: 'users',
           foreignField: 'wallet_address',
           as: 'users',
@@ -113,6 +113,9 @@ class RoomService {
       };
 
       const listRoom = await Room.aggregate([filter, lookup]);
+      // if (!listRoom?.name){
+      //   listRoom.name
+      // }
 
       if (listRoom.length === 0) {
         return {
@@ -136,6 +139,14 @@ class RoomService {
           message: 'Room: User not in room',
         };
       }
+
+      if (!room.name) {
+        room.name = room.users.filter((user: any) => user.wallet_address != address)[0].name;
+      }
+      if (!room.avatar) {
+        room.avatar = room.users.filter((user: any) => user.wallet_address != address)[0].avatar;
+      }
+
       return {
         status: true,
         data: {
@@ -444,7 +455,11 @@ class RoomService {
 
       let createField: any = {
         name,
-        avatar: !!avatar ? avatar : ChatConstant.DEFAULT_AVATAR,
+        avatar: !!avatar
+          ? avatar
+          : room_type == ChatConstant.ROOM_TYPE.PRIVATE
+          ? ''
+          : ChatConstant.DEFAULT_AVATAR,
         description,
         room_type,
         users: lowerCaseUsers,

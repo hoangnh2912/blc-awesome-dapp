@@ -64,7 +64,7 @@ export class RoomController extends Controller {
         this.setStatus(NETWORK_STATUS_CODE.BAD_REQUEST);
         return onError(roomInfo.message);
       }
-      return onSuccess(roomInfo);
+      return onSuccess(roomInfo.data);
     } catch (error) {
       logger.error(error);
       this.setStatus(NETWORK_STATUS_CODE.INTERNAL_SERVER_ERROR);

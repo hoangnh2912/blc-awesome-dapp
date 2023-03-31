@@ -171,8 +171,10 @@ const ApiServices = {
       AxiosGet<GetRoomInfo[]>("/room/get-room-list", {
         params: { page, limit },
       }),
-    getRoomInfo: (page: number = 0, limit: number = 15) =>
-      AxiosGet<GetRoomInfo>("/room/get-room-info", { params: { page, limit } }),
+    getRoomInfo: (room_id: string, page: number = 0, limit: number = 15) =>
+      AxiosGet<GetRoomInfo>("/room/get-room-info", {
+        params: { room_id, page, limit },
+      }),
     getPublicRoomList: (
       page: number = 0,
       limit: number = 15,

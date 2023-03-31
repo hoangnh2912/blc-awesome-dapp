@@ -10,14 +10,22 @@ import Head from "next/head";
 import React, { ReactNode, useEffect, useState } from "react";
 import { useStoreActions, useStoreState } from "../../services/redux/hook";
 import ApiServices from "../../services/api";
-import { GetMessageOutput } from "../../services/api/types";
+import { GetMessageOutput, GetRoomInfo } from "../../services/api/types";
+import { CONSTANT } from "../../constants/chat-constant";
 
-const Topbar = () => (
-  <Flex bg={"gray.100"} h="81px" w={"100%"} align="center" p={5}>
-    <Avatar src="" marginEnd={3} />
-    <Heading size={"md"}>Sakaino</Heading>
-  </Flex>
-);
+const userAvatarGetter = ({ avatar }: { avatar: string }) => {
+  const avatarURL = CONSTANT.API_PREFIX + avatar;
+  return avatarURL;
+};
+
+const Topbar = ({ avatar, username }: { avatar: string; username: string }) => {
+  return (
+    <Flex bg={"gray.100"} h="81px" w={"100%"} align="center" p={5}>
+      <Avatar src={userAvatarGetter({ avatar })} marginEnd={3} />
+      <Heading size={"md"}>{username}</Heading>
+    </Flex>
+  );
+};
 
 const Bottombar = () => {
   return (
@@ -72,15 +80,29 @@ const detail = () => {
 
   const [messageList, setMessageList] = useState<GetMessageOutput[]>();
 
+  const [room, setRoom] = useState<GetRoomInfo>();
+
+  const getRoom = async () => {
+    try {
+      if (!room && id) {
+        const room = await ApiServices.roomChat.getRoomInfo(
+          id?.toString() || ""
+        );
+
+        setRoom(room.data.data);
+      }
+    } catch (error) {}
+  };
+
   const getMessage = async () => {
     try {
-      console.log(`id: ${id}`);
-
-      const message = await ApiServices.privateMessage.getMessage(
-        id?.toString() || "",
-        0
-      );
-      setMessageList(message.data.data.messages);
+      if (!messageList && id) {
+        const message = await ApiServices.privateMessage.getMessage(
+          id?.toString() || "",
+          0
+        );
+        setMessageList(message.data.data.messages);
+      }
     } catch (error) {}
   };
 
@@ -115,7 +137,12 @@ const detail = () => {
 
   useEffect(() => {
     getMessage();
+    getRoom();
   }, [id]);
+
+  if (!room) {
+    return <h1>loading</h1>;
+  }
 
   return (
     <Flex h="100vh">
@@ -131,9 +158,12 @@ const detail = () => {
         />
       </Head>
       <ChatSidebar />
-
       <Flex flex={1} direction="column">
-        <Topbar />
+        <Topbar
+          key={Math.random()}
+          avatar={room?.avatar || ""}
+          username={room?.name || "Chat user"}
+        />
 
         <Flex
           flex={1}
