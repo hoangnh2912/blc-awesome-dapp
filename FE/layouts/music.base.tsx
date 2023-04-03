@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import SidebarMusic from "../components/sidebar-music";
 import { SideBarDataMusic } from "../constants/data/sidebar";
-import { useStoreState } from "../services/redux/hook";
+import ApiServices from "../services/api";
 import styles from "../styles/Home.module.css";
 const MusicBaseLayout = ({
   children,
@@ -14,11 +14,20 @@ const MusicBaseLayout = ({
 }) => {
   const [isBrowser, setIsBrowser] = useState(false);
   const router = useRouter();
-  const currentSongState = useStoreState(
-    (actions) => actions.music.currentSong
-  );
+  const [musicName, setMusicName] = useState("");
+  const [musicImage, setMusicImage] = useState("");
+  const [musicSinger, setMusicSinger] = useState("");
 
+  const getMusicDetail = async () => {
+    if (router.query.id) {
+      const res = await ApiServices.music.getMusic(router.query.id as string);
+      setMusicName(res.data.data.name);
+      setMusicImage(res.data.data.image);
+      setMusicSinger(res.data.data.singer);
+    }
+  };
   useEffect(() => {
+    getMusicDetail();
     setIsBrowser(true);
   }, []);
 
@@ -55,33 +64,48 @@ const MusicBaseLayout = ({
     <div className={styles.App}>
       <Head>
         <title>
-          {currentSongState
-            ? `${currentSongState.name} - ${currentSongState.singer}`
-            : "Music Protocol"}
+          {musicName ? `${musicName} - ${musicSinger}` : "Music Protocol"}
         </title>
 
         <link
           rel="shortcut icon"
-          href={currentSongState ? `${currentSongState.image}` : "/favicon.ico"}
+          href={musicImage ? `${musicImage}` : "/favicon.ico"}
         />
-        <meta name="description" content="Music" />
-        <meta property="og:url" content="https://scimta.com" />
+        <meta name="description" content="Music Marketplace" />
+        <meta
+          property="og:url"
+          content="https://scimta.com/music-marketplace"
+        />
         <meta property="og:type" content="website" />
-        <meta property="og:title" content="Music Dapp" />
-        <meta property="og:description" content="Music" />
+        <meta property="og:title" content="Music Marketplace" />
+        <meta property="og:description" content="Music Marketplace" />
         <meta
           property="og:image"
-          content="https://r4.wallpaperflare.com/wallpaper/135/692/935/astronaut-space-black-background-artwork-hd-wallpaper-7866ed583040dc28909c514e8812149a.jpg"
+          content={
+            musicImage
+              ? `${musicImage}`
+              : `https://r4.wallpaperflare.com/wallpaper/135/692/935/astronaut-space-black-background-artwork-hd-wallpaper-7866ed583040dc28909c514e8812149a.jpg`
+          }
         />
 
         <meta name="twitter:card" content="summary_large_image" />
-        <meta property="twitter:domain" content="Music.com" />
-        <meta property="twitter:url" content="https://Music.com" />
-        <meta name="twitter:title" content="Music Dapp" />
-        <meta name="twitter:description" content="Music" />
+        <meta
+          property="twitter:domain"
+          content="https://scimta.com/music-marketplace"
+        />
+        <meta
+          property="twitter:url"
+          content="https://scimta.com/music-marketplace"
+        />
+        <meta name="twitter:title" content="Music Marketplace" />
+        <meta name="twitter:description" content="Music Marketplace" />
         <meta
           name="twitter:image"
-          content="https://r4.wallpaperflare.com/wallpaper/135/692/935/astronaut-space-black-background-artwork-hd-wallpaper-7866ed583040dc28909c514e8812149a.jpg"
+          content={
+            musicImage
+              ? `${musicImage}`
+              : `https://r4.wallpaperflare.com/wallpaper/135/692/935/astronaut-space-black-background-artwork-hd-wallpaper-7866ed583040dc28909c514e8812149a.jpg`
+          }
         />
       </Head>
       <SidebarMusic
