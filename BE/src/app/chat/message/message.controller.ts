@@ -36,7 +36,7 @@ export class MessageController extends Controller {
     @Query() room_id: string,
     @Query() page: number,
     @Query() limit: number = Constant.LIMIT_MESSAGE,
-    @Query() isDescending: boolean = false,
+    @Query() isDescending: boolean = true,
     @Query() is_promotion?: boolean,
   ): Promise<
     OptionResponse<{
@@ -47,7 +47,7 @@ export class MessageController extends Controller {
     try {
       const address = req.headers.address as string;
 
-      const messages: any = await this.messageService.getMessageOfRoomV2(
+      const messages: any = await this.messageService.getMessageOfRoom(
         address,
         room_id,
         page,

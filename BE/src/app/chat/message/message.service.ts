@@ -17,7 +17,7 @@ import { AES, enc } from 'crypto-js';
 import keccak256 from 'keccak256';
 import { dmtp_priv_key, dmtp_pub_key } from '../key_pair.json';
 class MessageService {
-  public async getMessageOfRoomV2(
+  public async getMessageOfRoom(
     address: string,
     room_id: string,
     page: number,

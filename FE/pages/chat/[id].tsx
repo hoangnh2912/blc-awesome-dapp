@@ -7,73 +7,31 @@ import { Input, Text } from "@chakra-ui/react";
 import { FormControl } from "@chakra-ui/form-control";
 import { Button } from "@chakra-ui/button";
 import Head from "next/head";
-import React, { ReactNode, useEffect, useState } from "react";
+import React, { ReactNode, useEffect, useState, memo, useRef } from "react";
 import { useStoreActions, useStoreState } from "../../services/redux/hook";
 import ApiServices from "../../services/api";
 import { GetMessageOutput, GetRoomInfo } from "../../services/api/types";
 import { CONSTANT } from "../../constants/chat-constant";
+
+const Topbar = memo(
+  ({ avatar, username }: { avatar: string; username: string }) => {
+    return (
+      <Flex bg={"gray.100"} h="81px" w={"100%"} align="center" p={5}>
+        <Avatar src={userAvatarGetter({ avatar })} marginEnd={3} />
+        <Heading size={"md"}>{username}</Heading>
+      </Flex>
+    );
+  }
+);
 
 const userAvatarGetter = ({ avatar }: { avatar: string }) => {
   const avatarURL = CONSTANT.API_PREFIX + avatar;
   return avatarURL;
 };
 
-const Topbar = ({ avatar, username }: { avatar: string; username: string }) => {
-  return (
-    <Flex bg={"gray.100"} h="81px" w={"100%"} align="center" p={5}>
-      <Avatar src={userAvatarGetter({ avatar })} marginEnd={3} />
-      <Heading size={"md"}>{username}</Heading>
-    </Flex>
-  );
-};
-
-const Bottombar = () => {
-  return (
-    <FormControl px={3} pb={3}>
-      <Input placeholder="Type a message..." autoComplete="off" />
-      <Button type="submit" hidden>
-        Send
-      </Button>
-    </FormControl>
-  );
-};
-
-const MessageFromOther = ({ message }: { message: string }) => {
-  const color = "green.100";
-
-  return (
-    <Flex
-      bg={color}
-      minWidth={"100px"}
-      borderRadius="lg"
-      w="fit-content"
-      p={3}
-      m={1}
-    >
-      <Text>{message}</Text>
-    </Flex>
-  );
-};
-const MessageFromUser = ({ message }: { message: string }) => {
-  const color = "blue.100";
-  const align = "flex-end";
-
-  return (
-    <Flex
-      bg={color}
-      minWidth={"100px"}
-      borderRadius="lg"
-      w="fit-content"
-      p={3}
-      m={1}
-      alignSelf={align}
-    >
-      <Text>{message}</Text>
-    </Flex>
-  );
-};
-
 const detail = () => {
+  const inputReference = useRef(null);
+
   const userStateData = useStoreState((state) => state.chatUser.data);
   const router = useRouter();
   const { id } = router.query;
@@ -82,12 +40,77 @@ const detail = () => {
 
   const [room, setRoom] = useState<GetRoomInfo>();
 
+  const Bottombar = () => {
+    const [input, setInput] = useState("");
+
+    const sendMessage = async (e: React.FormEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      const newMessage = await ApiServices.privateMessage.sendMessage({
+        message_data: input,
+        room_id: id,
+      });
+
+      if (messageList) {
+        setMessageList([newMessage.data.data, ...messageList]);
+      }
+      setInput("");
+    };
+
+    return (
+      <FormControl px={3} pb={3} onSubmit={sendMessage} as="form">
+        <Input
+          id="message-text"
+          placeholder="Type a message..."
+          autoComplete="off"
+          onChange={(e) => setInput(e.target.value)}
+          ref={inputReference}
+        />
+        <Button type="submit" hidden>
+          Send
+        </Button>
+      </FormControl>
+    );
+  };
+
+  const MessageFromOther = ({ message }: { message: string }) => {
+    const color = "green.100";
+
+    return (
+      <Flex
+        bg={color}
+        minWidth={"100px"}
+        borderRadius="lg"
+        w="fit-content"
+        p={3}
+        m={1}
+      >
+        <Text>{message}</Text>
+      </Flex>
+    );
+  };
+  const MessageFromUser = ({ message }: { message: string }) => {
+    const color = "blue.100";
+    const align = "flex-end";
+
+    return (
+      <Flex
+        bg={color}
+        minWidth={"100px"}
+        borderRadius="lg"
+        w="fit-content"
+        p={3}
+        m={1}
+        alignSelf={align}
+      >
+        <Text>{message}</Text>
+      </Flex>
+    );
+  };
+
   const getRoom = async () => {
     try {
-      if (!room && id) {
-        const room = await ApiServices.roomChat.getRoomInfo(
-          id?.toString() || ""
-        );
+      if (id) {
+        const room = await ApiServices.roomChat.getRoomInfo(id.toString());
 
         setRoom(room.data.data);
       }
@@ -96,9 +119,9 @@ const detail = () => {
 
   const getMessage = async () => {
     try {
-      if (!messageList && id) {
+      if (id) {
         const message = await ApiServices.privateMessage.getMessage(
-          id?.toString() || "",
+          id.toString(),
           0
         );
         setMessageList(message.data.data.messages);
@@ -110,24 +133,29 @@ const detail = () => {
     if (userStateData && messageList) {
       return (
         <>
-          {messageList.map((message) => {
-            if (
-              message.sender_user.wallet_address == userStateData.wallet_address
-            ) {
+          {messageList
+            .slice(0)
+            .reverse()
+            .map((message) => {
+              if (
+                message.sender_user.wallet_address ==
+                userStateData.wallet_address
+              ) {
+                return (
+                  <MessageFromUser
+                    key={Math.random()}
+                    message={message.message_data}
+                  />
+                );
+              }
               return (
-                <MessageFromUser
+                <MessageFromOther
                   key={Math.random()}
                   message={message.message_data}
                 />
               );
-            }
-            return (
-              <MessageFromOther
-                key={Math.random()}
-                message={message.message_data}
-              />
-            );
-          })}
+            })}
+          <div id="bottom"></div>
         </>
       );
     }
@@ -140,9 +168,16 @@ const detail = () => {
     getRoom();
   }, [id]);
 
-  if (!room) {
-    return <h1>loading</h1>;
-  }
+  useEffect(() => {
+    setTimeout(() => {
+      document.getElementById("message-text")?.focus();
+
+      document.getElementById("bottom")?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 1000);
+  }, [messageList]);
 
   return (
     <Flex h="100vh">
@@ -160,7 +195,7 @@ const detail = () => {
       <ChatSidebar />
       <Flex flex={1} direction="column">
         <Topbar
-          key={Math.random()}
+          key={id?.toString()}
           avatar={room?.avatar || ""}
           username={room?.name || "Chat user"}
         />
@@ -181,7 +216,6 @@ const detail = () => {
         >
           <GetMessageOfRoom />
         </Flex>
-
         <Bottombar />
       </Flex>
     </Flex>

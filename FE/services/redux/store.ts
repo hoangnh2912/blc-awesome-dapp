@@ -79,6 +79,7 @@ const store = createStore<StoreModel>({
     }),
     logout: action((state) => {
       state.isLogin = false;
+      state.data = undefined;
     }),
   },
 });

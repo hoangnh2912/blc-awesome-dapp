@@ -264,9 +264,10 @@ const ApiServices = {
         }
       ),
 
+    sendMessage: (payload: any) =>
+      AxiosPost<GetMessageOutput>("/message/send-message", payload),
     updateMessage: (payload: any) =>
       AxiosPost<GetMessageOutput>("/message/update-message", payload),
-
     reactMessage: (payload: any) =>
       AxiosPost<GetMessageOutput>("/message/react-message", payload),
     removeReact: (payload: any) =>

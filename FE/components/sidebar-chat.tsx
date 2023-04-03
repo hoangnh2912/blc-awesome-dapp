@@ -43,7 +43,7 @@ import {
 } from "@thirdweb-dev/react";
 import { CgProfile } from "react-icons/cg";
 import { useStoreActions, useStoreState } from "../services/redux/hook";
-import React, { ReactNode, useEffect, useState } from "react";
+import React, { ReactNode, useEffect, useState, memo } from "react";
 import { RiMoneyDollarCircleLine } from "react-icons/ri";
 import { ABI_MUSIC } from "../constants/abi";
 import { useModalTransaction } from "./modal-transaction";
@@ -349,6 +349,7 @@ const ChatSidebar: NextPage = () => {
                 onClick={() => {
                   if (address) disconnect();
                   logout();
+                  redirectHome();
                 }}
                 borderTopWidth={1}
                 borderTopColor="rgba(0, 0, 0, 0.1)"
@@ -428,6 +429,10 @@ const ChatSidebar: NextPage = () => {
     router.push(`/chat/${id}`);
   };
 
+  const redirectHome = () => {
+    router.push("/chat/");
+  };
+
   useEffect(() => {
     if (isLoginState) {
       getListRoom();
@@ -503,4 +508,4 @@ const ChatSidebar: NextPage = () => {
   );
 };
 
-export default ChatSidebar;
+export default memo(ChatSidebar);
