@@ -96,10 +96,6 @@ export const ModalCheckConnect = () => {
   const disconnect = useDisconnect();
 
   useEffect(() => {
-    disconnect();
-  }, []);
-
-  useEffect(() => {
     if (
       connectionStatus != "connected" &&
       isCheckConnectDataState.isCheckConnect
