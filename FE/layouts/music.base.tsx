@@ -5,29 +5,20 @@ import SidebarMusic from "../components/sidebar-music";
 import { SideBarDataMusic } from "../constants/data/sidebar";
 import ApiServices from "../services/api";
 import styles from "../styles/Home.module.css";
+import { GetMarketOutput } from "../services/api/types";
 const MusicBaseLayout = ({
   children,
   selectTabIndex = 0,
+  meta,
 }: {
   children: React.ReactNode;
   selectTabIndex?: number;
+  meta?: GetMarketOutput;
 }) => {
   const [isBrowser, setIsBrowser] = useState(false);
   const router = useRouter();
-  const [musicName, setMusicName] = useState("");
-  const [musicImage, setMusicImage] = useState("");
-  const [musicSinger, setMusicSinger] = useState("");
 
-  const getMusicDetail = async () => {
-    if (router.query.id) {
-      const res = await ApiServices.music.getMusic(router.query.id as string);
-      setMusicName(res.data.data.name);
-      setMusicImage(res.data.data.image);
-      setMusicSinger(res.data.data.singer);
-    }
-  };
   useEffect(() => {
-    getMusicDetail();
     setIsBrowser(true);
   }, []);
 
@@ -64,12 +55,12 @@ const MusicBaseLayout = ({
     <div className={styles.App}>
       <Head>
         <title>
-          {musicName ? `${musicName} - ${musicSinger}` : "Music Protocol"}
+          {meta ? `${meta.name} - ${meta.singer}` : "Music Protocol"}
         </title>
 
         <link
           rel="shortcut icon"
-          href={musicImage ? `${musicImage}` : "/favicon.ico"}
+          href={meta ? `${meta.image}` : "/favicon.ico"}
         />
         <meta name="description" content="Music Marketplace" />
         <meta
@@ -82,9 +73,9 @@ const MusicBaseLayout = ({
         <meta
           property="og:image"
           content={
-            musicImage
-              ? `${musicImage}`
-              : `https://r4.wallpaperflare.com/wallpaper/135/692/935/astronaut-space-black-background-artwork-hd-wallpaper-7866ed583040dc28909c514e8812149a.jpg`
+            meta
+              ? `${meta.image}`
+              : `https://images.unsplash.com/photo-1494232410401-ad00d5433cfa?auto=format&fit=crop&w=1024`
           }
         />
 
@@ -102,9 +93,9 @@ const MusicBaseLayout = ({
         <meta
           name="twitter:image"
           content={
-            musicImage
-              ? `${musicImage}`
-              : `https://r4.wallpaperflare.com/wallpaper/135/692/935/astronaut-space-black-background-artwork-hd-wallpaper-7866ed583040dc28909c514e8812149a.jpg`
+            meta
+              ? `${meta.image}`
+              : `https://images.unsplash.com/photo-1494232410401-ad00d5433cfa?auto=format&fit=crop&w=1024`
           }
         />
       </Head>

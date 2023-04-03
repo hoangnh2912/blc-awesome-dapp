@@ -1,20 +1,12 @@
 import {
   Button,
   Image,
-  Link,
   Progress,
   SimpleGrid,
   Stack,
   Text,
 } from "@chakra-ui/react";
-import {
-  useAddress,
-  useContract,
-  useContractRead,
-  useNFT,
-  useNFTBalance,
-  useSDK,
-} from "@thirdweb-dev/react";
+import { useAddress, useSDK } from "@thirdweb-dev/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { BsCart4, BsFillPlayFill } from "react-icons/bs";
@@ -28,7 +20,7 @@ import ApiServices from "../../services/api";
 import { GetMarketOutput } from "../../services/api/types";
 import { useStoreActions, useStoreState } from "../../services/redux/hook";
 
-const Music = () => {
+const Music = ({ music }: { music: GetMarketOutput }) => {
   const router = useRouter();
   const { id } = router.query;
   const playMusicAction = useStoreActions((state) => state.music.playMusic);
@@ -36,7 +28,8 @@ const Music = () => {
   const isPlayingState = useStoreState((state) => state.music.isPlaying);
   const currentAddress = useAddress();
 
-  const [data, setData] = useState<GetMarketOutput>();
+  const data = music;
+  // const [data, setData] = useState<GetMarketOutput>();
 
   const [isOwnNft, setIsOwnNft] = useState(false);
 
@@ -44,13 +37,13 @@ const Music = () => {
   const { onBuy } = useBuyMusic();
 
   const getData = async () => {
-    try {
-      if (!id) return;
-      const res = await ApiServices.music.getMusic(id as string);
-      setData(res.data.data);
-    } catch (error) {
-      console.log(error);
-    }
+    // try {
+    //   if (!id) return;
+    //   const res = await ApiServices.music.getMusic(id as string);
+    //   setData(res.data.data);
+    // } catch (error) {
+    //   console.log(error);
+    // }
   };
 
   const getBalance = async () => {
@@ -100,7 +93,7 @@ const Music = () => {
     currentAddress.toLowerCase() == `${data.seller}`.toLowerCase();
 
   return (
-    <MusicBaseLayout selectTabIndex={0}>
+    <MusicBaseLayout selectTabIndex={0} meta={music}>
       <Stack direction={{ base: "column", md: "row" }}>
         <Image
           width={{
@@ -282,5 +275,17 @@ const Music = () => {
     </MusicBaseLayout>
   );
 };
-
+Music.getInitialProps = async (ctx: any) => {
+  const id = ctx.query.id;
+  try {
+    if (!id) return;
+    const res = await ApiServices.music.getMusic(id as string);
+    return {
+      music: res.data.data,
+    };
+  } catch (error) {
+    console.log(error);
+  }
+  return { music: null };
+};
 export default Music;
