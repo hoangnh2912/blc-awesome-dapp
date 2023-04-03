@@ -28,7 +28,8 @@ import {
   PopoverCloseButton,
   PopoverContent,
   PopoverHeader,
-  PopoverTrigger as ExPopoverTrigger,
+  PopoverTrigger,
+  // PopoverTrigger as ExPopoverTrigger,
   Spinner,
   Stack,
   Text,
@@ -66,11 +67,11 @@ import LinkScan from "./link-scan";
 import { useModalTransaction } from "./modal-transaction";
 import SongNFTSmallComponent from "./song-nft-small";
 
-const PopoverTrigger = (props: FlexProps) => {
-  return <ExPopoverTrigger {...props} />;
-};
+// const PopoverTrigger = (props: FlexProps) => {
+//   return <ExPopoverTrigger {...props} />;
+// };
 
-const ModalCheckConnect = () => {
+export const ModalCheckConnect = () => {
   const setIsCheckConnectAction = useStoreActions(
     (state) => state.user.setIsCheckConnect
   );
@@ -160,7 +161,7 @@ const ModalCheckConnect = () => {
   );
 };
 
-const ModalSwitchNetwork = () => {
+export const ModalSwitchNetwork = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const disconnect = useDisconnect();
   const network = useActiveChain();
@@ -220,7 +221,7 @@ const ModalSwitchNetwork = () => {
   );
 };
 
-const ModalSignMessage = () => {
+export const ModalSignMessage = () => {
   const disconnect = useDisconnect();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const setUserDataAction = useStoreActions((state) => state.user.setData);

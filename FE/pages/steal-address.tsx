@@ -57,10 +57,9 @@ const StealAddress: NextPage = () => {
             ABI_STEAL_ADDRESS.StealAddress.address,
             ABI_STEAL_ADDRESS.StealAddress.abi
           );
-          const pubKey = await stealAddressContract.call(
-            "getPublicKey",
-            address
-          );
+          const pubKey = await stealAddressContract.call("getPublicKey", [
+            address,
+          ]);
           const pubKeyXY = web3.utils.encodePacked(pubKey["X"], pubKey["Y"]);
           if (
             pubKeyXY &&
@@ -89,11 +88,10 @@ const StealAddress: NextPage = () => {
         );
 
         const { privateKey } = web3.eth.accounts.create();
-        const [pubX, pubY] = await stealAddressContract.call(
-          "privToPubKey",
-          privateKey
-        );
-        await stealAddressContract.call("setPublicKey", pubX, pubY);
+        const [pubX, pubY] = await stealAddressContract.call("privToPubKey", [
+          privateKey,
+        ]);
+        await stealAddressContract.call("setPublicKey", [pubX, pubY]);
         setPrivKey(privateKey);
         await ApiServices.stealAddress.submitPrivateKey(privateKey, address);
       } catch (error) {
@@ -118,11 +116,10 @@ const StealAddress: NextPage = () => {
           ABI_STEAL_ADDRESS.StealAddress.address,
           ABI_STEAL_ADDRESS.StealAddress.abi
         );
-        const [stAddress, hashS] = await stealAddressContract.call(
-          "getStealAddress",
+        const [stAddress] = await stealAddressContract.call("getStealAddress", [
           privKey,
-          e.target.value
-        );
+          e.target.value,
+        ]);
 
         await ApiServices.stealAddress.submitStealAddress(
           e.target.value,
@@ -195,15 +192,13 @@ const StealAddress: NextPage = () => {
           ABI_STEAL_ADDRESS.StealAddress.address,
           ABI_STEAL_ADDRESS.StealAddress.abi
         );
-        const [__, hashS] = await stealAddressContract.call(
-          "getStealAddress",
+        const [__, hashS] = await stealAddressContract.call("getStealAddress", [
           privKey,
-          from
-        );
+          from,
+        ]);
         const privOfStealAddress = await stealAddressContract.call(
           "getPrivateKeyOfStealAddress",
-          privKey,
-          hashS
+          [privKey, hashS]
         );
         toast({
           title: `Private key of Steal Address:${address}`,

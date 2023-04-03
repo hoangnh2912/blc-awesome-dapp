@@ -37,35 +37,6 @@ const deployContract = async (
   });
 };
 
-const addNetwork = async () => {
-  try {
-    let ethereum = window.ethereum;
-    if (ethereum) {
-      const tx = await ethereum.request({
-        method: "wallet_addEthereumChain",
-        params: [
-          {
-            chainId: `0x${ChainId.Mumbai.toString(16)}`,
-            chainName: "Mumbai Testnet",
-            nativeCurrency: {
-              name: "Matic",
-              symbol: "MATIC",
-              decimals: 18,
-            },
-            rpcUrls: ["https://rpc-mumbai.maticvigil.com/"],
-            blockExplorerUrls: ["https://mumbai.polygonscan.com/"],
-          },
-        ],
-      });
-      if (tx) {
-        console.log(tx);
-      }
-    }
-  } catch (error: any) {
-    console.log("addNetwork error", error.message);
-  }
-};
-
 const web3 = new Web3();
 
-export { deployContract, addNetwork, web3 };
+export { deployContract, web3 };

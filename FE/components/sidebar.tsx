@@ -9,7 +9,6 @@ import {
   FlexProps,
   Icon,
   IconButton,
-  Image,
   InputGroup,
   Link,
   Popover,
@@ -18,7 +17,7 @@ import {
   PopoverCloseButton,
   PopoverContent,
   PopoverHeader,
-  PopoverTrigger as ExPopoverTrigger,
+  PopoverTrigger,
   Stack,
   Text,
   useDisclosure,
@@ -29,15 +28,8 @@ import React, { ReactNode, useEffect, useMemo } from "react";
 import { IconType } from "react-icons";
 import { CgProfile } from "react-icons/cg";
 import { FiMenu } from "react-icons/fi";
-import {
-  SideBarData,
-  SideBarDataMusic,
-  SideBarDataProps,
-} from "../constants/data/sidebar";
-import { addNetwork } from "../services/thirdweb";
-const PopoverTrigger = (props: FlexProps) => {
-  return <ExPopoverTrigger {...props} />;
-};
+import { SideBarData, SideBarDataProps } from "../constants/data/sidebar";
+import { ModalSignMessage, ModalSwitchNetwork } from "./sidebar-music";
 
 export default function Sidebar({
   data,
@@ -60,6 +52,8 @@ export default function Sidebar({
 
   return (
     <Box minH="100vh" pb={20}>
+      <ModalSwitchNetwork />
+      <ModalSignMessage />
       <SidebarContent
         data={data}
         onClose={() => onClose}
@@ -139,10 +133,7 @@ interface NavItemProps extends FlexProps {
 const NavItem = ({ icon, children, link, ...rest }: NavItemProps) => {
   const { pathname } = useRouter();
   const isSelect = useMemo(() => {
-    if (
-      (pathname == "/" && link == SideBarData[0].link) ||
-      (pathname == "/music-marketplace" && link == SideBarDataMusic[0].link)
-    ) {
+    if (pathname == "/" && link == SideBarData[0].link) {
       return true;
     }
     return pathname.replace("/", "") === link.replace("/", "");

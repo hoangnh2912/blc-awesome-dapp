@@ -61,11 +61,10 @@ const Music = () => {
       ABI_MUSIC.Music.address,
       ABI_MUSIC.Music.abi
     );
-    const balance = await musicNFTContract.call(
-      "balanceOf",
+    const balance = await musicNFTContract.call("balanceOf", [
       currentAddress,
-      id
-    );
+      id,
+    ]);
     if (balance.toString() != "0") {
       setIsOwnNft(true);
     }
