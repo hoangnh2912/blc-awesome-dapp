@@ -22,7 +22,7 @@ type SuccessResponse<T> = {
 const BASE_URL =
   process.env.NODE_ENV == "development"
     ? "http://localhost:3001"
-    : "http://api.scimta.com";
+    : "https://api.scimta.com";
 
 const axios = new Axios({
   baseURL: BASE_URL,

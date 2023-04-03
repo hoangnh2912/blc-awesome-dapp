@@ -65,7 +65,7 @@ const MusicBaseLayout = ({
           href={currentSongState ? `${currentSongState.image}` : "/favicon.ico"}
         />
         <meta name="description" content="Music" />
-        <meta property="og:url" content="http://scimta.com" />
+        <meta property="og:url" content="https://scimta.com" />
         <meta property="og:type" content="website" />
         <meta property="og:title" content="Music Dapp" />
         <meta property="og:description" content="Music" />
@@ -76,7 +76,7 @@ const MusicBaseLayout = ({
 
         <meta name="twitter:card" content="summary_large_image" />
         <meta property="twitter:domain" content="Music.com" />
-        <meta property="twitter:url" content="http://Music.com" />
+        <meta property="twitter:url" content="https://Music.com" />
         <meta name="twitter:title" content="Music Dapp" />
         <meta name="twitter:description" content="Music" />
         <meta

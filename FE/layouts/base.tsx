@@ -29,7 +29,7 @@ const BaseLayout = ({
         <title>SCIMTA Protocol</title>
         <link rel="shortcut icon" href="/favicon.ico" />
         <meta name="description" content="SCIMTA" />
-        <meta property="og:url" content="http://scimta.com" />
+        <meta property="og:url" content="https://scimta.com" />
         <meta property="og:type" content="website" />
         <meta property="og:title" content="SCIMTA Dapp" />
         <meta property="og:description" content="SCIMTA" />
@@ -40,7 +40,7 @@ const BaseLayout = ({
 
         <meta name="twitter:card" content="summary_large_image" />
         <meta property="twitter:domain" content="scimta.com" />
-        <meta property="twitter:url" content="http://scimta.com" />
+        <meta property="twitter:url" content="https://scimta.com" />
         <meta name="twitter:title" content="SCIMTA Dapp" />
         <meta name="twitter:description" content="SCIMTA" />
         <meta

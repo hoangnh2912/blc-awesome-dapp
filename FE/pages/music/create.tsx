@@ -100,7 +100,7 @@ const Create: NextPage = () => {
         singer,
         image: resImage.data.data,
         animation_url: resAudio.data.data,
-        external_url: `http://scimta.com/music/${id}`,
+        external_url: `https://scimta.com/music/${id}`,
         attributes: [
           {
             trait_type: "Genre",
