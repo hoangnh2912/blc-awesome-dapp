@@ -430,7 +430,7 @@ const ChatSidebar: NextPage = () => {
   };
 
   const redirectHome = () => {
-    router.push("/chat/");
+    router.replace("/chat/", undefined, { shallow: true });
   };
 
   useEffect(() => {

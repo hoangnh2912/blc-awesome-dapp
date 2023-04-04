@@ -1,9 +1,9 @@
 import { Flex, Heading } from "@chakra-ui/layout";
-import { Avatar } from "@chakra-ui/avatar";
+// import { Avatar } from "@chakra-ui/avatar";
 import { useRouter } from "next/router";
 
 import ChatSidebar from "../../components/sidebar-chat";
-import { Input, Text } from "@chakra-ui/react";
+import { Input, Text, Avatar } from "@chakra-ui/react";
 import { FormControl } from "@chakra-ui/form-control";
 import { Button } from "@chakra-ui/button";
 import Head from "next/head";
@@ -13,19 +13,24 @@ import ApiServices from "../../services/api";
 import { GetMessageOutput, GetRoomInfo } from "../../services/api/types";
 import { CONSTANT } from "../../constants/chat-constant";
 
-const Topbar = memo(
-  ({ avatar, username }: { avatar: string; username: string }) => {
-    return (
-      <Flex bg={"gray.100"} h="81px" w={"100%"} align="center" p={5}>
-        <Avatar src={userAvatarGetter({ avatar })} marginEnd={3} />
-        <Heading size={"md"}>{username}</Heading>
-      </Flex>
-    );
-  }
-);
+const Topbar = ({ avatar, username }: { avatar: string; username: string }) => {
+  return (
+    <Flex bg={"gray.100"} h="81px" w={"100%"} align="center" p={5}>
+      <Avatar
+        src={userAvatarGetter({ avatar })}
+        marginEnd={3}
+        // loading="lazy"
+        ignoreFallback={true}
+      />
+
+      <Heading size={"md"}>{username}</Heading>
+    </Flex>
+  );
+};
 
 const userAvatarGetter = ({ avatar }: { avatar: string }) => {
   const avatarURL = CONSTANT.API_PREFIX + avatar;
+
   return avatarURL;
 };
 
@@ -199,6 +204,7 @@ const detail = () => {
           avatar={room?.avatar || ""}
           username={room?.name || "Chat user"}
         />
+        {}
 
         <Flex
           flex={1}
