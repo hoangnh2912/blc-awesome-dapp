@@ -45,8 +45,8 @@ const StealAddress: NextPage = () => {
   });
   const getPublicKey = async () => {
     if (connectedAddress && sdk) {
-      const address = await sdk.wallet.getAddress();
       try {
+        const address = await sdk.wallet.getAddress();
         setLoading.on();
         setPublicKey("");
 
@@ -160,8 +160,8 @@ const StealAddress: NextPage = () => {
 
   const getListStealAddress = async () => {
     if (sdk && connectedAddress) {
-      const address = await sdk.wallet.getAddress();
       try {
+        const address = await sdk.wallet.getAddress();
         setLoading.on();
         const res = await ApiServices.stealAddress.getStealAddress(address);
         const listStAddressWithBalance = await Promise.all(

@@ -18,13 +18,16 @@ import LinkScan from "../../components/link-scan";
 import { useModalTransaction } from "../../components/modal-transaction";
 import ApiServices from "../../services/api";
 import { deployContract } from "../../services/thirdweb";
+import { useStoreActions } from "../../services/redux/hook";
 
 const Erc1155 = () => {
   const [accessControlState, setAccessControlState] = useBoolean(false);
   const [name, setName] = useState("MyToken");
   const [uri, setUri] = useState("");
   const [features, setFeatures] = useState<(string | number)[]>([]);
-
+  const setIsCheckConnectAction = useStoreActions(
+    (state) => state.user.setIsCheckConnect
+  );
   const sdk = useSDK();
   const toast = useToast();
 
@@ -115,6 +118,13 @@ const Erc1155 = () => {
       console.log(error);
     }
   };
+  const deployTokenWithCheck = () => {
+    setIsCheckConnectAction({
+      isCheckConnect: true,
+      args: [],
+      callback: deployToken,
+    });
+  };
   const onChangeCheckBoxAccessControl = () => {
     if (
       features.includes(featuresMap.Mintable) ||
@@ -188,8 +198,9 @@ const Erc1155 = () => {
       </Stack>
       <Button
         leftIcon={<IoIosSettings />}
-        onClick={deployToken}
+        onClick={deployTokenWithCheck}
         colorScheme="teal"
+        boxShadow={"lg"}
         variant="solid"
       >
         Deploy Token

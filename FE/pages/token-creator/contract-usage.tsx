@@ -1,6 +1,4 @@
 import {
-  Box,
-  Button,
   Input,
   Stack,
   Tab,
@@ -9,13 +7,12 @@ import {
   TabPanels,
   Tabs,
   Text,
-  useToast,
 } from "@chakra-ui/react";
 import { useSDK } from "@thirdweb-dev/react";
 import { SmartContract } from "@thirdweb-dev/sdk";
 import { BaseContract } from "ethers";
 import { useEffect, useState } from "react";
-import { isAddress, AbiItem } from "web3-utils";
+import { AbiItem, isAddress } from "web3-utils";
 import ContractFunctionComponent from "../../components/contract-function";
 import ApiServices from "../../services/api";
 const ContractUsage = () => {
@@ -23,7 +20,6 @@ const ContractUsage = () => {
   const [contractInstance, setContractInstance] =
     useState<SmartContract<BaseContract> | null>(null);
   const sdk = useSDK();
-  const toast = useToast();
 
   const [contractFunctions, setContractFunctions] = useState<{
     view: AbiItem[];

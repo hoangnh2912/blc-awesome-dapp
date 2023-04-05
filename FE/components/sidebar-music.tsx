@@ -29,7 +29,6 @@ import {
   PopoverContent,
   PopoverHeader,
   PopoverTrigger,
-  // PopoverTrigger as ExPopoverTrigger,
   Spinner,
   Stack,
   Text,
@@ -67,10 +66,6 @@ import LinkScan from "./link-scan";
 import { useModalTransaction } from "./modal-transaction";
 import SongNFTSmallComponent from "./song-nft-small";
 
-// const PopoverTrigger = (props: FlexProps) => {
-//   return <ExPopoverTrigger {...props} />;
-// };
-
 export const ModalCheckConnect = () => {
   const setIsCheckConnectAction = useStoreActions(
     (state) => state.user.setIsCheckConnect
@@ -92,8 +87,6 @@ export const ModalCheckConnect = () => {
   const connectWithMetamask = useMetamask();
   const connectWithWalletConnect = useWalletConnect();
   const connectCoinbase = useCoinbaseWallet();
-
-  const disconnect = useDisconnect();
 
   useEffect(() => {
     if (

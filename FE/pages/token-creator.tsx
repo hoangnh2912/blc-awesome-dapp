@@ -1,20 +1,18 @@
-import type { NextPage } from "next";
-import BaseLayout from "../layouts/base";
 import {
-  Box,
   Stack,
   Tab,
   TabList,
   TabPanel,
   TabPanels,
   Tabs,
-  Text,
 } from "@chakra-ui/react";
-import Erc20 from "./token-creator/erc20";
-import Erc721 from "./token-creator/erc721";
-import Erc1155 from "./token-creator/erc1155";
+import type { NextPage } from "next";
+import BaseLayout from "../layouts/base";
 import ContractDeployed from "./token-creator/contract-deployed";
 import ContractUsage from "./token-creator/contract-usage";
+import Erc1155 from "./token-creator/erc1155";
+import Erc20 from "./token-creator/erc20";
+import Erc721 from "./token-creator/erc721";
 
 const TokenCreator: NextPage = () => {
   return (

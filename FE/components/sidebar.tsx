@@ -1,7 +1,6 @@
 import {
   Box,
   BoxProps,
-  Button,
   CloseButton,
   Drawer,
   DrawerContent,
@@ -9,15 +8,8 @@ import {
   FlexProps,
   Icon,
   IconButton,
-  InputGroup,
   Link,
-  Popover,
-  PopoverArrow,
-  PopoverBody,
-  PopoverCloseButton,
-  PopoverContent,
-  PopoverHeader,
-  PopoverTrigger,
+  Spinner,
   Stack,
   Text,
   useDisclosure,
@@ -26,19 +18,24 @@ import { ConnectWallet, useConnectedWallet } from "@thirdweb-dev/react";
 import { useRouter } from "next/router";
 import React, { ReactNode, useEffect, useMemo } from "react";
 import { IconType } from "react-icons";
-import { CgProfile } from "react-icons/cg";
-import { FiMenu } from "react-icons/fi";
+import { FiMenu, FiSettings } from "react-icons/fi";
 import { SideBarData, SideBarDataProps } from "../constants/data/sidebar";
-import { ModalSignMessage, ModalSwitchNetwork } from "./sidebar-music";
+import {
+  ModalCheckConnect,
+  ModalSignMessage,
+  ModalSwitchNetwork,
+} from "./sidebar-music";
 
 export default function Sidebar({
   data,
   content,
   selectIndex,
+  isLoading,
 }: {
   data: Array<SideBarDataProps>;
   content: React.ReactNode;
   selectIndex: number;
+  isLoading: boolean;
 }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -51,7 +48,8 @@ export default function Sidebar({
   }, [connectedWallet]);
 
   return (
-    <Box minH="100vh" pb={20}>
+    <Box minH="100vh" bg={"#F9FAFB"} pb={20}>
+      <ModalCheckConnect />
       <ModalSwitchNetwork />
       <ModalSignMessage />
       <SidebarContent
@@ -74,8 +72,32 @@ export default function Sidebar({
       </Drawer>
       {/* mobilenav */}
       <AppNav title={data[selectIndex].name} onOpen={onOpen} />
-      <Box ml={{ base: 0, md: 60 }} p="4" pt={20}>
-        {content}
+      <Box
+        ml={{ base: 0, md: 60 }}
+        style={{
+          padding: "1rem",
+          transition: "all 0.3s ease",
+          paddingTop: "calc(1rem + 85px)",
+        }}
+      >
+        {isLoading ? (
+          <Stack
+            justifyContent="center"
+            alignItems="center"
+            w={"100%"}
+            h={"70vh"}
+          >
+            <Spinner
+              thickness="7px"
+              speed="1s"
+              emptyColor="gray.200"
+              color="yellow.400"
+              size="xl"
+            />
+          </Stack>
+        ) : (
+          content
+        )}
       </Box>
     </Box>
   );
@@ -90,19 +112,20 @@ const SidebarContent = ({ onClose, data, ...rest }: SidebarProps) => {
   return (
     <Box
       transition="3s ease"
-      bg={"white"}
       w={{ base: "full", md: 60 }}
       pos="fixed"
       h="full"
       boxShadow={"2xl"}
+      bg={"#F9FAFB"}
       {...rest}
     >
       <Flex
-        h="66px"
-        borderBottomWidth={1}
+        h="84px"
+        borderBottomWidth={"2px"}
         borderBottomColor="yellow.400"
         alignItems="center"
-        mx="4"
+        px="4"
+        bg={"white"}
         justifyContent="space-between"
       >
         <Text fontFamily={"mono"} fontWeight="bold" fontSize="2xl">
@@ -111,12 +134,20 @@ const SidebarContent = ({ onClose, data, ...rest }: SidebarProps) => {
         <CloseButton
           display={{ base: "flex", md: "none" }}
           color={"white"}
-          bg={"yellow.400"}
+          bg={"green.400"}
           onClick={onClose}
         />
       </Flex>
       {data.map((link) => (
-        <NavItem key={link.name} link={link.link} icon={link.icon}>
+        <NavItem
+          boxShadow={"lg"}
+          bg={"white"}
+          my={"5"}
+          key={link.name}
+          link={link.link}
+          maintain={link.disabled}
+          icon={link.icon}
+        >
           {link.name}
         </NavItem>
       ))}
@@ -128,10 +159,11 @@ interface NavItemProps extends FlexProps {
   icon: IconType;
   children: ReactNode;
   link: string;
+  maintain?: boolean;
 }
 
-const NavItem = ({ icon, children, link, ...rest }: NavItemProps) => {
-  const { pathname } = useRouter();
+const NavItem = ({ icon, children, link, maintain, ...rest }: NavItemProps) => {
+  const { pathname, replace } = useRouter();
   const isSelect = useMemo(() => {
     if (pathname == "/" && link == SideBarData[0].link) {
       return true;
@@ -139,10 +171,16 @@ const NavItem = ({ icon, children, link, ...rest }: NavItemProps) => {
     return pathname.replace("/", "") === link.replace("/", "");
   }, [pathname, link]);
   return (
-    <Link
-      href={isSelect ? "#" : link}
+    <Box
+      onClick={() => {
+        if (isSelect || maintain) {
+          return;
+        } else {
+          replace(link, undefined, { shallow: true });
+        }
+      }}
+      cursor={maintain ? "not-allowed" : "pointer"}
       style={{ textDecoration: "none" }}
-      _focus={{ boxShadow: "none" }}
     >
       <Flex
         align="center"
@@ -151,15 +189,25 @@ const NavItem = ({ icon, children, link, ...rest }: NavItemProps) => {
         borderRadius="lg"
         role="group"
         cursor="pointer"
-        color={isSelect ? "yellow.700" : "black"}
+        color={maintain ? "gray" : isSelect ? "green" : "black"}
         {...rest}
       >
         {icon && <Icon mr="4" fontSize="16" as={icon} />}
         <Text fontFamily={"mono"} fontWeight={"bold"}>
           {children}
         </Text>
+        {maintain && (
+          <FiSettings
+            style={{
+              marginLeft: "auto",
+              transition: "all 0.3s ease",
+            }}
+            className="rotate"
+            fontSize="16"
+          />
+        )}
       </Flex>
-    </Link>
+    </Box>
   );
 };
 
@@ -183,32 +231,20 @@ const AppNav = ({ onOpen, title, ...rest }: AppNavProps) => {
       borderColor={"yellow.400"}
       zIndex={10}
       justifyContent={"space-between"}
+      alignItems={"center"}
     >
       <IconButton
         display={{ base: "flex", md: "none" }}
         onClick={onOpen}
         variant="outline"
-        color={"white"}
+        color={"green"}
         aria-label="open menu"
         icon={<FiMenu />}
       />
-      <InputGroup w={["100%", "70%", "65%", "60%", "50%", "35%"]}></InputGroup>
-
-      <Popover closeOnBlur={false} trigger="hover" placement="bottom-start">
-        <PopoverTrigger>
-          <Button colorScheme={"yellow"} boxShadow={"2xl"}>
-            <CgProfile size={30} color={"white"} />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent>
-          <PopoverHeader>Wallet</PopoverHeader>
-          <PopoverArrow />
-          <PopoverCloseButton />
-          <PopoverBody>
-            <ConnectWallet />
-          </PopoverBody>
-        </PopoverContent>
-      </Popover>
+      <Box></Box>
+      <Stack height={"58px"} justifyContent={"center"}>
+        <ConnectWallet />
+      </Stack>
     </Stack>
   );
 };

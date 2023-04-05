@@ -28,11 +28,6 @@ const MusicBaseLayout = ({
     const handleStart = (url: string) =>
       url !== router.asPath && setLoading(true);
     const handleComplete = (url: string) => {
-      // if (
-      //   url &&
-      //   typeof url == "string" &&
-      //   url.split("?")[0] === router.asPath.split("?")[0]
-      // )
       setLoading(false);
     };
 

@@ -14,3 +14,14 @@ a {
 * {
   box-sizing: border-box;
 }
+
+.rotate {
+  animation: rotate infinite 3s linear;
+}
+
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+
+}
