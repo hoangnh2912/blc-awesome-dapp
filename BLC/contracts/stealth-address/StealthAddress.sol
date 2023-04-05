@@ -9,7 +9,7 @@ struct PublicKey {
     uint256 Y;
 }
 
-contract StealAddress {
+contract StealthAddress {
     using Secp256k1 for uint256;
     mapping(address => PublicKey) private publicKey_;
 
@@ -29,21 +29,21 @@ contract StealAddress {
         return privKey.derivePubKey();
     }
 
-    function getStealAddress(
+    function getStealthAddress(
         uint256 privKey,
         address to_address
     ) public view returns (address, bytes memory) {
-        (address stealAddress, bytes memory hash) = privKey.getStealAddress(
+        (address stealthAddress, bytes memory hash) = privKey.getStealthAddress(
             publicKey_[to_address].X,
             publicKey_[to_address].Y
         );
-        return (stealAddress, hash);
+        return (stealthAddress, hash);
     }
 
-    function getPrivateKeyOfStealAddress(
+    function getPrivateKeyOfStealthAddress(
         uint256 privKey,
         uint256 hash
     ) public pure returns (bytes memory) {
-        return privKey.getPrivateKeyOfStealAddress(hash);
+        return privKey.getPrivateKeyOfStealthAddress(hash);
     }
 }

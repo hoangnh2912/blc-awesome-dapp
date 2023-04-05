@@ -15,24 +15,24 @@ import type { NextPage } from "next";
 import { useEffect, useState } from "react";
 import LinkScan from "../components/link-scan";
 import { useModalTransaction } from "../components/modal-transaction";
-import { ABI_STEAL_ADDRESS } from "../constants/abi";
+import { ABI_STEALTH_ADDRESS } from "../constants/abi";
 import BaseLayout from "../layouts/base";
 import ApiServices from "../services/api";
-import { GetStealAddressOutput } from "../services/api/types";
+import { GetStealthAddressOutput } from "../services/api/types";
 import { web3 } from "../services/thirdweb";
 
-const StealAddress: NextPage = () => {
+const StealthAddress: NextPage = () => {
   const [isLoading, setLoading] = useBoolean(true);
   const [publicKey, setPublicKey] = useState<string>("");
   const [privKey, setPrivKey] = useState<string>("");
   const [toAddress, setToAddress] = useState<string>("");
   const [amount, setAmount] = useState<string>("");
-  const [listStealAddress, setListStealAddress] = useState<
-    (GetStealAddressOutput & {
+  const [listStealthAddress, setListStealthAddress] = useState<
+    (GetStealthAddressOutput & {
       balance: string;
     })[]
   >([]);
-  const [stealAddress, setStealAddress] = useState<string>("");
+  const [stealthAddress, setStealthAddress] = useState<string>("");
 
   const connectedAddress = useAddress();
   const { onOpen, setTxResult } = useModalTransaction();
@@ -50,14 +50,14 @@ const StealAddress: NextPage = () => {
         setLoading.on();
         setPublicKey("");
 
-        const res = await ApiServices.stealAddress.getPrivateKey(address);
+        const res = await ApiServices.stealthAddress.getPrivateKey(address);
         if (res.data.data.privateKey) {
           setPrivKey(res.data.data.privateKey);
-          const stealAddressContract = await sdk.getContractFromAbi(
-            ABI_STEAL_ADDRESS.StealAddress.address,
-            ABI_STEAL_ADDRESS.StealAddress.abi
+          const stealthAddressContract = await sdk.getContractFromAbi(
+            ABI_STEALTH_ADDRESS.StealthAddress.address,
+            ABI_STEALTH_ADDRESS.StealthAddress.abi
           );
-          const pubKey = await stealAddressContract.call("getPublicKey", [
+          const pubKey = await stealthAddressContract.call("getPublicKey", [
             address,
           ]);
           const pubKeyXY = web3.utils.encodePacked(pubKey["X"], pubKey["Y"]);
@@ -82,18 +82,18 @@ const StealAddress: NextPage = () => {
         const address = await sdk.wallet.getAddress();
 
         setLoading.on();
-        const stealAddressContract = await sdk.getContractFromAbi(
-          ABI_STEAL_ADDRESS.StealAddress.address,
-          ABI_STEAL_ADDRESS.StealAddress.abi
+        const stealthAddressContract = await sdk.getContractFromAbi(
+          ABI_STEALTH_ADDRESS.StealthAddress.address,
+          ABI_STEALTH_ADDRESS.StealthAddress.abi
         );
 
         const { privateKey } = web3.eth.accounts.create();
-        const [pubX, pubY] = await stealAddressContract.call("privToPubKey", [
+        const [pubX, pubY] = await stealthAddressContract.call("privToPubKey", [
           privateKey,
         ]);
-        await stealAddressContract.call("setPublicKey", [pubX, pubY]);
+        await stealthAddressContract.call("setPublicKey", [pubX, pubY]);
         setPrivKey(privateKey);
-        await ApiServices.stealAddress.submitPrivateKey(privateKey, address);
+        await ApiServices.stealthAddress.submitPrivateKey(privateKey, address);
       } catch (error) {
         console.log("generateKeyPair", error);
       } finally {
@@ -104,7 +104,7 @@ const StealAddress: NextPage = () => {
 
   const onChangeToAddress = async (e: any) => {
     setToAddress(e.target.value);
-    setStealAddress("");
+    setStealthAddress("");
     if (
       web3.utils.isAddress(e.target.value) &&
       sdk &&
@@ -112,23 +112,23 @@ const StealAddress: NextPage = () => {
       connectedAddress
     ) {
       try {
-        const stealAddressContract = await sdk.getContractFromAbi(
-          ABI_STEAL_ADDRESS.StealAddress.address,
-          ABI_STEAL_ADDRESS.StealAddress.abi
+        const stealthAddressContract = await sdk.getContractFromAbi(
+          ABI_STEALTH_ADDRESS.StealthAddress.address,
+          ABI_STEALTH_ADDRESS.StealthAddress.abi
         );
-        const [stAddress] = await stealAddressContract.call("getStealAddress", [
-          privKey,
-          e.target.value,
-        ]);
+        const [stAddress] = await stealthAddressContract.call(
+          "getStealthAddress",
+          [privKey, e.target.value]
+        );
 
-        await ApiServices.stealAddress.submitStealAddress(
+        await ApiServices.stealthAddress.submitStealthAddress(
           e.target.value,
           stAddress,
           connectedAddress
         );
-        setStealAddress(stAddress);
+        setStealthAddress(stAddress);
       } catch (error) {
-        setStealAddress(`This address was not generate public key`);
+        setStealthAddress(`This address was not generate public key`);
       }
     }
   };
@@ -137,7 +137,7 @@ const StealAddress: NextPage = () => {
     try {
       if (sdk && onOpen) {
         onOpen();
-        const res = await sdk.wallet.transfer(stealAddress, amount);
+        const res = await sdk.wallet.transfer(stealthAddress, amount);
         setTxResult({
           reason: "",
           content: [
@@ -158,12 +158,12 @@ const StealAddress: NextPage = () => {
     }
   };
 
-  const getListStealAddress = async () => {
+  const getListStealthAddress = async () => {
     if (sdk && connectedAddress) {
       try {
         const address = await sdk.wallet.getAddress();
         setLoading.on();
-        const res = await ApiServices.stealAddress.getStealAddress(address);
+        const res = await ApiServices.stealthAddress.getStealthAddress(address);
         const listStAddressWithBalance = await Promise.all(
           res.data.data.map(
             (item) =>
@@ -177,7 +177,7 @@ const StealAddress: NextPage = () => {
               })
           )
         );
-        setListStealAddress(listStAddressWithBalance as any);
+        setListStealthAddress(listStAddressWithBalance as any);
       } catch (error) {
       } finally {
         setLoading.off();
@@ -185,24 +185,27 @@ const StealAddress: NextPage = () => {
     }
   };
 
-  const getPrivateKeyOfStealAddress = async (address: string, from: string) => {
+  const getPrivateKeyOfStealthAddress = async (
+    address: string,
+    from: string
+  ) => {
     if (sdk && privKey) {
       try {
-        const stealAddressContract = await sdk.getContractFromAbi(
-          ABI_STEAL_ADDRESS.StealAddress.address,
-          ABI_STEAL_ADDRESS.StealAddress.abi
+        const stealthAddressContract = await sdk.getContractFromAbi(
+          ABI_STEALTH_ADDRESS.StealthAddress.address,
+          ABI_STEALTH_ADDRESS.StealthAddress.abi
         );
-        const [__, hashS] = await stealAddressContract.call("getStealAddress", [
-          privKey,
-          from,
-        ]);
-        const privOfStealAddress = await stealAddressContract.call(
-          "getPrivateKeyOfStealAddress",
+        const [__, hashS] = await stealthAddressContract.call(
+          "getStealthAddress",
+          [privKey, from]
+        );
+        const privOfStealthAddress = await stealthAddressContract.call(
+          "getPrivateKeyOfStealthAddress",
           [privKey, hashS]
         );
         toast({
-          title: `Private key of Steal Address:${address}`,
-          description: privOfStealAddress,
+          title: `Private key of Stealth Address:${address}`,
+          description: privOfStealthAddress,
           status: "success",
           duration: 5000,
           position: "top-right",
@@ -216,10 +219,10 @@ const StealAddress: NextPage = () => {
   useEffect(() => {
     if (connectedAddress && sdk) {
       setToAddress("");
-      setStealAddress("");
+      setStealthAddress("");
       setAmount("");
       _.debounce(getPublicKey, 500)();
-      _.debounce(getListStealAddress, 500)();
+      _.debounce(getListStealthAddress, 500)();
     }
   }, [connectedAddress, sdk]);
 
@@ -241,13 +244,13 @@ const StealAddress: NextPage = () => {
       </Box>
       <Box boxShadow="lg" bg={"white"} mt={5} borderRadius={5} p={5}>
         <Text fontWeight="bold" fontSize={["xs", "sm", "md", "lg", "xl"]}>
-          Your Steal Address
+          Your Stealth Address
         </Text>
         <Skeleton isLoaded={!isLoading}>
           <Stack direction={["column"]}>
-            {listStealAddress.map(
+            {listStealthAddress.map(
               (
-                item: GetStealAddressOutput & {
+                item: GetStealthAddressOutput & {
                   balance: string;
                 }
               ) => (
@@ -260,7 +263,7 @@ const StealAddress: NextPage = () => {
                   p={5}
                   flex={1}
                   onClick={() =>
-                    getPrivateKeyOfStealAddress(item.address, item.from)
+                    getPrivateKeyOfStealthAddress(item.address, item.from)
                   }
                   _hover={{
                     cursor: "pointer",
@@ -302,10 +305,10 @@ const StealAddress: NextPage = () => {
               onChange={onChangeToAddress}
               placeholder=""
             />
-            {stealAddress && (
+            {stealthAddress && (
               <Stack>
                 <Text color="red.500" fontSize={["sm"]}>
-                  Steal address: {stealAddress}
+                  Stealth Address: {stealthAddress}
                 </Text>
               </Stack>
             )}
@@ -318,12 +321,12 @@ const StealAddress: NextPage = () => {
             />
             <Button
               disabled={
-                !stealAddress ||
+                !stealthAddress ||
                 !amount ||
                 !toAddress ||
                 !publicKey ||
                 !privKey ||
-                toAddress == stealAddress ||
+                toAddress == stealthAddress ||
                 toAddress == connectedAddress
               }
               onClick={transferMatic}
@@ -339,4 +342,4 @@ const StealAddress: NextPage = () => {
   );
 };
 
-export default StealAddress;
+export default StealthAddress;

@@ -6,7 +6,7 @@ export interface IUser {
   avatar: string;
   description: string;
   private_key: string;
-  steal_address: {
+  stealth_address: {
     address: string;
     from: string;
   }[];
@@ -22,7 +22,7 @@ const userSchema = new Schema<IUser>({
   name: { type: String, required: false, default: 'Unnamed' },
   avatar: { type: String, required: false, default: '' },
   description: { type: String, required: false, default: '' },
-  steal_address: { type: Schema.Types.Mixed, default: [] },
+  stealth_address: { type: Schema.Types.Mixed, default: [] },
   ids: { type: Schema.Types.Mixed, default: [] },
   created_at: { required: false, type: Date, default: Date.now },
   updated_at: { required: false, type: Date },

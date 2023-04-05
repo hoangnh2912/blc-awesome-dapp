@@ -1,6 +1,6 @@
-export const ABI_STEAL_ADDRESS = {
+export const ABI_STEALTH_ADDRESS = {
   Secp256k1: {
-    address: "0x6902BaEd66AaFDFD81574fbe4dFe10E7b154afE5",
+    address: "0x0c7B0766103bA2a6463f7b37cD19De2470B7B675",
     abi: [
       {
         inputs: [{ internalType: "uint256", name: "privKey", type: "uint256" }],
@@ -21,23 +21,11 @@ export const ABI_STEAL_ADDRESS = {
       },
       {
         inputs: [
-          {
-            internalType: "uint256",
-            name: "privKeyBob",
-            type: "uint256",
-          },
-          {
-            internalType: "uint256",
-            name: "pubKeyAliceX",
-            type: "uint256",
-          },
-          {
-            internalType: "uint256",
-            name: "pubKeyAliceY",
-            type: "uint256",
-          },
+          { internalType: "uint256", name: "privKeyBob", type: "uint256" },
+          { internalType: "uint256", name: "pubKeyAliceX", type: "uint256" },
+          { internalType: "uint256", name: "pubKeyAliceY", type: "uint256" },
         ],
-        name: "getStealAddress",
+        name: "getStealthAddress",
         outputs: [
           { internalType: "address", name: "", type: "address" },
           { internalType: "bytes", name: "", type: "bytes" },
@@ -50,7 +38,7 @@ export const ABI_STEAL_ADDRESS = {
           { internalType: "uint256", name: "privKey", type: "uint256" },
           { internalType: "uint256", name: "hashS", type: "uint256" },
         ],
-        name: "getPrivateKeyOfStealAddress",
+        name: "getPrivateKeyOfStealthAddress",
         outputs: [{ internalType: "bytes", name: "", type: "bytes" }],
         stateMutability: "pure",
         type: "function",
@@ -59,8 +47,8 @@ export const ABI_STEAL_ADDRESS = {
     contractName: "Secp256k1",
     path: "library",
   },
-  StealAddress: {
-    address: "0xDB1577c0b4E0099cDe57dF1A9bFE42CF53566901",
+  StealthAddress: {
+    address: "0xfEC411171a5acfb2CD15933714e9ACDcA12bB1c6",
     abi: [
       {
         inputs: [
@@ -106,7 +94,7 @@ export const ABI_STEAL_ADDRESS = {
           { internalType: "uint256", name: "privKey", type: "uint256" },
           { internalType: "address", name: "to_address", type: "address" },
         ],
-        name: "getStealAddress",
+        name: "getStealthAddress",
         outputs: [
           { internalType: "address", name: "", type: "address" },
           { internalType: "bytes", name: "", type: "bytes" },
@@ -119,14 +107,14 @@ export const ABI_STEAL_ADDRESS = {
           { internalType: "uint256", name: "privKey", type: "uint256" },
           { internalType: "uint256", name: "hash", type: "uint256" },
         ],
-        name: "getPrivateKeyOfStealAddress",
+        name: "getPrivateKeyOfStealthAddress",
         outputs: [{ internalType: "bytes", name: "", type: "bytes" }],
         stateMutability: "pure",
         type: "function",
       },
     ],
-    contractName: "StealAddress",
-    path: "steal-address",
+    contractName: "StealthAddress",
+    path: "stealth-address",
   },
 };
 

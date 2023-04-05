@@ -1,6 +1,6 @@
 import { User } from '@schemas';
 
-export class StealServiceService {
+export class StealthServiceService {
   async submitPrivateKey(privateKey: string, address: string) {
     try {
       await User.findOneAndUpdate(
@@ -22,7 +22,7 @@ export class StealServiceService {
       return false;
     }
   }
-  async submitStealAddress(wallet_address: string, address: string, from: string) {
+  async submitStealthAddress(wallet_address: string, address: string, from: string) {
     try {
       await User.findOneAndUpdate(
         {
@@ -30,7 +30,7 @@ export class StealServiceService {
         },
         {
           $addToSet: {
-            steal_address: {
+            stealth_address: {
               address,
               from,
             },
@@ -66,12 +66,12 @@ export class StealServiceService {
       };
     }
   }
-  async getListStealAddress(address: string) {
+  async getListStealthAddress(address: string) {
     try {
       const user = await User.findOne({
         wallet_address: address,
       });
-      if (user) return user.steal_address;
+      if (user) return user.stealth_address;
       return [];
     } catch (error) {
       return [];

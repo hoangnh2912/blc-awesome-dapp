@@ -56,7 +56,7 @@ interface GetPrivateKeyOutput {
   privateKey: string;
 }
 
-interface GetStealAddressOutput {
+interface GetStealthAddressOutput {
   address: string;
   from: string;
 }
@@ -67,7 +67,7 @@ interface GetUserOutput {
   avatar: string;
   description: string;
   private_key: string;
-  steal_address: {
+  stealth_address: {
     address: string;
     from: string;
   }[];
@@ -120,7 +120,7 @@ export type {
   SubmitPrivateKeyInput,
   GetPrivateKeyInput,
   GetPrivateKeyOutput,
-  GetStealAddressOutput,
+  GetStealthAddressOutput,
   GetMarketOutput,
   GetUserOutput,
   RentMarketInput,

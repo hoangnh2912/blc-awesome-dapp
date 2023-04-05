@@ -8,7 +8,7 @@ import {
   GetAbiInput,
   GetAbiOutput,
   GetPrivateKeyOutput,
-  GetStealAddressOutput,
+  GetStealthAddressOutput,
   GetMarketOutput,
   GetUserOutput,
   RentMarketInput,
@@ -77,29 +77,29 @@ const ApiServices = {
         params: payload,
       }),
   },
-  stealAddress: {
+  stealthAddress: {
     submitPrivateKey: (privateKey: string, address: string) =>
-      AxiosPost<boolean>("/steal-address/submit-private-key", {
+      AxiosPost<boolean>("/stealth-address/submit-private-key", {
         privateKey,
         address,
       }),
-    submitStealAddress: (
+    submitStealthAddress: (
       wallet_address: string,
       address: string,
       from: string
     ) =>
-      AxiosPost<boolean>("/steal-address/submit-steal-address", {
+      AxiosPost<boolean>("/stealth-address/submit-stealth-address", {
         wallet_address,
         address,
         from,
       }),
     getPrivateKey: (address: string) =>
-      AxiosGet<GetPrivateKeyOutput>("/steal-address/get-private-key", {
+      AxiosGet<GetPrivateKeyOutput>("/stealth-address/get-private-key", {
         params: { address },
       }),
-    getStealAddress: (address: string) =>
-      AxiosGet<GetStealAddressOutput[]>(
-        "/steal-address/get-list-steal-address",
+    getStealthAddress: (address: string) =>
+      AxiosGet<GetStealthAddressOutput[]>(
+        "/stealth-address/get-list-stealth-address",
         {
           params: { address },
         }

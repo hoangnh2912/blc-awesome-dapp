@@ -95,4 +95,4 @@ main()
     process.exit(1);
   });
 // The contract Secp256k1 has been deployed to: 0x45B4561C5451161050b1cA29B78785F00Faad872
-// The contract StealAddress has been deployed to: 0x650Bf48a001F77D15b192184D820b9cca9836B8a
+// The contract StealthAddress has been deployed to: 0x650Bf48a001F77D15b192184D820b9cca9836B8a

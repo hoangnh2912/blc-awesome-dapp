@@ -11,13 +11,13 @@ async function main() {
     {
       name: "Secp256k1",
       args: [],
-      path:'library'
+      path: "library",
     },
     {
-      name: "StealAddress",
+      name: "StealthAddress",
       args: [],
       link: "Secp256k1",
-      path:'steal-address'
+      path: "stealth-address",
     },
   ];
   let contractDeployed = {};
@@ -49,7 +49,10 @@ async function main() {
 
   // deploy contracts
 
-  fs.writeFileSync("./config.json", JSON.stringify(contractDeployed));
+  fs.writeFileSync(
+    "./abi-stealth-address.json",
+    JSON.stringify(contractDeployed)
+  );
   // log deploy contracts
   Object.values(contractDeployed).forEach((contract) => {});
 }
@@ -60,5 +63,3 @@ main()
     console.error(error);
     process.exit(1);
   });
-  // The contract Secp256k1 has been deployed to: 0x45B4561C5451161050b1cA29B78785F00Faad872
-  // The contract StealAddress has been deployed to: 0x650Bf48a001F77D15b192184D820b9cca9836B8a

@@ -5,13 +5,13 @@ import {
   GetPrivateKeyOutput,
   SubmitPrivateKeyInput,
   SubmitPrivateKeyOutput,
-} from './steal-address';
+} from './stealth-address';
 
 const { NETWORK_STATUS_CODE, NETWORK_STATUS_MESSAGE } = Constant;
-@Tags('steal-address')
-@Route('steal-address')
+@Tags('stealth-address')
+@Route('stealth-address')
 @Security('authorize')
-export class StealAddressController extends Controller {
+export class StealthAddressController extends Controller {
   @Post('submit-private-key')
   public async submitPrivateKey(
     @Body()
@@ -19,7 +19,7 @@ export class StealAddressController extends Controller {
   ): Promise<OptionResponse<SubmitPrivateKeyOutput>> {
     try {
       return onSuccess(
-        await Singleton.getStealAddressInstance().submitPrivateKey(
+        await Singleton.getStealthAddressInstance().submitPrivateKey(
           payload.privateKey.toLowerCase(),
           payload.address.toLowerCase(),
         ),
@@ -31,8 +31,8 @@ export class StealAddressController extends Controller {
     }
   }
 
-  @Post('submit-steal-address')
-  public async submitStealAddress(
+  @Post('submit-stealth-address')
+  public async submitStealthAddress(
     @Body()
     payload: {
       wallet_address: string;
@@ -42,7 +42,7 @@ export class StealAddressController extends Controller {
   ): Promise<OptionResponse<SubmitPrivateKeyOutput>> {
     try {
       return onSuccess(
-        await Singleton.getStealAddressInstance().submitStealAddress(
+        await Singleton.getStealthAddressInstance().submitStealthAddress(
           payload.wallet_address.toLowerCase(),
           payload.address.toLowerCase(),
           payload.from.toLowerCase(),
@@ -62,7 +62,7 @@ export class StealAddressController extends Controller {
   ): Promise<OptionResponse<GetPrivateKeyOutput>> {
     try {
       return onSuccess(
-        await Singleton.getStealAddressInstance().getPrivateKey(address.toLowerCase()),
+        await Singleton.getStealthAddressInstance().getPrivateKey(address.toLowerCase()),
       );
     } catch (error) {
       logger.error(error);
@@ -71,14 +71,14 @@ export class StealAddressController extends Controller {
     }
   }
 
-  @Get('get-list-steal-address')
-  public async getListStealAddress(
+  @Get('get-list-stealth-address')
+  public async getListStealthAddress(
     @Query()
     address: string,
   ): Promise<OptionResponse<GetPrivateKeyOutput>> {
     try {
       return onSuccess(
-        await Singleton.getStealAddressInstance().getListStealAddress(address.toLowerCase()),
+        await Singleton.getStealthAddressInstance().getListStealthAddress(address.toLowerCase()),
       );
     } catch (error) {
       logger.error(error);
