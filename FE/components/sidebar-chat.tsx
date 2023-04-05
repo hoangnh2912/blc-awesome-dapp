@@ -28,8 +28,7 @@ import { Text } from "@chakra-ui/layout";
 import { IconButton } from "@chakra-ui/button";
 import type { NextPage } from "next";
 import BaseLayout from "../layouts/base";
-import { ArrowLeftIcon } from "@chakra-ui/icons";
-import { AiFillHome, AiOutlineHome } from "react-icons/ai";
+import { AiOutlineHome } from "react-icons/ai";
 import {
   ChainId,
   ConnectWallet,
@@ -469,7 +468,6 @@ const ChatSidebar: NextPage = () => {
         </Flex>
 
         <IconButton
-          // icon={<ArrowLeftIcon />}
           icon={<AiOutlineHome />}
           aria-label={""}
           size="sm"

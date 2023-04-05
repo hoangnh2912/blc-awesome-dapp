@@ -152,6 +152,7 @@ class MessageService {
         if (!message_reply) return null;
         else createPayload['message_reply'] = message_id_reply;
       }
+      console.log(`got message: ${message_data}`);
 
       const messages = await Message.create(createPayload);
       messages.cid = await this.getCid({
