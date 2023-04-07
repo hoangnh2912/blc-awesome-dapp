@@ -16,7 +16,7 @@ import {
   GetRoomInfo,
 } from "../../services/api/types";
 import { CONSTANT } from "../../constants/chat-constant";
-import InfiniteScroll from "react-infinite-scroller";
+import InfiniteScroll from "react-infinite-scroll-component";
 import { AiOutlineSend } from "react-icons/ai";
 
 const Topbar = ({ avatar, username }: { avatar: string; username: string }) => {
@@ -138,37 +138,86 @@ const MessageFromUser = ({ message }: { message: string }) => {
 const GetMessageOfRoom = ({
   userStateData,
   messageList,
+  setMessageList,
+  room_id,
 }: {
   userStateData: GetChatUserOutput | undefined;
   messageList: GetMessageOutput[] | undefined;
+  setMessageList: React.Dispatch<
+    React.SetStateAction<GetMessageOutput[] | undefined>
+  >;
+  room_id: string;
 }) => {
+  const [loading, setLoading] = useState<boolean>(false);
+  const [page, setPage] = useState<number>(0);
+  const fetchMoreData = async ({ room_id }: { room_id: string }) => {
+    try {
+      if (room_id) {
+        setLoading(true);
+        const toPage = page;
+        const newMessage = await ApiServices.privateMessage.getMessage(
+          room_id.toString(),
+          toPage
+        );
+        if (messageList) {
+          await setMessageList([
+            ...messageList,
+            ...newMessage.data.data.messages,
+          ]);
+        } else {
+          await setMessageList([...newMessage.data.data.messages]);
+        }
+
+        setLoading(false);
+        setPage(toPage + 1);
+      }
+
+      return;
+    } catch (error) {}
+  };
+
   if (userStateData && messageList) {
     return (
-      <>
-        <div id="top"></div>
-        {messageList
-          .slice(0)
-          .reverse()
-          .map((message) => {
-            if (
-              message.sender_user.wallet_address == userStateData.wallet_address
-            ) {
+      <div>
+        <div
+          id="top-of-message"
+          onScroll={() => fetchMoreData({ room_id })}
+        ></div>
+        <InfiniteScroll
+          dataLength={messageList.length}
+          next={() => fetchMoreData({ room_id })}
+          style={{ display: "flex", flexDirection: "column" }}
+          inverse={true}
+          hasMore={true && !loading}
+          loader={<></>}
+          scrollableTarget="scrollableFlex"
+        >
+          {messageList
+            .slice(0)
+            .reverse()
+            .map((message) => {
+              if (
+                message.sender_user.wallet_address ==
+                userStateData.wallet_address
+              ) {
+                return (
+                  <MessageFromUser
+                    key={Math.random()}
+                    message={message.message_data}
+                  />
+                );
+              }
               return (
-                <MessageFromUser
+                <MessageFromOther
                   key={Math.random()}
                   message={message.message_data}
                 />
               );
-            }
-            return (
-              <MessageFromOther
-                key={Math.random()}
-                message={message.message_data}
-              />
-            );
-          })}
+            })}
+        </InfiniteScroll>
+
         <div id="bottom"></div>
-      </>
+      </div>
     );
   }
 
@@ -176,6 +225,8 @@ const GetMessageOfRoom = ({
 };
 
 const detail = () => {
+  console.log(`rerendered`);
+
   const userStateData = useStoreState((state) => state.chatUser.data);
   const router = useRouter();
   const { id } = router.query;
@@ -183,6 +234,7 @@ const detail = () => {
   const [messageList, setMessageList] = useState<GetMessageOutput[]>();
 
   const [room, setRoom] = useState<GetRoomInfo>();
+  // setNextPage(nextPage + 1);
 
   const getRoom = async () => {
     try {
@@ -205,17 +257,6 @@ const detail = () => {
       }
     } catch (error) {}
   };
-  const fetchMoreData = async () => {
-    try {
-      if (id) {
-        const newMessage = await ApiServices.privateMessage.getMessage(
-          id.toString(),
-          1
-        );
-      }
-      return;
-    } catch (error) {}
-  };
 
   useEffect(() => {
     getMessage();
@@ -231,7 +272,7 @@ const detail = () => {
         block: "start",
       });
     }, 1000);
-  }, [messageList]);
+  }, []);
 
   return (
     <Flex h="100vh">
@@ -256,8 +297,11 @@ const detail = () => {
         {}
 
         <Flex
+          id="scrollableFlex"
           flex={1}
           direction="column"
+          flexDirection={"column-reverse"}
+          display="flex"
           // pt={0}
           pb={0}
           mx={5}
@@ -269,24 +313,12 @@ const detail = () => {
             },
           }}
         >
-          {/* <InfiniteScroll
-            key={Math.random()}
-            pageStart={0}
-            loadMore={fetchMoreData}
-            hasMore={true || false}
-            loader={
-              <div className="loader" key={0}>
-                Loading ...
-              </div>
-            }
-            isReverse={true}
-
-          >
-          </InfiniteScroll> */}
           <GetMessageOfRoom
             key={`MessageOfRoom_${id}`}
             messageList={messageList}
             userStateData={userStateData}
+            room_id={id?.toString() || ""}
+            setMessageList={setMessageList}
           />
         </Flex>
         <Bottombar

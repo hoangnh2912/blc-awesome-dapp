@@ -180,7 +180,7 @@ const ModalSignMessage = () => {
     >
       <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(10px) " />
       <ModalContent>
-        <ModalHeader>Sign message for verify your wallet</ModalHeader>
+        <ModalHeader>Sign message for verifying your wallet</ModalHeader>
         <ModalBody>
           <Center>
             <Button
