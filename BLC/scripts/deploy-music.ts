@@ -1,6 +1,6 @@
-require("dotenv").config();
-const { ethers } = require("hardhat");
-const fs = require("fs");
+import "dotenv/config";
+import fs from "fs";
+import { ethers } from "hardhat";
 async function main() {
   const [deployer] = await ethers.getSigners();
 
@@ -34,7 +34,7 @@ async function main() {
       ],
     },
   ];
-  let contractDeployed = {};
+  let contractDeployed:any = {};
   for (let i = 0; i < Contracts.length; i++) {
     const contract = Contracts[i];
     const contractFactory = await ethers.getContractFactory(contract.name);
@@ -90,12 +90,7 @@ async function main() {
       }
     }
   }
-
-  // deploy contracts
-
   fs.writeFileSync("./abi-music.json", JSON.stringify(contractDeployed));
-  // log deploy contracts
-  Object.values(contractDeployed).forEach((contract) => {});
 }
 
 main()

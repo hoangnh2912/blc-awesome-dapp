@@ -5,10 +5,12 @@
   "scripts": {
     "compile": "truffle compile",
     "contract:verify": "node ./scripts/verify.js",
-    "contract:deploy:stealth-address": "yarn compile && hardhat run --network mumbai ./scripts/deploy-stealth-address.js",
-    "contract:deploy:music": "yarn compile && hardhat run --network mumbai ./scripts/deploy-music.js",
-    "contract:deploy:rent": "yarn compile && hardhat run --network mumbai ./scripts/deploy-rent.js",
-    "contract:init-data:music": "yarn compile && hardhat run --network mumbai ./scripts/init-data-music.js"
+    "contract:deploy:stealth-address:mumbai": "yarn compile && hardhat run --network mumbai ./scripts/deploy-stealth-address.ts",
+    "contract:deploy:stealth-address:local": "yarn compile && hardhat run --network local ./scripts/deploy-stealth-address.ts",
+    "contract:deploy:music": "yarn compile && hardhat run --network mumbai ./scripts/deploy-music.ts",
+    "contract:deploy:rent": "yarn compile && hardhat run --network mumbai ./scripts/deploy-rent.ts",
+    "contract:init-data:music": "yarn compile && hardhat run --network mumbai ./scripts/init-data-music.ts",
+    "hardhat:node": "hardhat node"
   },
   "author": "",
   "license": "ISC",
@@ -18,12 +20,18 @@
     "@nomiclabs/hardhat-waffle": "^2.0.3",
     "@openzeppelin/contracts": "4.8.1",
     "@truffle/hdwallet-provider": "^2.0.8",
-    "chai": "^4.3.6",
+    "chai": "^4.3.7",
     "dotenv": "^16.0.2",
     "ethereum-waffle": "^3.4.4",
     "hardhat": "^2.9.5",
     "truffle": "^5.5.14",
     "web3": "^1.7.5"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@types/chai": "^4.3.4",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "^18.15.11",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.4"
+  }
 }
