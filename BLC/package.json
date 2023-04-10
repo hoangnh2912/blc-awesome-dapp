@@ -7,9 +7,11 @@
     "contract:verify": "node ./scripts/verify.js",
     "contract:deploy:stealth-address:mumbai": "yarn compile && hardhat run --network mumbai ./scripts/deploy-stealth-address.ts",
     "contract:deploy:stealth-address:local": "yarn compile && hardhat run --network local ./scripts/deploy-stealth-address.ts",
-    "contract:deploy:music": "yarn compile && hardhat run --network mumbai ./scripts/deploy-music.ts",
+    "contract:deploy:music:mumbai": "yarn compile && hardhat run --network mumbai ./scripts/deploy-music.ts",
+    "contract:deploy:music:local": "yarn compile && hardhat run --network mumbai ./scripts/deploy-music.ts",
     "contract:deploy:rent": "yarn compile && hardhat run --network mumbai ./scripts/deploy-rent.ts",
-    "contract:init-data:music": "yarn compile && hardhat run --network mumbai ./scripts/init-data-music.ts",
+    "contract:init-data:music:mumbai": "yarn compile && hardhat run --network mumbai ./scripts/init-data-music.ts",
+    "contract:init-data:music:local": "yarn compile && hardhat run --network mumbai ./scripts/init-data-music.ts",
     "hardhat:node": "hardhat node"
   },
   "author": "",

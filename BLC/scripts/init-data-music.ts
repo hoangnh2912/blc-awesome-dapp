@@ -1,7 +1,7 @@
-require("dotenv").config();
-const { ethers } = require("hardhat");
-const musicData = require("../data/music.json");
-const abiMusic = require("../abi-music.json");
+import "dotenv/config";
+import { ethers } from "hardhat";
+import musicData from "../data/music.json"
+import abiMusic from "../abi-music.json"
 async function main() {
   const [deployer] = await ethers.getSigners();
 
@@ -23,16 +23,6 @@ async function main() {
     );
     console.log("Listed song", chunk.length);
   }
-
-  // for (let i = 0; i < musicData.length; i++) {
-  //   await contractInteractInstance.listSongs(
-  //     [musicData[i].id],
-  //     [musicData[i].price],
-  //     [musicData[i].amount],
-  //     [musicData[i].uri]
-  //   );
-  //   console.log("Listed song", i + 1);
-  // }
 }
 
 main()
