@@ -1,6 +1,6 @@
 import { ABI_MUSIC } from '@constants';
 import Web3 from 'web3';
-import { Contract } from 'web3-eth/node_modules/web3-eth-contract/types/index';
+import { Contract } from 'web3-eth/node_modules/web3-eth-contract';
 
 const web3 = new Web3(`${process.env.NETWORK_RPC}`);
 
