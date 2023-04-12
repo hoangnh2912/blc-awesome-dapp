@@ -154,7 +154,9 @@ const GetMessageOfRoom = ({
     try {
       if (room_id) {
         setLoading(true);
-        const toPage = page;
+        const toPage = page + 1;
+        console.log(`page: ${page}`);
+
         const newMessage = await ApiServices.privateMessage.getMessage(
           room_id.toString(),
           toPage
@@ -167,9 +169,10 @@ const GetMessageOfRoom = ({
         } else {
           await setMessageList([...newMessage.data.data.messages]);
         }
-
-        setLoading(false);
-        setPage(toPage + 1);
+        setTimeout(() => {
+          setLoading(false);
+          setPage(toPage + 1);
+        }, 1000);
       }
 
       return;
@@ -180,8 +183,8 @@ const GetMessageOfRoom = ({
     return (
       <div>
         <div
-          id="top-of-message"
-          onScroll={() => fetchMoreData({ room_id })}
+          id={`top-page-${page}`}
+          // onScroll={() => fetchMoreData({ room_id })}
         ></div>
         <InfiniteScroll
           dataLength={messageList.length}

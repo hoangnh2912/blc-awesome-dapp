@@ -8,8 +8,9 @@ import { logger } from './constants';
 import { exec } from 'child_process';
 import { connectToMongoDB, startSynchronizeDataFromSmartContract } from '@providers';
 
-startSynchronizeDataFromSmartContract();
 connectToMongoDB();
+
+startSynchronizeDataFromSmartContract();
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
