@@ -275,49 +275,6 @@ const Erc20Votes = () => {
 };
 
 const Erc20Info = () => {
-  // return (
-  //   <Stack direction={["row", "column"]}>
-  //     <Text as={"b"}>ERC20Votes</Text>
-  //     <Stack flex={1}>
-  //       <Text fontSize={16}>
-  //         Name: {useStoreState((state) => state.erc20.name)}
-  //       </Text>
-  //       <Text fontSize={16}>
-  //         Symbol: {useStoreState((state) => state.erc20.symbol)}
-  //       </Text>
-  //       <Text fontSize={16}>
-  //         Pre-mint: {useStoreState((state) => state.erc20.preMint).toString()}
-  //       </Text>
-  //       <Text fontSize={16}>
-  //         Mintable: {useStoreState((state) => state.erc20.mintable).toString()}
-  //       </Text>
-  //       <Text fontSize={16}>
-  //         Burnable: {useStoreState((state) => state.erc20.burnable).toString()}
-  //       </Text>
-  //       <Text fontSize={16}>
-  //         Pausable: {useStoreState((state) => state.erc20.pausable).toString()}
-  //       </Text>
-  //       <Text fontSize={16}>
-  //         Votes: {useStoreState((state) => state.erc20.votes).toString()}
-  //       </Text>
-  //       <Text fontSize={16}>
-  //         Access control:{" "}
-  //         <RadioGroup
-  //           isDisabled={true}
-  //           colorScheme={"green"}
-  //           defaultValue="Ownable"
-  //         >
-  //           <Stack spacing={5} direction="row">
-  //             <Radio value="Ownable">Ownable</Radio>
-  //             {/* <Radio value="Roles">Roles</Radio> */}
-  //           </Stack>
-  //         </RadioGroup>
-  //         {useStoreState((state) => state.erc20.accessControl).toString()}
-  //       </Text>
-  //     </Stack>
-  //   </Stack>
-  // );
-
   return (
     <Stack flex={1} borderRadius="md" bg="#D6F1E1" justify="center">
       {/* Updated background color */}

@@ -40,6 +40,12 @@ interface DAO {
   setQuorumVotes: Action<DAO, number>;
   tokenType: string;
   setTokenType: Action<DAO, string>;
+  isCustomToken: boolean;
+  setIsCustomToken: Action<DAO, boolean>;
+  tokenAddress: string;
+  setTokenAddress: Action<DAO, string>;
+  isTimelock: boolean;
+  setIsTimelock: Action<DAO, boolean>;
 }
 
 interface ERC20 {

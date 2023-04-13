@@ -83,6 +83,18 @@ const store = createStore<StoreModel>({
     setTokenType: action((state, payload) => {
       state.tokenType = payload;
     }),
+    isCustomToken: false,
+    setIsCustomToken: action((state, payload) => {
+      state.isCustomToken = payload;
+    }),
+    tokenAddress: "",
+    setTokenAddress: action((state, payload) => {
+      state.tokenAddress = payload;
+    }),
+    isTimelock: false,
+    setIsTimelock: action((state, payload) => {
+      state.isTimelock = payload;
+    }),
   },
   erc20: {
     name: "MaiDAOXToken",

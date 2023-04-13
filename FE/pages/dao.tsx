@@ -32,16 +32,20 @@ import ContractUsage from "./token-creator/contract-usage";
 import { BsToggleOff } from "react-icons/bs";
 import { useState } from "react";
 import { logger } from "@ethersproject/wordlists";
+import { useStoreActions, useStoreState } from "../services/redux/hook";
 
 const Dao: NextPage = () => {
   const [activeIndex, setActiveIndex] = useState(3);
+  const isCustomToken = useStoreState((state) => state.dao.isCustomToken);
+  const tokenAddress = useStoreState((state) => state.dao.tokenAddress);
+  const isTimelock = useStoreState((state) => state.dao.isTimelock);
 
   const handleChange = (newIndex: any) => {
     // update the state with the new index value
     setActiveIndex(newIndex);
   };
 
-  const items = [
+  let items = [
     {
       title: "Governor",
       icon: RiGovernmentFill,
@@ -64,6 +68,14 @@ const Dao: NextPage = () => {
     },
   ];
 
+  // Remove token setting if custom token is selected
+  if (isCustomToken) {
+    items = items.filter((item) => item.title !== "Token setting");
+  }
+  // Remove Timelock setting if custom token is not selected
+  if (!isTimelock) {
+    items = items.filter((item) => item.title !== "Timelock setting");
+  }
   const handleNext = () => {
     setActiveIndex((prevIndex) => (prevIndex + 1) % items.length);
     logger.info(activeIndex);
@@ -161,7 +173,8 @@ const Dao: NextPage = () => {
                           bg="#ffffff"
                           // rounded={"md"}
                           borderBottomRadius="md"
-                          padding={1}
+                          // boxShadow="lg"
+                          padding={5}
                           // border={"1px solid #FFBA8C"}
                         >
                           {item.content}

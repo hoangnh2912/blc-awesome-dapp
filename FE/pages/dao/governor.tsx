@@ -69,18 +69,23 @@ const Governor = () => {
     useStoreActions((state) => state.dao.setQuorumVotes),
   ];
 
-  // Timelock setting
-  const [timelockDelay, setTimelockDelay] = useState(0);
-  const [timelockGuardian, setTimelockGuardian] = useState("");
-
-  // Access control setting
-  const [accessControlAdmin, setAccessControlAdmin] = useState("");
-
   // Token setting
-  const [isCustomToken, setIsCustomToken] = useBoolean(false);
   const [tokenType, setTokenType] = useState("TokenType");
-  const [tokenAddress, setTokenAddress] = useState("");
   const [tokenDecimals, setTokenDecimals] = useState(0);
+
+  const [isCustomToken, setIsCustomToken] = [
+    useStoreState((state) => state.dao.isCustomToken),
+    useStoreActions((state) => state.dao.setIsCustomToken),
+  ];
+  const [tokenAddress, setTokenAddress] = [
+    useStoreState((state) => state.dao.tokenAddress),
+    useStoreActions((state) => state.dao.setTokenAddress),
+  ];
+
+  const [isTimelock, setIsTimelock] = [
+    useStoreState((state) => state.dao.isTimelock),
+    useStoreActions((state) => state.dao.setIsTimelock),
+  ];
 
   const sdk = useSDK();
   const toast = useToast();
@@ -175,6 +180,45 @@ const Governor = () => {
               placeholder="4"
             />
           </Stack>
+          <p />
+          <Stack flex={1} direction={["row", "row"]}>
+            <Text fontSize={16}> Custom token:</Text>
+            <Checkbox
+              isChecked={isCustomToken}
+              onChange={(e) => setIsCustomToken(e.target.checked)}
+            />
+          </Stack>
+          <Stack>
+            {isCustomToken && (
+              <Input
+                value={tokenAddress}
+                onChange={(e) => setTokenAddress(e.target.value)}
+                // borderColor="black.300"
+                placeholder=""
+              />
+            )}
+          </Stack>
+          <Stack>
+            <Stack direction={["column", "row"]}>
+              <Text>Timelock</Text>
+              <Checkbox
+                onChange={(e) => setIsTimelock(e.target.checked)}
+                isChecked={isTimelock}
+              />
+            </Stack>
+            <Stack direction={["column", "row"]}>
+              <RadioGroup
+                isDisabled={!isTimelock}
+                colorScheme={"green"}
+                defaultValue="Ownable"
+              >
+                <Stack spacing={5} direction="row">
+                  <Radio value="Ownable">Ownable</Radio>
+                  {/* <Radio value="Roles">Roles</Radio> */}
+                </Stack>
+              </RadioGroup>
+            </Stack>
+          </Stack>
         </Stack>
       </Stack>
     </Stack>
@@ -182,38 +226,6 @@ const Governor = () => {
 };
 
 const GovernorInfo = () => {
-  // return (
-  //   <Stack direction={["row", "column"]}>
-  //     <Text as={"b"}>Governor</Text>
-  //     <Stack direction={["row", "column"]}>
-  //       <Stack flex={1}>
-  //         <Text fontSize={16}>
-  //           Name: {useStoreState((state) => state.dao.name)}
-  //         </Text>
-  //         <Text fontSize={16}>
-  //           Voting delay: {useStoreState((state) => state.dao.votingDelay)}
-  //         </Text>
-  //         <Text fontSize={16}>
-  //           Voting period: {useStoreState((state) => state.dao.votingPeriod)}
-  //         </Text>
-  //         <Text fontSize={16}>
-  //           Block time: {useStoreState((state) => state.dao.blockTime)}
-  //         </Text>
-  //         <Text fontSize={16}>
-  //           Proposal threshold:{" "}
-  //           {useStoreState((state) => state.dao.proposalThreshold)}
-  //         </Text>
-  //         <Text fontSize={16}>
-  //           Quorum type: {useStoreState((state) => state.dao.quorumType)}
-  //         </Text>
-  //         <Text fontSize={16}>
-  //           Quorum votes: {useStoreState((state) => state.dao.quorumVotes)}
-  //         </Text>
-  //       </Stack>
-  //     </Stack>
-  //   </Stack>
-  // );
-
   return (
     <Stack flex={1} borderRadius="md" bg="#D6F1E1" justify="center">
       {/* Updated background color */}
@@ -281,6 +293,14 @@ const GovernorInfo = () => {
             {useStoreState((state) => state.dao.blockTime)} (seconds)
           </Text>
         </GridItem>
+        {useStoreState((state) => state.dao.isCustomToken) && (
+          <GridItem>
+            <Text fontWeight="bold" color={COLOR_INFO().TEXT_COLOR_INFO}>
+              Custom token address:
+            </Text>
+            <Text color={COLOR_INFO().TEXT_COLOR_INFO}>{}</Text>
+          </GridItem>
+        )}
       </Grid>
     </Stack>
   );

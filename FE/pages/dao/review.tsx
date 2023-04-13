@@ -23,8 +23,9 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 import { useSDK } from "@thirdweb-dev/react";
-import { logger } from "ethers/lib/ethers";
+import { ContractInterface, logger } from "ethers/lib/ethers";
 import { useEffect, useMemo, useState } from "react";
+import { ABI_DAO } from "../../constants/abi";
 import { IoIosSettings } from "react-icons/io";
 import { useModalTransaction } from "../../components/modal-transaction";
 import ApiServices from "../../services/api";
@@ -35,8 +36,10 @@ import { GovernorInfo } from "./governor";
 import { Erc20Info } from "./erc20votes";
 import { Erc721Info } from "./erc721votes";
 import { TimelockInfo } from "./timelock";
+import { Axios } from "axios";
 
 const ReviewGovernor = () => {
+  // Governor
   const name = useStoreState((state) => state.dao.name);
   const votingDelay = useStoreState((state) => state.dao.votingDelay);
   const votingPeriod = useStoreState((state) => state.dao.votingPeriod);
@@ -46,126 +49,164 @@ const ReviewGovernor = () => {
   );
   const quorumType = useStoreState((state) => state.dao.quorumType);
   const quorumVotes = useStoreState((state) => state.dao.quorumVotes);
+
+  // Token
   const tokenType = useStoreState((state) => state.dao.tokenType);
+  const erc20State = useStoreState((state) => state.erc20);
+  const erc721State = useStoreState((state) => state.erc721);
 
-  const bg = useColorModeValue("gray.200", "gray.700");
-  const border = useColorModeValue("gray.300", "gray.600");
-  const textColor = useColorModeValue("gray.700", "gray.100");
+  const isTimelock = useStoreState((state) => state.dao.isTimelock);
+  // Timelock
+  const minDelay = useStoreState((state) => state.timelock.minDelay);
+  const proposers = useStoreState((state) => state.timelock.proposers);
+  const executors = useStoreState((state) => state.timelock.executors);
+  const admin = useStoreState((state) => state.timelock.admin);
 
-  // return (
-  //   <Stack flex={1} borderRadius={5} p={5}>
-  //     <Stack>
-  //       <GovernorInfo />
-  //     </Stack>
-  //     <Stack>
-  //       {tokenType === "ERC20Votes" ? <Erc20Info /> : null}
-  //       {tokenType === "ERC721Votes" ? <Erc721Info /> : null}
-  //     </Stack>
-  //     <Stack>
-  //       <TimelockInfo />
-  //     </Stack>
-  //   </Stack>
-  // );
+  const sdk = useSDK();
+  const toast = useToast();
 
-  // return (
-  //   <Stack flex={1} borderRadius={5} p={5}>
-  //     <Heading size="lg" mb={2}>
-  //       Governor
-  //     </Heading>
-  //     <Grid
-  //       templateColumns="repeat(2, 1fr)"
-  //       gap={2}
-  //       bg={bg}
-  //       borderWidth={1}
-  //       borderColor={border}
-  //       p={2}
-  //       borderRadius={5}
-  //     >
-  //       <GridItem>
-  //         <Text fontWeight="bold" color={textColor}>
-  //           Name:
-  //         </Text>
-  //         <Text color={textColor}>KingDAOX</Text>
-  //         <Text fontWeight="bold" color={textColor}>
-  //           Voting delay:
-  //         </Text>
-  //         <Text color={textColor}>1</Text>
-  //         <Text fontWeight="bold" color={textColor}>
-  //           Voting period:
-  //         </Text>
-  //         <Text color={textColor}>3600</Text>
-  //         <Text fontWeight="bold" color={textColor}>
-  //           Block time:
-  //         </Text>
-  //         <Text color={textColor}>12</Text>
-  //       </GridItem>
-  //       <GridItem>
-  //         <Text fontWeight="bold" color={textColor}>
-  //           Proposal threshold:
-  //         </Text>
-  //         <Text color={textColor}>0</Text>
-  //         <Text fontWeight="bold" color={textColor}>
-  //           Quorum type:
-  //         </Text>
-  //         <Text color={textColor}>percent</Text>
-  //         <Text fontWeight="bold" color={textColor}>
-  //           Quorum votes:
-  //         </Text>
-  //         <Text color={textColor}>4</Text>
-  //       </GridItem>
-  //     </Grid>
-  //   </Stack>
-  // );
+  const { onOpen, setTxResult } = useModalTransaction();
 
-  // return (
-  //   <Stack flex={1} borderRadius={5} p={5} bg="white">
-  //     <Heading size="lg" mb={2}>
-  //       Governor
-  //     </Heading>
-  //     <Grid
-  //       templateColumns="repeat(2, 1fr)"
-  //       gap={2}
-  //       bg={bg}
-  //       borderWidth={1}
-  //       borderColor={border}
-  //       p={2}
-  //       borderRadius={5}
-  //     >
-  //       <GridItem>
-  //         <Text fontWeight="bold" color={textColor}>
-  //           Name:
-  //         </Text>
-  //         <Text color={textColor}>KingDAOX</Text>
-  //         <Text fontWeight="bold" color={textColor}>
-  //           Voting delay:
-  //         </Text>
-  //         <Text color={textColor}>1</Text>
-  //         <Text fontWeight="bold" color={textColor}>
-  //           Voting period:
-  //         </Text>
-  //         <Text color={textColor}>3600</Text>
-  //         <Text fontWeight="bold" color={textColor}>
-  //           Block time:
-  //         </Text>
-  //         <Text color={textColor}>12</Text>
-  //       </GridItem>
-  //       <GridItem>
-  //         <Text fontWeight="bold" color={textColor}>
-  //           Proposal threshold:
-  //         </Text>
-  //         <Text color={textColor}>0</Text>
-  //         <Text fontWeight="bold" color={textColor}>
-  //           Quorum type:
-  //         </Text>
-  //         <Text color={textColor}>percent</Text>
-  //         <Text fontWeight="bold" color={textColor}>
-  //           Quorum votes:
-  //         </Text>
-  //         <Text color={textColor}>4</Text>
-  //       </GridItem>
-  //     </Grid>
-  //   </Stack>
-  // );
+  const deployToken = async () => {
+    try {
+      if (onOpen) onOpen();
+      let res: any;
+      if (tokenType === "ERC20Votes") {
+        res = await ApiServices.tokenCreator.erc20({
+          name: erc20State.name,
+          symbol: erc20State.symbol,
+          initial_supply: erc20State.preMint,
+          is_burnable: erc20State.burnable,
+          is_mintable: erc20State.mintable,
+          is_pausable: erc20State.pausable,
+          is_vote: true,
+        });
+      } else if (tokenType === "ERC721Votes") {
+        res = await ApiServices.tokenCreator.erc721({
+          name: erc721State.name,
+          symbol: erc721State.symbol,
+          baseURI: erc721State.baseURI,
+          is_burnable: erc721State.burnable,
+          is_mintable: erc721State.mintable,
+          is_pausable: erc721State.pausable,
+          is_uri_storage: erc721State.uriStorage,
+          is_vote: true,
+        });
+      }
+
+      let timelock_abi;
+      let timelock_bytecode;
+      let govenor_abi;
+      let governor_bytecode;
+      if (isTimelock) {
+        timelock_bytecode = ABI_DAO.TimelockController.bytecode;
+        timelock_abi = ABI_DAO.TimelockController.abi;
+      }
+
+      if (isTimelock && quorumType === "percent") {
+        governor_bytecode = ABI_DAO.GovernorQuorumFractionTimelock.bytecode;
+        govenor_abi = ABI_DAO.GovernorQuorumFractionTimelock.abi;
+      } else if (isTimelock && quorumType === "absolute") {
+        governor_bytecode = ABI_DAO.GovernorQuorumTimelock.bytecode;
+        govenor_abi = ABI_DAO.GovernorQuorumTimelock.abi;
+      } else if (!isTimelock && quorumType === "percent") {
+        governor_bytecode = ABI_DAO.GovernorQuorumFractionNonTimelock.bytecode;
+        govenor_abi = ABI_DAO.GovernorQuorumFractionNonTimelock.abi;
+      } else if (!isTimelock && quorumType === "absolute") {
+        governor_bytecode = ABI_DAO.GovernorQuorumNonTimelock.bytecode;
+        govenor_abi = ABI_DAO.GovernorQuorumNonTimelock.abi;
+      }
+
+      const token_bytecode = res.data.data.bytecode;
+      const token_abi = res.data.data.abi;
+      const token_name = res.data.data.name;
+      const token_uuid = res.data.data.uuid;
+      console.log({ token_bytecode, token_abi, token_name, token_uuid });
+      console.log(res.data.data);
+
+      let totalContractDeployed = [];
+      console.log("pro vjp: ", proposers, executors, admin);
+      try {
+        if (!sdk) return;
+        //Contract deploy
+        const contractDeployed = await deployContract(
+          sdk,
+          token_abi,
+          token_bytecode,
+          []
+        );
+
+        //Contract info
+        setTxResult({
+          reason: "",
+          content: [
+            {
+              title: "Transaction Hash",
+              value: (
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href={`https://mumbai.polygonscan.com/tx/${contractDeployed.transactionHash}`}
+                >
+                  {contractDeployed.transactionHash}
+                </a>
+              ),
+            },
+            {
+              title: "Contract Address",
+              value: <Spinner color="green.500" />,
+            },
+          ],
+          txState: "success",
+        });
+        const { contractAddress } = await contractDeployed.deployed();
+        setTxResult({
+          reason: "",
+          content: [
+            {
+              title: "Transaction Hash",
+              value: (
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href={`https://mumbai.polygonscan.com/tx/${contractDeployed.transactionHash}`}
+                >
+                  {contractDeployed.transactionHash}
+                </a>
+              ),
+            },
+            {
+              title: "Contract Address",
+              value: (
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href={`https://mumbai.polygonscan.com/address/${contractAddress}`}
+                >
+                  {contractAddress}
+                </a>
+              ),
+            },
+          ],
+          txState: "success",
+        });
+        if (contractAddress)
+          await ApiServices.tokenCreator.verify({
+            uuid,
+            address: contractAddress,
+            name: contractName,
+          });
+      } catch (error: any) {
+        setTxResult({
+          reason: error.message,
+          content: [],
+          txState: "error",
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <Stack flex={1} borderRadius={5} p={5} bg="white">
@@ -174,75 +215,19 @@ const ReviewGovernor = () => {
       </Heading>
       <GovernorInfo />
       <p />
-      <Erc20Info />
-      <Erc721Info />
-      <TimelockInfo />
+      {tokenType === "ERC20Votes" ? <Erc20Info /> : null}
+      {tokenType === "ERC721Votes" ? <Erc721Info /> : null}
+      {isTimelock ? <TimelockInfo /> : null}
+      <Button
+        leftIcon={<IoIosSettings />}
+        onClick={deployToken}
+        colorScheme="teal"
+        variant="solid"
+      >
+        Deploy
+      </Button>
     </Stack>
   );
-
-  // return (
-  //   <Box p="6" boxShadow="md" borderRadius="lg">
-  //     <Box mb="4">
-  //       <Heading as="h2" size="lg" mb="2">
-  //         Governor
-  //       </Heading>
-  //       <Box>
-  //         <Text fontWeight="bold">Name:</Text>
-  //         <Text ml="2">KingDAOX</Text>
-  //         <Text fontWeight="bold" mt="2">
-  //           Voting delay:
-  //         </Text>
-  //         <Text ml="2">1</Text>
-  //         <Text fontWeight="bold" mt="2">
-  //           Voting period:
-  //         </Text>
-  //         <Text ml="2">3600</Text>
-  //         <Text fontWeight="bold" mt="2">
-  //           Block time:
-  //         </Text>
-  //         <Text ml="2">12</Text>
-  //         <Text fontWeight="bold" mt="2">
-  //           Proposal threshold:
-  //         </Text>
-  //         <Text ml="2">0</Text>
-  //         <Text fontWeight="bold" mt="2">
-  //           Quorum type:
-  //         </Text>
-  //         <Text ml="2">percent</Text>
-  //         <Text fontWeight="bold" mt="2">
-  //           Quorum votes:
-  //         </Text>
-  //         <Text ml="2">4</Text>
-  //       </Box>
-  //     </Box>
-  //   </Box>
-  // );
-
-  // return (
-  //   <Flex
-  //     bg="gray.50"
-  //     p={8}
-  //     borderRadius="md"
-  //     boxShadow="xl"
-  //     alignItems="center"
-  //     justify="center"
-  //     height="100vh"
-  //   >
-  //     <Box bg="white" p={8} borderRadius="md" boxShadow="md" maxW="lg" w="full">
-  //       <Heading mb={4}>KingDAOX Information</Heading>
-  //       <Text mb={2} fontWeight="bold">
-  //         Governor
-  //       </Text>
-  //       <Text mb={2}>Name: KingDAOX</Text>
-  //       <Text mb={2}>Voting delay: 1</Text>
-  //       <Text mb={2}>Voting period: 3600</Text>
-  //       <Text mb={2}>Block time: 12</Text>
-  //       <Text mb={2}>Proposal threshold: 0</Text>
-  //       <Text mb={2}>Quorum type: percent</Text>
-  //       <Text mb={4}>Quorum votes: 4</Text>
-  //     </Box>
-  //   </Flex>
-  // );
 };
 
 export default ReviewGovernor;
