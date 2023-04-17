@@ -155,11 +155,11 @@ const GetMessageOfRoom = ({
       if (room_id) {
         setLoading(true);
         const toPage = page + 1;
-        console.log(`page: ${page}`);
 
         const newMessage = await ApiServices.privateMessage.getMessage(
           room_id.toString(),
-          toPage
+          toPage,
+          CONSTANT.MESSAGE_LIMIT
         );
         if (messageList) {
           await setMessageList([
@@ -169,10 +169,15 @@ const GetMessageOfRoom = ({
         } else {
           await setMessageList([...newMessage.data.data.messages]);
         }
+
+        document.getElementById(`top-page-${page - 1}`)?.scrollIntoView({
+          behavior: "auto",
+          block: "start",
+        });
         setTimeout(() => {
           setLoading(false);
-          setPage(toPage + 1);
-        }, 1000);
+          setPage(page + 1);
+        }, 100);
       }
 
       return;
@@ -182,10 +187,6 @@ const GetMessageOfRoom = ({
   if (userStateData && messageList) {
     return (
       <div>
-        <div
-          id={`top-page-${page}`}
-          // onScroll={() => fetchMoreData({ room_id })}
-        ></div>
         <InfiniteScroll
           dataLength={messageList.length}
           next={() => fetchMoreData({ room_id })}
@@ -198,24 +199,61 @@ const GetMessageOfRoom = ({
           {messageList
             .slice(0)
             .reverse()
-            .map((message) => {
+            .map((message, index) => {
+              const returnValues = [];
+
+              if ((messageList.length - index) % CONSTANT.MESSAGE_LIMIT == 0) {
+                // console.log(`index: ${index}`);
+
+                // console.log(
+                //   `page: ${
+                //     (messageList.length - index) / CONSTANT.MESSAGE_LIMIT
+                //   }`
+                // );
+
+                returnValues.push(
+                  <div
+                    key={`top-page-${
+                      (messageList.length - index) / CONSTANT.MESSAGE_LIMIT - 1
+                    }`}
+                    id={`top-page-${
+                      (messageList.length - index) / CONSTANT.MESSAGE_LIMIT - 1
+                    }`}
+                  ></div>
+                );
+              }
+
               if (
                 message.sender_user.wallet_address ==
                 userStateData.wallet_address
               ) {
-                return (
+                // return (
+                //   <MessageFromUser
+                //     key={Math.random()}
+                //     message={message.message_data}
+                //   />
+                // );
+                returnValues.push(
                   <MessageFromUser
                     key={Math.random()}
                     message={message.message_data}
                   />
                 );
+              } else {
+                // return (
+                //   <MessageFromOther
+                //     key={Math.random()}
+                //     message={message.message_data}
+                //   />
+                // );
+                returnValues.push(
+                  <MessageFromOther
+                    key={Math.random()}
+                    message={message.message_data}
+                  />
+                );
               }
-              return (
-                <MessageFromOther
-                  key={Math.random()}
-                  message={message.message_data}
-                />
-              );
+              return returnValues;
             })}
         </InfiniteScroll>
 
@@ -254,7 +292,8 @@ const detail = () => {
       if (id) {
         const message = await ApiServices.privateMessage.getMessage(
           id.toString(),
-          0
+          0,
+          CONSTANT.MESSAGE_LIMIT
         );
         setMessageList(message.data.data.messages);
       }

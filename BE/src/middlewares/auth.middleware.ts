@@ -12,6 +12,8 @@ const SignatureMiddleware = async (req: Request, res: Response, next: NextFuncti
       //   .json(onError(NETWORK_STATUS_MESSAGE.UNAUTHORIZED));
     }
     authorize = authorize as string;
+    console.log(`authorize: ${authorize}`);
+
     const [message, signature] = authorize.split(':');
     const address = web3.eth.accounts.recover(message, signature);
 
