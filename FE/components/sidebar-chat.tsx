@@ -48,7 +48,7 @@ import { ABI_MUSIC } from "../constants/abi";
 import { useModalTransaction } from "./modal-transaction";
 import LinkScan from "./link-scan";
 import { FaUser } from "react-icons/fa";
-import { useRouter } from "next/router";
+import { NextRouter, useRouter } from "next/router";
 import { IoLogOut } from "react-icons/io5";
 import ApiServices from "../services/api";
 import {
@@ -217,197 +217,214 @@ const userAvatarGetter = ({ avatar }: { avatar: string }) => {
   return avatarURL;
 };
 
+const LoginButton = ({
+  avatar,
+  router,
+}: {
+  avatar: string;
+  router: NextRouter;
+}) => {
+  const disconnect = useDisconnect();
+  const logout = useStoreActions((state) => state.chatUser.logout);
+
+  const avatarURL = userAvatarGetter({ avatar });
+
+  const address = useAddress();
+  const { data, refetch } = useBalance(ABI_MUSIC.MUC.address);
+  const sdk = useSDK();
+  const { onOpen: onOpenModalTx, setTxResult } = useModalTransaction();
+  const { replace, push, query } = useRouter();
+
+  const redirectHome = () => {
+    router.replace("/chat/", undefined, { shallow: true });
+  };
+
+  const onFaucet = async () => {
+    if (sdk && onOpenModalTx) {
+      try {
+        const mucContract = await sdk.getContractFromAbi(
+          ABI_MUSIC.MUC.address,
+          ABI_MUSIC.MUC.abi
+        );
+        onOpenModalTx();
+        const res = await mucContract.call("faucet");
+        setTxResult({
+          reason: "",
+          content: [
+            {
+              title: "Transaction Hash",
+              value: <LinkScan transactionHash={res.receipt.transactionHash} />,
+            },
+          ],
+          txState: "success",
+        });
+        refetch();
+      } catch (error: any) {
+        setTxResult({
+          reason: error.message,
+          content: [],
+          txState: "error",
+        });
+      }
+    }
+  };
+
+  return (
+    <Popover closeOnBlur={false} trigger="hover" placement="bottom-start">
+      <PopoverTrigger>
+        <Avatar
+          src={avatar ? avatarURL : ""}
+          marginEnd={3}
+          border={""}
+          _hover={{ cursor: "pointer" }}
+        >
+          <AvatarBadge boxSize="1em" bg="green.500" />
+        </Avatar>
+      </PopoverTrigger>
+      <PopoverContent>
+        <PopoverHeader>Wallet</PopoverHeader>
+        <PopoverArrow />
+        <PopoverCloseButton />
+        <PopoverBody>
+          <ConnectWallet />
+        </PopoverBody>
+        {address && (
+          <>
+            <Stack
+              p="4"
+              borderTopWidth={1}
+              borderTopColor="rgba(0, 0, 0, 0.1)"
+              borderBottomColor="rgba(0, 0, 0, 0.1)"
+              borderBottomWidth={1}
+              _hover={{
+                bg: "rgba(0, 0, 0, 0.1)",
+              }}
+              alignItems="center"
+              direction="row"
+            >
+              <RiMoneyDollarCircleLine />
+              <Text fontFamily={"mono"}>{data?.displayValue} MUC</Text>
+              <Button
+                bg="#0D164D"
+                color="white"
+                _hover={{ bg: "#0D166D" }}
+                onClick={onFaucet}
+                style={{
+                  marginLeft: "1rem",
+                }}
+              >
+                Faucet
+              </Button>
+            </Stack>
+            <Stack
+              cursor="pointer"
+              p="4"
+              borderTopWidth={1}
+              borderTopColor="rgba(0, 0, 0, 0.1)"
+              borderBottomColor="rgba(0, 0, 0, 0.1)"
+              borderBottomWidth={1}
+              _hover={{
+                bg: "rgba(0, 0, 0, 0.1)",
+              }}
+              alignItems="center"
+              direction="row"
+              onClick={() => {
+                if (address)
+                  replace(
+                    {
+                      pathname: `/music/address/${address}`,
+                    },
+                    undefined,
+                    {
+                      shallow: true,
+                    }
+                  );
+              }}
+            >
+              <FaUser />
+              <Text fontFamily={"mono"}>My Profile</Text>
+            </Stack>
+            <Stack
+              cursor="pointer"
+              p="4"
+              onClick={() => {
+                if (address) disconnect();
+                logout();
+                redirectHome();
+              }}
+              borderTopWidth={1}
+              borderTopColor="rgba(0, 0, 0, 0.1)"
+              borderBottomColor="rgba(0, 0, 0, 0.1)"
+              borderBottomWidth={1}
+              _hover={{
+                bg: "rgba(0, 0, 0, 0.1)",
+              }}
+              alignItems="center"
+              direction="row"
+            >
+              <IoLogOut color="#B12222" />
+              <Text color="#B12222" fontWeight="bold" fontFamily={"mono"}>
+                Logout
+              </Text>
+            </Stack>
+          </>
+        )}
+      </PopoverContent>
+    </Popover>
+  );
+};
+
+const Room = ({
+  name,
+  avatar,
+  id,
+  room_type,
+  users,
+  userStateData,
+  router,
+}: {
+  name: string;
+  avatar: string;
+  id: string;
+  room_type: string;
+  users: [UserOfRoom];
+  userStateData: GetChatUserOutput | undefined;
+  router: NextRouter;
+}) => {
+  let roomName = name;
+  let roomAvatar = avatar;
+  if (room_type === CONSTANT.ROOM_TYPE.PRIVATE && userStateData) {
+    const theOtherOne = users.filter(
+      (user) => user.wallet_address != userStateData.wallet_address
+    )[0];
+    roomName = theOtherOne.name || "";
+
+    roomAvatar = theOtherOne.avatar || "";
+  }
+
+  const redirect = (id: string) => {
+    router.push(`/chat/${id}`);
+  };
+
+  return (
+    <Flex
+      p={3}
+      align={"center"}
+      _hover={{ bg: "gray.100", cursor: "pointer" }}
+      onClick={() => redirect(id)}
+    >
+      <Avatar src={userAvatarGetter({ avatar: roomAvatar })} marginEnd={3} />
+      <Text>{roomName}</Text>
+    </Flex>
+  );
+};
+
 const ChatSidebar: NextPage = () => {
   const userStateData = useStoreState((state) => state.chatUser.data);
   const isLoginState = useStoreState((state) => state.chatUser.isLogin);
   const [listRoom, setListRoom] = useState<GetRoomInfo[]>();
   const [user, setUser] = useState<GetChatUserOutput>();
-  const logout = useStoreActions((state) => state.chatUser.logout);
-  const disconnect = useDisconnect();
   const router = useRouter();
-
-  const LoginButton = ({ avatar }: { avatar: string }) => {
-    const avatarURL = userAvatarGetter({ avatar });
-
-    const address = useAddress();
-    const { data, refetch } = useBalance(ABI_MUSIC.MUC.address);
-    const sdk = useSDK();
-    const { onOpen: onOpenModalTx, setTxResult } = useModalTransaction();
-    const { replace, push, query } = useRouter();
-
-    const onFaucet = async () => {
-      if (sdk && onOpenModalTx) {
-        try {
-          const mucContract = await sdk.getContractFromAbi(
-            ABI_MUSIC.MUC.address,
-            ABI_MUSIC.MUC.abi
-          );
-          onOpenModalTx();
-          const res = await mucContract.call("faucet");
-          setTxResult({
-            reason: "",
-            content: [
-              {
-                title: "Transaction Hash",
-                value: (
-                  <LinkScan transactionHash={res.receipt.transactionHash} />
-                ),
-              },
-            ],
-            txState: "success",
-          });
-          refetch();
-        } catch (error: any) {
-          setTxResult({
-            reason: error.message,
-            content: [],
-            txState: "error",
-          });
-        }
-      }
-    };
-
-    return (
-      <Popover closeOnBlur={false} trigger="hover" placement="bottom-start">
-        <PopoverTrigger>
-          <Avatar
-            src={avatar ? avatarURL : ""}
-            marginEnd={3}
-            border={""}
-            _hover={{ cursor: "pointer" }}
-          >
-            <AvatarBadge boxSize="1em" bg="green.500" />
-          </Avatar>
-        </PopoverTrigger>
-        <PopoverContent>
-          <PopoverHeader>Wallet</PopoverHeader>
-          <PopoverArrow />
-          <PopoverCloseButton />
-          <PopoverBody>
-            <ConnectWallet />
-          </PopoverBody>
-          {address && (
-            <>
-              <Stack
-                p="4"
-                borderTopWidth={1}
-                borderTopColor="rgba(0, 0, 0, 0.1)"
-                borderBottomColor="rgba(0, 0, 0, 0.1)"
-                borderBottomWidth={1}
-                _hover={{
-                  bg: "rgba(0, 0, 0, 0.1)",
-                }}
-                alignItems="center"
-                direction="row"
-              >
-                <RiMoneyDollarCircleLine />
-                <Text fontFamily={"mono"}>{data?.displayValue} MUC</Text>
-                <Button
-                  bg="#0D164D"
-                  color="white"
-                  _hover={{ bg: "#0D166D" }}
-                  onClick={onFaucet}
-                  style={{
-                    marginLeft: "1rem",
-                  }}
-                >
-                  Faucet
-                </Button>
-              </Stack>
-              <Stack
-                cursor="pointer"
-                p="4"
-                borderTopWidth={1}
-                borderTopColor="rgba(0, 0, 0, 0.1)"
-                borderBottomColor="rgba(0, 0, 0, 0.1)"
-                borderBottomWidth={1}
-                _hover={{
-                  bg: "rgba(0, 0, 0, 0.1)",
-                }}
-                alignItems="center"
-                direction="row"
-                onClick={() => {
-                  if (address)
-                    replace(
-                      {
-                        pathname: `/music/address/${address}`,
-                      },
-                      undefined,
-                      {
-                        shallow: true,
-                      }
-                    );
-                }}
-              >
-                <FaUser />
-                <Text fontFamily={"mono"}>My Profile</Text>
-              </Stack>
-              <Stack
-                cursor="pointer"
-                p="4"
-                onClick={() => {
-                  if (address) disconnect();
-                  logout();
-                  redirectHome();
-                }}
-                borderTopWidth={1}
-                borderTopColor="rgba(0, 0, 0, 0.1)"
-                borderBottomColor="rgba(0, 0, 0, 0.1)"
-                borderBottomWidth={1}
-                _hover={{
-                  bg: "rgba(0, 0, 0, 0.1)",
-                }}
-                alignItems="center"
-                direction="row"
-              >
-                <IoLogOut color="#B12222" />
-                <Text color="#B12222" fontWeight="bold" fontFamily={"mono"}>
-                  Logout
-                </Text>
-              </Stack>
-            </>
-          )}
-        </PopoverContent>
-      </Popover>
-    );
-  };
-
-  const Room = ({
-    name,
-    avatar,
-    id,
-    room_type,
-    users,
-  }: {
-    name: string;
-    avatar: string;
-    id: string;
-    room_type: string;
-    users: [UserOfRoom];
-  }) => {
-    let roomName = name;
-    let roomAvatar = avatar;
-    if (room_type === CONSTANT.ROOM_TYPE.PRIVATE && userStateData) {
-      const theOtherOne = users.filter(
-        (user) => user.wallet_address != userStateData.wallet_address
-      )[0];
-      roomName = theOtherOne.name || "";
-
-      roomAvatar = theOtherOne.avatar || "";
-    }
-
-    return (
-      <Flex
-        p={3}
-        align={"center"}
-        _hover={{ bg: "gray.100", cursor: "pointer" }}
-        onClick={() => redirect(id)}
-      >
-        <Avatar src={userAvatarGetter({ avatar: roomAvatar })} marginEnd={3} />
-        <Text>{roomName}</Text>
-      </Flex>
-    );
-  };
 
   const getListRoom = async () => {
     try {
@@ -422,14 +439,6 @@ const ChatSidebar: NextPage = () => {
       const user = await ApiServices.chatUser.userInfo();
       setUser(user.data.data);
     } catch (error) {}
-  };
-
-  const redirect = (id: string) => {
-    router.push(`/chat/${id}`);
-  };
-
-  const redirectHome = () => {
-    router.replace("/chat/", undefined, { shallow: true });
   };
 
   useEffect(() => {
@@ -462,7 +471,7 @@ const ChatSidebar: NextPage = () => {
       >
         <Flex align={"center"}>
           {/* <Avatar src="" marginEnd={3} /> */}
-          <LoginButton avatar={userStateData?.avatar || ""} />
+          <LoginButton avatar={userStateData?.avatar || ""} router={router} />
 
           <Text>{userStateData?.name || "Please log in"}</Text>
         </Flex>
@@ -498,6 +507,8 @@ const ChatSidebar: NextPage = () => {
               id={item._id}
               room_type={CONSTANT.ROOM_TYPE.PRIVATE}
               users={item.users}
+              userStateData={userStateData}
+              router={router}
             />
           );
         })}
