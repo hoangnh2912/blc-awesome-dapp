@@ -18,6 +18,7 @@ import {
 import { CONSTANT } from "../../constants/chat-constant";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { AiOutlineSend } from "react-icons/ai";
+import { useAddress, useSDK } from "@thirdweb-dev/react";
 
 const Topbar = ({ avatar, username }: { avatar: string; username: string }) => {
   return (
@@ -265,17 +266,21 @@ const GetMessageOfRoom = ({
   return <></>;
 };
 
+const secretKey = () => {};
+
 const detail = () => {
   console.log(`rerendered`);
-
   const userStateData = useStoreState((state) => state.chatUser.data);
+  const secretKeyState = useStoreState((state) => state.chatUser.secretKey);
+
   const router = useRouter();
+  const sdk = useSDK();
+  const address = useAddress();
+
   const { id } = router.query;
 
   const [messageList, setMessageList] = useState<GetMessageOutput[]>();
-
   const [room, setRoom] = useState<GetRoomInfo>();
-  // setNextPage(nextPage + 1);
 
   const getRoom = async () => {
     try {
@@ -298,6 +303,18 @@ const detail = () => {
         setMessageList(message.data.data.messages);
       }
     } catch (error) {}
+  };
+
+  const getSecretKey = async () => {
+    const signature = localStorage.getItem("signature");
+    const getBob = room?.users
+      .filter(
+        (user) => user.wallet_address.toLowerCase() != address?.toLowerCase()
+      )
+      .pop();
+    const bobPubkey = (
+      await ApiServices.chatUser.getUserByAddress(address?.toLowerCase() || "")
+    ).data.data.dmtp_pub_key;
   };
 
   useEffect(() => {

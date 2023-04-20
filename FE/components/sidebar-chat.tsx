@@ -131,7 +131,7 @@ const ModalSignMessage = () => {
 
   const signMessage = async () => {
     if (sdk && address) {
-      const signature = await sdk.wallet.sign("Music protocol");
+      const signature = await sdk.wallet.sign(address);
       localStorage.setItem("address", address.toLowerCase());
       localStorage.setItem("signature", signature);
       await getUserData();

@@ -73,6 +73,7 @@ const store = createStore<StoreModel>({
   chatUser: {
     data: undefined,
     isLogin: false,
+    secretKey: undefined,
     setData: action((state, payload) => {
       state.data = payload;
       state.isLogin = true;

@@ -183,6 +183,8 @@ interface GetChatUserOutput {
   link_addresses: [string];
   invitation_url: string;
   api_key: string;
+  dmtp_pub_key?: string;
+  dmtp_priv_key?: string;
   stdmtp: string;
   matic: string;
   is_minter: boolean;
