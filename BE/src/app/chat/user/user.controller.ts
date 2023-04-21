@@ -467,18 +467,14 @@ export class UsersController extends Controller {
     @Request() req: exRequest,
     @Body()
     inputParam: {
-      dmtp_pub_key: string;
-      dmtp_priv_key: string;
+      pub_key: string;
+      priv_key: string;
     },
   ) {
     try {
       const address = req.headers.address as string;
-      const { dmtp_pub_key, dmtp_priv_key } = inputParam;
-      const updatedUser = await this.userService.submitKeyPair(
-        address,
-        dmtp_pub_key,
-        dmtp_priv_key,
-      );
+      const { pub_key, priv_key } = inputParam;
+      const updatedUser = await this.userService.submitKeyPair(address, pub_key, priv_key);
 
       return onSuccess(updatedUser);
     } catch (error) {

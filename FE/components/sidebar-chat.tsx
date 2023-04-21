@@ -56,6 +56,8 @@ import {
   GetRoomInfo,
   UserOfRoom,
 } from "../services/api/types";
+import { decryptMessage, encryptMessage } from "../constants/utils";
+import { createECDH } from "crypto";
 // import { redirect } from "next/dist/server/api-utils";
 
 const PopoverTrigger = (props: FlexProps) => {
@@ -131,7 +133,16 @@ const ModalSignMessage = () => {
 
   const signMessage = async () => {
     if (sdk && address) {
-      const signature = await sdk.wallet.sign(address);
+      const signature = await sdk.wallet.sign(address.toLowerCase());
+      console.log(`address from useAddress: ${address.toLowerCase()}`);
+      console.log(`signature signed: ${signature}`);
+      console.log(
+        sdk.wallet.recoverAddress(
+          "0x3c90d8be4573f0582a2613e5cefe8727431db2f2",
+          "0x168307a637aac047952365f0fea0936829cef24f839793967e2e307fafaf547b4ec4653f5d6eee072c5a03732193717f3c4490cf4e6e257a9acb687c85feca851b"
+        )
+      );
+
       localStorage.setItem("address", address.toLowerCase());
       localStorage.setItem("signature", signature);
       await getUserData();
@@ -142,8 +153,25 @@ const ModalSignMessage = () => {
   const getUserData = async () => {
     if (address) {
       try {
-        const resUser = await ApiServices.chatUser.userInfo();
-        setUserDataAction(resUser.data.data);
+        const resUser = (await (await ApiServices.chatUser.userInfo()).data)
+          .data;
+        const signature = localStorage.getItem("signature") || "";
+        if (!resUser.dmtp_priv_key || !resUser.dmtp_pub_key) {
+          const ecdh = createECDH("secp256k1");
+          ecdh.generateKeys();
+          const privKey = ecdh.getPrivateKey().toString("hex");
+          const encryptedPrivKey = encryptMessage(privKey, signature);
+          const pubKey = ecdh.getPublicKey().toString("hex");
+          await ApiServices.chatUser.submitKeyPair({
+            privKey: encryptedPrivKey,
+            pubKey: pubKey,
+          });
+        }
+        resUser.dmtp_priv_key = decryptMessage(
+          resUser.dmtp_priv_key || "",
+          signature
+        );
+        setUserDataAction(resUser);
       } catch (error) {}
     }
   };

@@ -157,7 +157,7 @@ class RoomService {
               role = ChatConstant.MEMBER_OF_ROOM_TYPE.ADMIN;
             if (room.sub_admins && room.sub_admins.includes(user.wallet_address))
               role = ChatConstant.MEMBER_OF_ROOM_TYPE.SUB_ADMIN;
-            if (!user?.dmtp_pub_key) {
+            if (!user?.pub_key) {
               return {
                 ...user,
                 dmtp_pub_key: ChatConstant.KEY_PAIR.dmtp_pub_key,
@@ -269,7 +269,7 @@ class RoomService {
                   role = ChatConstant.MEMBER_OF_ROOM_TYPE.ADMIN;
                 if (room.sub_admins && room.sub_admins.includes(user.wallet_address))
                   role = ChatConstant.MEMBER_OF_ROOM_TYPE.SUB_ADMIN;
-                if (!user?.dmtp_pub_key) {
+                if (!user?.pub_key) {
                   return {
                     ...user,
                     dmtp_pub_key: ChatConstant.KEY_PAIR.dmtp_pub_key,
@@ -315,8 +315,8 @@ class RoomService {
       if (oppositeAddress) {
         const user = await this.userService.get(oppositeAddress);
 
-        if (user?.dmtp_pub_key) {
-          return user?.dmtp_pub_key;
+        if (user?.pub_key) {
+          return user?.pub_key;
         }
         return ChatConstant.KEY_PAIR.dmtp_pub_key;
       }
@@ -484,7 +484,7 @@ class RoomService {
       users.map(async user => {
         if (user != creator) {
           const findUser = await this.userService.get(user);
-          if (!findUser?.dmtp_pub_key) {
+          if (!findUser?.pub_key) {
             both_init = false;
           }
         }

@@ -1,5 +1,18 @@
+import { AES, enc } from "crypto-js";
+import keccak256 from "keccak256";
+
 const ipfsToGateway = (ipfsUrl: string) => {
   return ipfsUrl;
 };
 
-export { ipfsToGateway };
+const decryptMessage = (message: string, encryptKey: string) => {
+  const hash = keccak256(encryptKey).toString("hex");
+  return AES.decrypt(message, hash).toString(enc.Utf8);
+};
+
+const encryptMessage = (message: string, encryptKey: string) => {
+  const hash = keccak256(encryptKey).toString("hex");
+  return AES.encrypt(message, hash).toString();
+};
+
+export { ipfsToGateway, encryptMessage, decryptMessage };

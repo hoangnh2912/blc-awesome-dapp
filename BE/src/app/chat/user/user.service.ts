@@ -1,4 +1,4 @@
-import { ChatConstant, logger, Some } from '@constants';
+import { ChatConstant, Some } from '@constants';
 import {
   CidContract,
   emitAcceptFriend,
@@ -77,7 +77,7 @@ class ChatUserService {
 
   public async getPrivateKey(wallet_address: string) {
     try {
-      const privateKey = (await ChatUser.findOne({ wallet_address }))?.dmtp_priv_key || '';
+      const privateKey = (await ChatUser.findOne({ wallet_address }))?.priv_key || '';
       return privateKey;
     } catch (error) {
       throw error;
@@ -87,8 +87,7 @@ class ChatUserService {
   public async getPublicKey(wallet_address: string) {
     try {
       const publicKey =
-        (await ChatUser.findOne({ wallet_address }))?.dmtp_pub_key ||
-        ChatConstant.KEY_PAIR.dmtp_pub_key;
+        (await ChatUser.findOne({ wallet_address }))?.pub_key || ChatConstant.KEY_PAIR.dmtp_pub_key;
       return publicKey;
     } catch (error) {
       throw error;
@@ -909,17 +908,17 @@ class ChatUserService {
       });
 
       if (findUser) {
-        if (findUser?.dmtp_pub_key || findUser?.dmtp_priv_key) {
+        if (findUser?.pub_key || findUser?.priv_key) {
           return findUser;
         }
 
-        findUser.dmtp_priv_key = priv_key;
-        findUser.dmtp_pub_key = pub_key;
+        findUser.priv_key = priv_key;
+        findUser.pub_key = pub_key;
         const cid_key_pair = await uploadJson({
           DMTPpubKey: pub_key,
           DMTPpriKey: priv_key,
         });
-        logger.info('cid_key_pair', cid_key_pair);
+
         await sendTransaction(
           CidContract,
           'addKey',

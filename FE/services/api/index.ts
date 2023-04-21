@@ -43,10 +43,15 @@ const axios = new Axios({
 });
 
 axios.interceptors.request.use((config) => {
-  if (config.headers)
-    config.headers["authorize"] = `Music protocol:${localStorage.getItem(
-      "signature"
-    )}`;
+  if (config.headers) {
+    console.log(
+      `${localStorage.getItem("address")}:${localStorage.getItem("signature")}`
+    );
+
+    config.headers["authorize"] = `${localStorage.getItem(
+      "address"
+    )}:${localStorage.getItem("signature")}`;
+  }
   return config;
 });
 

@@ -36,8 +36,8 @@ export interface IChatUser {
   wallet_score: number;
   campaign?: string;
   is_stake_eth: boolean;
-  dmtp_pub_key?: string;
-  dmtp_priv_key?: string;
+  pub_key?: string;
+  priv_key?: string;
   cid_key_pair?: string;
   created_at: Date;
   updated_at?: Date;
@@ -61,8 +61,8 @@ const chatUserSchema = new Schema<IChatUser>({
   campaign: { required: false, type: String },
   is_stake_eth: { required: false, type: Boolean, default: false },
   avatar: { required: false, type: String },
-  dmtp_pub_key: { required: false, type: String },
-  dmtp_priv_key: { required: false, type: String },
+  pub_key: { required: false, type: String },
+  priv_key: { required: false, type: String },
   cid_key_pair: { required: false, type: String },
   created_at: { required: false, type: Date, default: Date.now },
   updated_at: { required: false, type: Date },

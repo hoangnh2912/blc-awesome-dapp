@@ -1,6 +1,7 @@
 import { Flex, Heading, HStack, Stack } from "@chakra-ui/layout";
 // import { Avatar } from "@chakra-ui/avatar";
 import { useRouter } from "next/router";
+import { createECDH, generateKey } from "crypto";
 
 import ChatSidebar from "../../components/sidebar-chat";
 import { Input, Text, Avatar } from "@chakra-ui/react";
@@ -16,10 +17,10 @@ import {
   GetRoomInfo,
 } from "../../services/api/types";
 import { CONSTANT } from "../../constants/chat-constant";
+import { decryptMessage, encryptMessage } from "../../constants/utils";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { AiOutlineSend } from "react-icons/ai";
 import { useAddress, useSDK } from "@thirdweb-dev/react";
-
 const Topbar = ({ avatar, username }: { avatar: string; username: string }) => {
   return (
     <Flex bg={"gray.100"} h="81px" w={"100%"} align="center" p={5}>
@@ -306,15 +307,40 @@ const detail = () => {
   };
 
   const getSecretKey = async () => {
-    const signature = localStorage.getItem("signature");
+    const signature = localStorage.getItem("signature") || "";
     const getBob = room?.users
       .filter(
         (user) => user.wallet_address.toLowerCase() != address?.toLowerCase()
       )
       .pop();
-    const bobPubkey = (
-      await ApiServices.chatUser.getUserByAddress(address?.toLowerCase() || "")
-    ).data.data.dmtp_pub_key;
+
+    const bobPubkey =
+      (
+        await ApiServices.chatUser.getUserByAddress(
+          getBob?.wallet_address || ""
+        )
+      ).data.data.dmtp_pub_key || "";
+
+    const aliceEncryptedPrikey =
+      (
+        await ApiServices.chatUser.getUserByAddress(
+          address?.toLowerCase() || ""
+        )
+      ).data.data.dmtp_priv_key || "";
+
+    const ecdh = createECDH("secp256k1");
+    const alicePrikey = decryptMessage(aliceEncryptedPrikey, signature);
+
+    // ecdh.setPrivateKey(Buffer.from(alicePrikey, "hex"))
+    ecdh.generateKeys();
+    console.log(ecdh.getPrivateKey().toString("hex"));
+
+    const encrypted = encryptMessage(
+      ecdh.getPrivateKey().toString("hex"),
+      signature
+    );
+
+    // const secretKey = ecdh.computeSecret(Buffer.from(bobPubkey, "hex"));
   };
 
   useEffect(() => {
@@ -332,6 +358,10 @@ const detail = () => {
       });
     }, 1000);
   }, []);
+
+  useEffect(() => {
+    getSecretKey();
+  });
 
   return (
     <Flex h="100vh">
