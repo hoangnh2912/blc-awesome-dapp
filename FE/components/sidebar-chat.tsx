@@ -153,24 +153,31 @@ const ModalSignMessage = () => {
   const getUserData = async () => {
     if (address) {
       try {
-        const resUser = (await (await ApiServices.chatUser.userInfo()).data)
+        let resUser = (await (await ApiServices.chatUser.userInfo()).data)
           .data;
         const signature = localStorage.getItem("signature") || "";
-        if (!resUser.dmtp_priv_key || !resUser.dmtp_pub_key) {
-          const ecdh = createECDH("secp256k1");
+        const ecdh = createECDH("secp256k1");
+        
+
+        if (!resUser.priv_key || !resUser.pub_key) {  
           ecdh.generateKeys();
           const privKey = ecdh.getPrivateKey().toString("hex");
           const encryptedPrivKey = encryptMessage(privKey, signature);
           const pubKey = ecdh.getPublicKey().toString("hex");
           await ApiServices.chatUser.submitKeyPair({
-            privKey: encryptedPrivKey,
-            pubKey: pubKey,
+            priv_key: encryptedPrivKey,
+            pub_key: pubKey,
           });
+          resUser.priv_key = ecdh.getPrivateKey().toString('hex')
+          resUser.pub_key = ecdh.getPublicKey().toString('hex')
         }
-        resUser.dmtp_priv_key = decryptMessage(
-          resUser.dmtp_priv_key || "",
-          signature
-        );
+        else {
+          resUser.priv_key = decryptMessage(
+            resUser.priv_key || "",
+            signature
+          );
+        }
+
         setUserDataAction(resUser);
       } catch (error) {}
     }

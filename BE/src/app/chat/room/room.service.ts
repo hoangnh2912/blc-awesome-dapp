@@ -295,8 +295,6 @@ class RoomService {
         }),
       );
 
-      // console.log(listRoomWithRole)
-
       return listRoomWithRole.filter(room => {
         if (room.hidden && room.hidden.includes(address.toLowerCase())) return false;
         return true;
@@ -530,7 +528,6 @@ class RoomService {
       // }
 
       const newRoom = await Room.create(createField);
-      console.log(`newRoom: ${newRoom}`);
 
       // let roomWithNftContract = null;
       // let shared_key = null;

@@ -117,8 +117,8 @@ class MessageService {
         users: address,
       });
 
-      if (!sender_user.friends?.includes(findRoom?.users?.find(user => user != address) || ''))
-        return null;
+      // if (!sender_user.friends?.includes(findRoom?.users?.find(user => user != address) || ''))
+      //   return null;
 
       if (!findRoom || findRoom.room_type !== ChatConstant.ROOM_TYPE.PRIVATE) {
         return null;
@@ -129,6 +129,7 @@ class MessageService {
       );
 
       if (!to_address) return null;
+
       const now = new Date();
       const createPayload: any = {
         room_id,

@@ -1,12 +1,12 @@
 import { ChatConstant, Some } from '@constants';
 import {
-  CidContract,
+  // CidContract,
   emitAcceptFriend,
   emitDeleteFriendRequest,
   emitFriendRequest,
   emitNewNotification,
   emitUnFriend,
-  sendTransaction,
+  // sendTransaction,
   Singleton,
   stickerContract,
   uploadJson,
@@ -919,13 +919,13 @@ class ChatUserService {
           DMTPpriKey: priv_key,
         });
 
-        await sendTransaction(
-          CidContract,
-          'addKey',
-          [wallet_address, `${cid_key_pair.path}`],
-          `${process.env.DMTP_OWNER_WALLET}`,
-          ChatConstant.CONFIG_CONTRACT.CID.address,
-        );
+        // await sendTransaction(
+        //   CidContract,
+        //   'addKey',
+        //   [wallet_address, `${cid_key_pair.path}`],
+        //   `${process.env.DMTP_OWNER_WALLET}`,
+        //   ChatConstant.CONFIG_CONTRACT.CID.address,
+        // );
 
         findUser.cid_key_pair = cid_key_pair.path;
         findUser.updated_at = new Date();
