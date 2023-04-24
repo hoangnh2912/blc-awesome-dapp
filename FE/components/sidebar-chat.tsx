@@ -134,14 +134,6 @@ const ModalSignMessage = () => {
   const signMessage = async () => {
     if (sdk && address) {
       const signature = await sdk.wallet.sign(address.toLowerCase());
-      console.log(`address from useAddress: ${address.toLowerCase()}`);
-      console.log(`signature signed: ${signature}`);
-      console.log(
-        sdk.wallet.recoverAddress(
-          "0x3c90d8be4573f0582a2613e5cefe8727431db2f2",
-          "0x168307a637aac047952365f0fea0936829cef24f839793967e2e307fafaf547b4ec4653f5d6eee072c5a03732193717f3c4490cf4e6e257a9acb687c85feca851b"
-        )
-      );
 
       localStorage.setItem("address", address.toLowerCase());
       localStorage.setItem("signature", signature);
@@ -153,13 +145,11 @@ const ModalSignMessage = () => {
   const getUserData = async () => {
     if (address) {
       try {
-        let resUser = (await (await ApiServices.chatUser.userInfo()).data)
-          .data;
+        let resUser = (await (await ApiServices.chatUser.userInfo()).data).data;
         const signature = localStorage.getItem("signature") || "";
         const ecdh = createECDH("secp256k1");
-        
 
-        if (!resUser.priv_key || !resUser.pub_key) {  
+        if (!resUser.priv_key || !resUser.pub_key) {
           ecdh.generateKeys();
           const privKey = ecdh.getPrivateKey().toString("hex");
           const encryptedPrivKey = encryptMessage(privKey, signature);
@@ -168,14 +158,10 @@ const ModalSignMessage = () => {
             priv_key: encryptedPrivKey,
             pub_key: pubKey,
           });
-          resUser.priv_key = ecdh.getPrivateKey().toString('hex')
-          resUser.pub_key = ecdh.getPublicKey().toString('hex')
-        }
-        else {
-          resUser.priv_key = decryptMessage(
-            resUser.priv_key || "",
-            signature
-          );
+          resUser.priv_key = ecdh.getPrivateKey().toString("hex");
+          resUser.pub_key = ecdh.getPublicKey().toString("hex");
+        } else {
+          resUser.priv_key = decryptMessage(resUser.priv_key || "", signature);
         }
 
         setUserDataAction(resUser);
@@ -235,7 +221,13 @@ const ModalSignMessage = () => {
   );
 };
 
-const addNewChat = async () => {
+const addNewChat = async ({
+  listRoom,
+  setListRoom,
+}: {
+  listRoom: GetRoomInfo[] | undefined;
+  setListRoom: React.Dispatch<React.SetStateAction<GetRoomInfo[] | undefined>>;
+}) => {
   const input = prompt("Send message to: ");
 
   const payload = {
@@ -244,7 +236,16 @@ const addNewChat = async () => {
     users: [input],
     room_type: "PRIVATE",
   };
-  await ApiServices.roomChat.createRoom(payload);
+  if (input) {
+    const newRoom = await ApiServices.roomChat.createRoom(payload);
+
+    if (listRoom) {
+      console.log([newRoom.data.data, ...listRoom]);
+      setListRoom([newRoom.data.data, ...listRoom]);
+    } else {
+      setListRoom([newRoom.data.data]);
+    }
+  }
 };
 
 const userAvatarGetter = ({ avatar }: { avatar: string }) => {
@@ -471,7 +472,13 @@ const ChatSidebar: NextPage = () => {
 
   const getUser = async () => {
     try {
-      const user = await ApiServices.chatUser.userInfo();
+      let user = await ApiServices.chatUser.userInfo();
+      const address = localStorage.getItem("address");
+      if (!user.data.data && address) {
+        user = await ApiServices.chatUser.createOrUpdateUserInfo({
+          name: address,
+        });
+      }
       setUser(user.data.data);
     } catch (error) {}
   };
@@ -505,10 +512,23 @@ const ChatSidebar: NextPage = () => {
         borderColor={"gray.200"}
       >
         <Flex align={"center"}>
-          {/* <Avatar src="" marginEnd={3} /> */}
           <LoginButton avatar={userStateData?.avatar || ""} router={router} />
 
-          <Text>{userStateData?.name || "Please log in"}</Text>
+          <Text>
+            {userStateData
+              ? userStateData.name.length <= CONSTANT.NAME_LENGTH_LIMIT
+                ? userStateData.name
+                : userStateData.name.substring(0, CONSTANT.NAME_LENGTH_LIMIT) +
+                  "..."
+              : "Please log in"}
+            {/* {(userStateData &&
+            userStateData.name.length <= CONSTANT.NAME_LENGTH_LIMIT)
+              ? userStateData
+                ? userStateData?.name
+                : userStateData?.name.substring(0, CONSTANT.NAME_LENGTH_LIMIT) +
+                  "..."
+              : "Please log in"} */}
+          </Text>
         </Flex>
 
         <IconButton
@@ -519,7 +539,7 @@ const ChatSidebar: NextPage = () => {
           onClick={() => router.push("/chat")}
         />
       </Flex>
-      <Button m={5} p={4} onClick={() => addNewChat()}>
+      <Button m={5} p={4} onClick={() => addNewChat({ listRoom, setListRoom })}>
         New Chat
       </Button>
       <Flex

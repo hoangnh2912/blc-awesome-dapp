@@ -1,5 +1,6 @@
 import { createStore, action } from "easy-peasy";
 import StoreModel from "./model";
+import { get } from "lodash";
 
 const store = createStore<StoreModel>({
   music: {
@@ -73,7 +74,7 @@ const store = createStore<StoreModel>({
   chatUser: {
     data: undefined,
     isLogin: false,
-    secretKey: undefined,
+    secretKey: {},
     setData: action((state, payload) => {
       state.data = payload;
       state.isLogin = true;
@@ -81,6 +82,9 @@ const store = createStore<StoreModel>({
     logout: action((state) => {
       state.isLogin = false;
       state.data = undefined;
+    }),
+    setSecretKey: action((state, payload) => {
+      state.secretKey[`${payload.address.toLowerCase()}`] = payload.secret;
     }),
   },
 });

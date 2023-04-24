@@ -2,7 +2,7 @@ import { Flex, Heading, HStack, Stack } from "@chakra-ui/layout";
 // import { Avatar } from "@chakra-ui/avatar";
 import { useRouter } from "next/router";
 import { createECDH, generateKey } from "crypto";
-const crypto = require('crypto')
+const crypto = require("crypto");
 // import {} from 'create-ecdh'
 
 import ChatSidebar from "../../components/sidebar-chat";
@@ -48,14 +48,14 @@ const Bottombar = ({
   id,
   messageList,
   setMessageList,
-  secretKey
+  secretKey,
 }: {
   id: string;
   messageList: GetMessageOutput[] | undefined;
   setMessageList: React.Dispatch<
     React.SetStateAction<GetMessageOutput[] | undefined>
   >;
-  secretKey: string
+  secretKey: string;
 }) => {
   const ref = useRef(null) as any;
 
@@ -76,7 +76,9 @@ const Bottombar = ({
       const message_data = input;
       setInput("");
       const newMessage = await ApiServices.privateMessage.sendMessage({
-        message_data: encryptMessage(message_data, secretKey),
+        message_data: secretKey
+          ? encryptMessage(message_data, secretKey)
+          : message_data,
         room_id: id,
       });
 
@@ -146,7 +148,7 @@ const GetMessageOfRoom = ({
   messageList,
   setMessageList,
   room_id,
-  secretKey
+  secretKey,
 }: {
   userStateData: GetChatUserOutput | undefined;
   messageList: GetMessageOutput[] | undefined;
@@ -154,9 +156,8 @@ const GetMessageOfRoom = ({
     React.SetStateAction<GetMessageOutput[] | undefined>
   >;
   room_id: string;
-  secretKey: string
+  secretKey: string;
 }) => {
-  
   const [loading, setLoading] = useState<boolean>(false);
   const [page, setPage] = useState<number>(0);
   const fetchMoreData = async ({ room_id }: { room_id: string }) => {
@@ -212,14 +213,6 @@ const GetMessageOfRoom = ({
               const returnValues = [];
 
               if ((messageList.length - index) % CONSTANT.MESSAGE_LIMIT == 0) {
-                // console.log(`index: ${index}`);
-
-                // console.log(
-                //   `page: ${
-                //     (messageList.length - index) / CONSTANT.MESSAGE_LIMIT
-                //   }`
-                // );
-
                 returnValues.push(
                   <div
                     key={`top-page-${
@@ -236,29 +229,25 @@ const GetMessageOfRoom = ({
                 message.sender_user.wallet_address ==
                 userStateData.wallet_address
               ) {
-                // return (
-                //   <MessageFromUser
-                //     key={Math.random()}
-                //     message={message.message_data}
-                //   />
-                // );
                 returnValues.push(
                   <MessageFromUser
                     key={Math.random()}
-                    message={decryptMessage(message.message_data, secretKey)}
+                    message={
+                      secretKey
+                        ? decryptMessage(message.message_data, secretKey)
+                        : message.message_data
+                    }
                   />
                 );
               } else {
-                // return (
-                //   <MessageFromOther
-                //     key={Math.random()}
-                //     message={message.message_data}
-                //   />
-                // );
                 returnValues.push(
                   <MessageFromOther
                     key={Math.random()}
-                    message={decryptMessage(message.message_data, secretKey)}
+                    message={
+                      secretKey
+                        ? decryptMessage(message.message_data, secretKey)
+                        : message.message_data
+                    }
                   />
                 );
               }
@@ -279,7 +268,10 @@ const secretKey = () => {};
 const detail = () => {
   console.log(`rerendered`);
   const userStateData = useStoreState((state) => state.chatUser.data);
-  // const secretKeyState = useStoreState((state) => state.chatUser.secretKey);
+  const secretKeyState = useStoreState((state) => state.chatUser.secretKey);
+  const setSecretKeyAction = useStoreActions(
+    (state) => state.chatUser.setSecretKey
+  );
 
   const router = useRouter();
   const sdk = useSDK();
@@ -289,7 +281,7 @@ const detail = () => {
 
   const [messageList, setMessageList] = useState<GetMessageOutput[]>();
   const [room, setRoom] = useState<GetRoomInfo>();
-  const [secret, setSecret] = useState<String>('')
+  const [secret, setSecret] = useState<string>("");
 
   const getRoom = async () => {
     try {
@@ -315,41 +307,43 @@ const detail = () => {
   };
 
   const getSecretKey = async () => {
-    if (userStateData){
-      const getBob = room?.users
-      .filter(
-        (user) => user.wallet_address.toLowerCase() != address?.toLowerCase()
-      )
-      .pop();
+    if (userStateData) {
+      const address = localStorage.getItem("address");
+      if (address) {
+        const getBob = room?.users
+          .filter(
+            (user) =>
+              user.wallet_address.toLowerCase() != address?.toLowerCase()
+          )
+          .pop();
 
-    const bobPubkey =
-      (
-        await ApiServices.chatUser.getUserByAddress(
-          getBob?.wallet_address || ""
-        )
-      ).data.data.pub_key || "";
+        const bobPubkey =
+          (
+            await ApiServices.chatUser.getUserByAddress(
+              getBob?.wallet_address || ""
+            )
+          ).data.data.pub_key || "";
 
-    // const ecdh = createECDH("secp256k1");
-    const ecdh = crypto.createECDH('secp256k1')
-    const alicePrikey = userStateData?.priv_key || ""
-    console.log(`alicePrikey: ${alicePrikey}`);
-    
-    ecdh.setPrivateKey(Buffer.from(alicePrikey, "hex"))
-    // ecdh.generateKeys();
-    console.log(ecdh.getPrivateKey().toString('hex'));
-    
-    console.log(`bobPubkey: ${bobPubkey}`);
-    
-    const secretKey = ecdh.computeSecret(Buffer.from(bobPubkey, "hex"));
-    setSecret(secretKey.toString('hex'))
+        const ecdh = crypto.createECDH("secp256k1");
+        const alicePrikey = userStateData?.priv_key || "";
+
+        ecdh.setPrivateKey(Buffer.from(alicePrikey, "hex"));
+
+        const secret = bobPubkey
+          ? ecdh.computeSecret(Buffer.from(bobPubkey, "hex"))
+          : "";
+        console.log(`bobPubkey: ${bobPubkey}`);
+
+        setSecretKeyAction({ address, secret });
+        // setSecret(secretKey.toString("hex"));
+      }
     }
-   
   };
 
   useEffect(() => {
     getMessage();
     getRoom();
-    getSecretKey()
+    getSecretKey();
   }, [id]);
 
   useEffect(() => {
@@ -366,8 +360,6 @@ const detail = () => {
   // useEffect(() => {
   //   getSecretKey();
   // });
-
-  
 
   return (
     <Flex h="100vh">
@@ -414,6 +406,7 @@ const detail = () => {
             userStateData={userStateData}
             room_id={id?.toString() || ""}
             setMessageList={setMessageList}
+            secretKey={secret}
           />
         </Flex>
         <Bottombar
@@ -421,6 +414,7 @@ const detail = () => {
           id={id?.toString() || ""}
           messageList={messageList}
           setMessageList={setMessageList}
+          secretKey={secret}
         />
       </Flex>
     </Flex>

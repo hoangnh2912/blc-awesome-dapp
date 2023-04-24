@@ -32,7 +32,8 @@ interface User {
 interface ChatUser {
   data: GetChatUserOutput | undefined;
   isLogin: boolean;
-  secretKey: {} | undefined;
+  secretKey: { [key: string]: string };
+  setSecretKey: Action<ChatUser, { address: string; secret: string }>;
   setData: Action<ChatUser, GetChatUserOutput | undefined>;
   logout: Action<ChatUser>;
 }

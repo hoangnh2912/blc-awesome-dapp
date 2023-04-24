@@ -9,4 +9,5 @@ export const CONSTANT = {
   API_PREFIX: "http://localhost:3001/",
   ROOM_TYPE,
   MESSAGE_LIMIT: 15,
+  NAME_LENGTH_LIMIT: 15,
 };

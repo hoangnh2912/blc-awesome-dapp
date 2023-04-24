@@ -92,7 +92,7 @@ const Topbar = () => (
     justifyContent={"center"}
   >
     <Flex>
-      <Heading size={"lg"}>Statisic</Heading>
+      <Heading size={"lg"}>Statistic</Heading>
     </Flex>
   </Flex>
 );
