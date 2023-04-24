@@ -33,7 +33,7 @@ async function main() {
     const deployContract = await contractFactory.deploy();
     await deployContract.deployed();
 
-    const contractCompileFilePath = `../build/contracts/${contract.name}.json`;
+    const contractCompileFilePath = `../artifacts/contracts/${contract.path}/${contract.name}.sol/${contract.name}.json`;
     contractDeployed[contract.name] = {
       address: deployContract.address,
       abi: require(contractCompileFilePath).abi,

@@ -1,5 +1,5 @@
 artifacts/
 cache/
 crytic-export/
-node_modules/
+./node_modules/
 typechain/

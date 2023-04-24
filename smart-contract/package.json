@@ -3,15 +3,15 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "compile": "truffle compile",
+    "compile": "hardhat compile",
     "contract:verify": "node ./scripts/verify.js",
     "contract:deploy:stealth-address:mumbai": "yarn compile && hardhat run --network mumbai ./scripts/deploy-stealth-address.ts",
     "contract:deploy:stealth-address:local": "yarn compile && hardhat run --network local ./scripts/deploy-stealth-address.ts",
     "contract:deploy:music:mumbai": "yarn compile && hardhat run --network mumbai ./scripts/deploy-music.ts",
-    "contract:deploy:music:local": "yarn compile && hardhat run --network mumbai ./scripts/deploy-music.ts",
+    "contract:deploy:music:local": "yarn compile && hardhat run --network local ./scripts/deploy-music.ts",
     "contract:deploy:rent": "yarn compile && hardhat run --network mumbai ./scripts/deploy-rent.ts",
     "contract:init-data:music:mumbai": "yarn compile && hardhat run --network mumbai ./scripts/init-data-music.ts",
-    "contract:init-data:music:local": "yarn compile && hardhat run --network mumbai ./scripts/init-data-music.ts",
+    "contract:init-data:music:local": "yarn compile && hardhat run --network local ./scripts/init-data-music.ts",
     "hardhat:node": "hardhat node"
   },
   "author": "",
@@ -27,7 +27,6 @@
     "dotenv": "^16.0.2",
     "ethereum-waffle": "^3.4.4",
     "hardhat": "^2.9.5",
-    "truffle": "^5.5.14",
     "web3": "^1.7.5"
   },
   "devDependencies": {
