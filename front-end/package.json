@@ -5,9 +5,10 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "deploy": "scp -i ~/.ssh/scimta.pem -r .next ubuntu@165.232.170.40:/home/ubuntu/blc-awesome-dapp/FE",
+    "deploy": "scp -i ~/.ssh/scimta.pem -r .next ubuntu@165.232.170.40:/home/ubuntu/blc-awesome-dapp/front-end",
     "start": "next start -H 0.0.0.0 -p 8080",
-    "lint": "next lint"
+    "lint": "next lint","format": "yarn prettier --write ."
+
   },
   "dependencies": {
     "@ajna/pagination": "^1.4.19",
@@ -38,7 +39,8 @@
     "@types/react-dom": "18.0.2",
     "eslint": "8.13.0",
     "eslint-config-next": "12.1.5",
-    "typescript": "^5.0.3"
+    "typescript": "^5.0.3",
+    "prettier": "2.8.1"
   },
   "homepage": "./"
 }
