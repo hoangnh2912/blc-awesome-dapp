@@ -21,7 +21,10 @@ const onJobGetDataFromSmartContract = async () => {
       return;
     }
     const listTxHash: string[] = [];
-    const last_block_number_onchain = await web3.eth.getBlockNumber();
+    const last_block_number_onchain = Math.min(
+      await web3.eth.getBlockNumber(),
+      last_block_number + 500,
+    );
 
     await synchronizeMarket(last_block_number, last_block_number_onchain, listTxHash);
     await synchronizeMusic(last_block_number, last_block_number_onchain, listTxHash);
@@ -63,12 +66,17 @@ const synchronizeMusic = async (
 
   for (const value of transferSingleEvents) {
     if (value.returnValues.from == Constant.ZERO_ADDRESS) {
-      await musicService.mintEvent(value.returnValues.to.toLowerCase(), value.returnValues.id);
+      await musicService.mintEvent(
+        value.returnValues.to.toLowerCase(),
+        value.returnValues.id,
+        value.transactionHash,
+      );
     } else {
       await musicService.transferEvent(
         value.returnValues.from.toLowerCase(),
         value.returnValues.to.toLowerCase(),
         value.returnValues.id,
+        value.transactionHash,
       );
     }
     listTxHash.push(value.transactionHash);
@@ -79,12 +87,14 @@ const synchronizeMusic = async (
       await musicService.mintBatchEvent(
         value.returnValues.to.toLowerCase(),
         value.returnValues.ids,
+        value.transactionHash,
       );
     } else {
       await musicService.transferBatchEvent(
         value.returnValues.from.toLowerCase(),
         value.returnValues.to.toLowerCase(),
         value.returnValues.ids,
+        value.transactionHash,
       );
     }
     listTxHash.push(value.transactionHash);
@@ -115,11 +125,13 @@ const synchronizeMarket = async (
     price: web3.utils.fromWei(e.returnValues['price'], 'ether'),
     amount: e.returnValues['amount'],
     uri: e.returnValues['uri'],
+    transactionHash: e.transactionHash,
   }));
 
   const listBuySongUpdate = eventBuySong.sort(sortByTransactionIndex).map(e => ({
     id: e.returnValues['id'],
     buyer: e.returnValues['buyer'],
+    transactionHash: e.transactionHash,
   }));
 
   listTxHash.push(...eventListSong.map(e => e.transactionHash));
@@ -133,6 +145,7 @@ const synchronizeMarket = async (
         priceUpdate.price,
         priceUpdate.amount,
         priceUpdate.uri,
+        priceUpdate.transactionHash,
       );
     } catch (error: any) {
       logger.error(`Can not update market for music: ${priceUpdate.id}, error: ${error.message}`);
@@ -141,7 +154,11 @@ const synchronizeMarket = async (
 
   for (const buyUpdate of listBuySongUpdate) {
     try {
-      await marketService.createBuyHistory(buyUpdate.id, buyUpdate.buyer);
+      await marketService.createBuyHistory(
+        buyUpdate.id,
+        buyUpdate.buyer,
+        buyUpdate.transactionHash,
+      );
     } catch (error: any) {
       logger.error(`Can not update market for music: ${buyUpdate.id}, error: ${error.message}`);
     }

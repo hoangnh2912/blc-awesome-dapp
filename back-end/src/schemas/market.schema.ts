@@ -15,6 +15,13 @@ export interface IMarket {
     trait_type: string;
     value: string;
   }[];
+  history: {
+    from: string;
+    to: string;
+    created_at: Date;
+    transaction_hash: string;
+    event: string;
+  }[];
   duration: number;
   bitrate: number;
   search_key: string;
@@ -38,6 +45,7 @@ const marketSchema = new Schema<IMarket>({
   bitrate: { required: true, type: Number },
   search_key: { required: true, type: String },
   attributes: { required: true, type: Schema.Types.Mixed, default: [] },
+  history: { required: true, type: Schema.Types.Mixed, default: [] },
   created_at: { required: false, type: Date, default: Date.now },
   updated_at: { required: false, type: Date },
   deleted_at: { required: false, type: Date },

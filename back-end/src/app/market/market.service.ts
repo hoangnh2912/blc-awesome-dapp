@@ -3,7 +3,7 @@ import { MarketContract, readCID } from '@providers';
 import { Market, User } from '@schemas';
 
 export class MarketService {
-  public async listSong(id: string, seller: string, price: string, amount: string, uri: string) {
+  public async listSong(id: string, seller: string, price: string, amount: string, uri: string, transaction_hash:string) {
     const data: any = await readCID(uri);
     await Market.findOneAndUpdate(
       {
@@ -25,6 +25,15 @@ export class MarketService {
         search_key: `${removeAccent(data.name)} ${removeAccent(data.singer)} ${removeAccent(
           data.description,
         )}`,
+        $addToSet: {
+          history: {
+            transaction_hash,
+            event: 'list',
+            created_at: new Date(),
+            from: Constant.ZERO_ADDRESS,
+            to: seller,
+          }
+        }
       },
       {
         upsert: true,
@@ -34,13 +43,22 @@ export class MarketService {
     );
   }
 
-  public async createBuyHistory(id: string, buyer: string) {
+  public async createBuyHistory(id: string, buyer: string, transaction_hash: string) {
     await Market.findOneAndUpdate(
       {
         id,
       },
       {
         left: (await MarketContract.methods.song(id).call())['amount'],
+        $addToSet: {
+          history: {
+            transaction_hash,
+            event: 'buy',
+            created_at: new Date(),
+            from: Constant.ZERO_ADDRESS,
+            to: buyer,
+          }
+        }
       },
     );
 
