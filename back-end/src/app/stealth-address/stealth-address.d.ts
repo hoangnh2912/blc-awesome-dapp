@@ -1,4 +1,3 @@
-
 interface SubmitPrivateKeyInput {
   privateKey: string;
   address: string;
@@ -15,9 +14,4 @@ interface GetPrivateKeyOutput {
   privateKey: string;
 }
 
-export {
-  SubmitPrivateKeyInput,
-  GetPrivateKeyInput,
-  SubmitPrivateKeyOutput,
-  GetPrivateKeyOutput,
-};
+export { SubmitPrivateKeyInput, GetPrivateKeyInput, SubmitPrivateKeyOutput, GetPrivateKeyOutput };

@@ -39,7 +39,7 @@
       "@constants": ["./src/constants/index.ts"],
       "@middlewares": ["./src/middlewares/index.ts"],
       "@providers": ["./src/providers/index.ts"],
-      "@schemas": ["./src/schemas/index.ts"],
+      "@schemas": ["./src/schemas/index.ts"]
     }
   }
 }

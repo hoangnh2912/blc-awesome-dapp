@@ -3,7 +3,14 @@ import { MarketContract, readCID } from '@providers';
 import { Market, User } from '@schemas';
 
 export class MarketService {
-  public async listSong(id: string, seller: string, price: string, amount: string, uri: string, transaction_hash:string) {
+  public async listSong(
+    id: string,
+    seller: string,
+    price: string,
+    amount: string,
+    uri: string,
+    transaction_hash: string,
+  ) {
     const data: any = await readCID(uri);
     await Market.findOneAndUpdate(
       {
@@ -32,8 +39,8 @@ export class MarketService {
             created_at: new Date(),
             from: Constant.ZERO_ADDRESS,
             to: seller,
-          }
-        }
+          },
+        },
       },
       {
         upsert: true,
@@ -57,8 +64,8 @@ export class MarketService {
             created_at: new Date(),
             from: Constant.ZERO_ADDRESS,
             to: buyer,
-          }
-        }
+          },
+        },
       },
     );
 

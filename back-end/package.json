@@ -11,9 +11,7 @@
     "dev": "ENV_MODE=development && concurrently \"nodemon\" \"nodemon -x tsoa spec-and-routes\"",
     "deploy": "ssh scimta \"bash -i -c 'cd /home/ubuntu/blc-awesome-dapp/BE && git pull && pm2 stop all && yarn && yarn build && pm2 restart all'\"",
     "postinstall": "patch-package",
-    "compile": "truffle compile",
-    "contract:verify": "node ./scripts/verify.js",
-    "contract:deploy": "yarn compile && hardhat run --network mumbai ./scripts/deploy.js"
+    "compile": "truffle compile"
   },
   "author": "",
   "license": "ISC",

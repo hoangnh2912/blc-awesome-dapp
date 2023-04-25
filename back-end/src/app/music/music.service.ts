@@ -124,7 +124,12 @@ export class MusicService {
       },
     );
   }
-  public async transferBatchEvent(from_address: string, to_address: string, ids: string[], transactionHash: string) {
+  public async transferBatchEvent(
+    from_address: string,
+    to_address: string,
+    ids: string[],
+    transactionHash: string,
+  ) {
     await User.findOneAndUpdate(
       {
         wallet_address: from_address,
