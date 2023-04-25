@@ -7,8 +7,8 @@
     "build": "next build",
     "deploy": "scp -i ~/.ssh/scimta.pem -r .next ubuntu@165.232.170.40:/home/ubuntu/blc-awesome-dapp/front-end",
     "start": "next start -H 0.0.0.0 -p 8080",
-    "lint": "next lint","format": "yarn prettier --write ."
-
+    "lint": "next lint",
+    "format": "yarn prettier --write ."
   },
   "dependencies": {
     "@ajna/pagination": "^1.4.19",

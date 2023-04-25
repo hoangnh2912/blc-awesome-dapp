@@ -20,11 +20,7 @@ const LinkScan = ({
           : `https://mumbai.polygonscan.com/address/${address}`
       }
     >
-      {transactionHash
-          ? `${transactionHash}`
-          : raw
-          ? `${raw}`
-          : `${address}`}
+      {transactionHash ? `${transactionHash}` : raw ? `${raw}` : `${address}`}
     </Link>
   );
 };

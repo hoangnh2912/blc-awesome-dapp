@@ -163,7 +163,7 @@ const useBuyMusic = () => {
 };
 const useListMusic = () => {
   const sdk = useSDK();
-    const address = useAddress();
+  const address = useAddress();
   const { onOpen: onOpenModalTx, setTxResult } = useModalTransaction();
   const setIsCheckConnectAction = useStoreActions(
     (state) => state.user.setIsCheckConnect
