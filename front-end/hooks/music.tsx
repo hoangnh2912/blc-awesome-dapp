@@ -7,7 +7,7 @@ import LinkScan from "../components/link-scan";
 import { useModalTransaction } from "../components/modal-transaction";
 import { ABI_MUSIC } from "../constants/abi";
 import { GetMarketOutput } from "../services/api/types";
-import { useStoreActions, useStoreState } from "../services/redux/hook";
+import { useStoreActions } from "../services/redux/hook";
 
 const useMusicIsPlayingView = ({
   pauseComponent,
@@ -163,7 +163,7 @@ const useBuyMusic = () => {
 };
 const useListMusic = () => {
   const sdk = useSDK();
-  const address = useAddress();
+    const address = useAddress();
   const { onOpen: onOpenModalTx, setTxResult } = useModalTransaction();
   const setIsCheckConnectAction = useStoreActions(
     (state) => state.user.setIsCheckConnect
@@ -190,28 +190,35 @@ const useListMusic = () => {
   ) => {
     if (sdk && onOpenModalTx && address) {
       try {
+        setTxResult((prev) => ({
+          content: [
+            ...prev.content,
+            {
+              title: "Transaction Hash",
+              value: <Spinner color="green.500" />,
+            },
+          ],
+        }));
         const musicMarketContract = await sdk.getContractFromAbi(
           ABI_MUSIC.MusicMarket.address,
           ABI_MUSIC.MusicMarket.abi
         );
-
-        onOpenModalTx();
         const res = await musicMarketContract.call("listSong", [
           id,
-          price,
+          ethers.utils.parseUnits(price, "ether"),
           amount,
           uri,
         ]);
-        setTxResult({
-          reason: "",
+        setTxResult((prev) => ({
           content: [
+            ...prev.content.filter((item) => item.title !== "Transaction Hash"),
             {
               title: "Transaction Hash",
               value: <LinkScan transactionHash={res.receipt.transactionHash} />,
             },
           ],
           txState: "success",
-        });
+        }));
       } catch (error: any) {
         setTxResult({
           reason: error.message,

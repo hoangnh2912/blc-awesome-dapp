@@ -2,9 +2,11 @@ import { Link } from "@chakra-ui/react";
 const LinkScan = ({
   transactionHash,
   address,
+  raw,
 }: {
   transactionHash?: string;
   address?: string;
+  raw?: string;
 }) => {
   return (
     <Link
@@ -13,10 +15,16 @@ const LinkScan = ({
       href={
         transactionHash
           ? `https://mumbai.polygonscan.com/tx/${transactionHash}`
+          : raw
+          ? `${raw}`
           : `https://mumbai.polygonscan.com/address/${address}`
       }
     >
-      {transactionHash}
+      {transactionHash
+          ? `${transactionHash}`
+          : raw
+          ? `${raw}`
+          : `${address}`}
     </Link>
   );
 };

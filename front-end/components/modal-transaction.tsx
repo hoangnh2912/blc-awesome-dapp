@@ -34,6 +34,21 @@ const ModalTransactionComponent = () => {
             </ModalBody>
           </>
         );
+      case "process":
+        return (
+          <>
+            <ModalHeader>Transaction processing</ModalHeader>
+            <ModalCloseButton />
+            {txResult.content.map((item, index) => (
+              <ModalBody key={index}>
+                <Text fontWeight="bold">{item.title}</Text>
+                <Text color={"green"} fontSize={"sm"}>
+                  {item.value}
+                </Text>
+              </ModalBody>
+            ))}
+          </>
+        );
       case "success":
         return (
           <>
@@ -77,7 +92,10 @@ const ModalTransactionComponent = () => {
       isCentered
       isOpen={!!isOpen}
       closeOnOverlayClick={txResult.txState != "pending"}
-      onClose={onClose}
+      onClose={() => {
+        onClose();
+        clearTxResult();
+      }}
       scrollBehavior="inside"
     >
       <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(10px) " />

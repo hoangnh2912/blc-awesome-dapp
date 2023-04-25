@@ -1,24 +1,24 @@
 import {
-  Box,
   Button,
   Image,
   Input,
   Select,
+  Spinner,
   Stack,
   Text,
   Textarea,
 } from "@chakra-ui/react";
 import type { NextPage } from "next";
 import { useEffect, useState } from "react";
-import { FaPlay } from "react-icons/fa";
 import { MdLibraryMusic, MdPhotoLibrary } from "react-icons/md";
-import { TiMediaPause } from "react-icons/ti";
+import LinkScan from "../../components/link-scan";
 import { useModalTransaction } from "../../components/modal-transaction";
 import { GENRE, INSTRUMENT, MOOD } from "../../constants/constants";
 import { useListMusic } from "../../hooks/music";
 import MusicBaseLayout from "../../layouts/music.base";
 import ApiServices from "../../services/api";
-import { useStoreActions, useStoreState } from "../../services/redux/hook";
+import { useStoreActions } from "../../services/redux/hook";
+import { useAddress } from "@thirdweb-dev/react";
 const Create: NextPage = () => {
   const [image, setImage] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -36,6 +36,10 @@ const Create: NextPage = () => {
     (state) => state.music.updateMusicMetadata
   );
   const { onOpen: onOpenModalTx, setTxResult } = useModalTransaction();
+  const setIsCheckConnectAction = useStoreActions(
+    (state) => state.user.setIsCheckConnect
+  );
+  const address = useAddress();
   const { onList } = useListMusic();
   const getAudioInfo = async () => {
     if (!audio)
@@ -52,6 +56,21 @@ const Create: NextPage = () => {
       bitrate: audioData.sampleRate,
     };
   };
+
+  const checkIsConnect = () => {
+    if (!address) {
+      setIsCheckConnectAction({
+        isCheckConnect: true,
+        args: [],
+      });
+      return false;
+    }
+    return true;
+  };
+
+  useEffect(() => {
+    checkIsConnect();
+  }, [address]);
 
   useEffect(() => {
     if (audio && url) {
@@ -82,18 +101,54 @@ const Create: NextPage = () => {
     try {
       if (!audio) return;
       if (!imageFile) return;
+      if (!checkIsConnect()) return;
       if (onOpenModalTx) onOpenModalTx();
       const resNextId = await ApiServices.music.getNextId();
       const id = resNextId.data.data;
       const { duration, bitrate } = await getAudioInfo();
       const formDataImage = new FormData();
       formDataImage.append("imageFile", imageFile);
+      setTxResult({
+        content: [
+          {
+            title: "Upload Image",
+            value: <Spinner color="green.500" />,
+          },
+        ],
+        txState: "process",
+      });
       const resImage = await ApiServices.ipfs.uploadImage(formDataImage);
-
+      setTxResult({
+        content: [
+          {
+            title: "Upload Image",
+            value: <LinkScan raw={resImage.data.data} />,
+          },
+          {
+            title: "Upload Audio",
+            value: <Spinner color="green.500" />,
+          },
+        ],
+      });
       const formDataAudio = new FormData();
       formDataAudio.append("imageFile", audio);
       const resAudio = await ApiServices.ipfs.uploadImage(formDataAudio);
-
+      setTxResult({
+        content: [
+          {
+            title: "Upload Image",
+            value: <LinkScan raw={resImage.data.data} />,
+          },
+          {
+            title: "Upload Audio",
+            value: <LinkScan raw={resAudio.data.data} />,
+          },
+          {
+            title: "Upload NFT Metadata",
+            value: <Spinner color="green.500" />,
+          },
+        ],
+      });
       const payload = {
         id,
         name: title,
@@ -120,6 +175,22 @@ const Create: NextPage = () => {
         bitrate,
       };
       const resJson = await ApiServices.ipfs.uploadJson(payload);
+      setTxResult({
+        content: [
+          {
+            title: "Upload Image",
+            value: <LinkScan raw={resImage.data.data} />,
+          },
+          {
+            title: "Upload Audio",
+            value: <LinkScan raw={resAudio.data.data} />,
+          },
+          {
+            title: "Upload NFT Metadata",
+            value: <LinkScan raw={resJson.data.data} />,
+          },
+        ],
+      });
       await onList(`${id}`, price, quantity, resJson.data.data);
     } catch (error: any) {
       setTxResult({

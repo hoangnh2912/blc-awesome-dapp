@@ -95,10 +95,10 @@ export const ModalCheckConnect = () => {
     ) {
       onOpen();
     } else {
+      onClose();
       if (isCheckConnectDataState.args && isCheckConnectDataState.callback) {
         isCheckConnectDataState.callback(...isCheckConnectDataState.args);
       }
-      onClose();
     }
   }, [connectionStatus, isCheckConnectDataState.isCheckConnect]);
 
