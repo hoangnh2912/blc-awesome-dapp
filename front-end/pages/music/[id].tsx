@@ -4,7 +4,14 @@ import {
   Progress,
   SimpleGrid,
   Stack,
+  Table,
+  TableContainer,
+  Tbody,
+  Td,
   Text,
+  Th,
+  Thead,
+  Tr,
 } from "@chakra-ui/react";
 import { useAddress, useSDK } from "@thirdweb-dev/react";
 import { useRouter } from "next/router";
@@ -29,22 +36,10 @@ const Music = ({ music }: { music: GetMarketOutput }) => {
   const currentAddress = useAddress();
 
   const data = music;
-  // const [data, setData] = useState<GetMarketOutput>();
-
   const [isOwnNft, setIsOwnNft] = useState(false);
 
   const sdk = useSDK();
   const { onBuy } = useBuyMusic();
-
-  const getData = async () => {
-    // try {
-    //   if (!id) return;
-    //   const res = await ApiServices.music.getMusic(id as string);
-    //   setData(res.data.data);
-    // } catch (error) {
-    //   console.log(error);
-    // }
-  };
 
   const getBalance = async () => {
     if (!id) return;
@@ -66,10 +61,6 @@ const Music = ({ music }: { music: GetMarketOutput }) => {
   useEffect(() => {
     getBalance();
   }, [id, sdk, currentAddress]);
-
-  useEffect(() => {
-    getData();
-  }, [id]);
 
   const onPlayMusic = () => {
     if (data)
@@ -272,6 +263,90 @@ const Music = ({ music }: { music: GetMarketOutput }) => {
       <Text color="white" fontSize="20">
         {data.description}
       </Text>
+      <Text
+        color="#fcae00"
+        fontSize="24"
+        style={{
+          marginTop: "1.5rem",
+        }}
+        fontWeight="bold"
+      >
+        Transaction History
+      </Text>
+      <TableContainer>
+        <Table
+          display={{
+            base: "none",
+            md: "table",
+          }}
+          variant="simple"
+        >
+          <Thead>
+            <Tr>
+              <Th
+                fontFamily="mono"
+                fontWeight="bold"
+                fontSize="16"
+                color="#fcae00"
+              >
+                Date
+              </Th>
+              <Th
+                fontFamily="mono"
+                fontWeight="bold"
+                fontSize="16"
+                color="#fcae00"
+              >
+                From
+              </Th>
+              <Th
+                fontFamily="mono"
+                fontWeight="bold"
+                fontSize="16"
+                color="#fcae00"
+              >
+                To
+              </Th>
+              <Th
+                fontFamily="mono"
+                fontWeight="bold"
+                fontSize="16"
+                color="#fcae00"
+              >
+                Event
+              </Th>
+              <Th></Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {data.history.map((item, idx) => (
+              <Tr
+                fontFamily="mono"
+                fontWeight="bold"
+                key={idx}
+                cursor={"pointer"}
+                _hover={{
+                  background: "#fcae00",
+                  color: "black",
+                }}
+                onClick={() => {
+                  window.open(
+                    `https://mumbai.polygonscan.com/tx/${item.transaction_hash}`,
+                    `_blank`
+                  );
+                }}
+                fontSize="16"
+                color="white"
+              >
+                <Td>{new Date(item.created_at).toDateString()}</Td>
+                <Td>{item.from}</Td>
+                <Td>{item.to}</Td>
+                <Td>{item.event}</Td>
+              </Tr>
+            ))}
+          </Tbody>
+        </Table>
+      </TableContainer>
     </MusicBaseLayout>
   );
 };

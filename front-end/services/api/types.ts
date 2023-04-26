@@ -95,6 +95,13 @@ interface GetMarketOutput {
     trait_type: string;
     value: string;
   }[];
+  history: {
+    from: string;
+    to: string;
+    created_at: Date;
+    transaction_hash: string;
+    event: string;
+  }[];
   duration: number;
   bitrate: number;
   created_at: Date;

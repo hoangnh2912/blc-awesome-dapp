@@ -9,23 +9,27 @@ const globalVariable: any = global;
 globalVariable.isSyncingGetDataFromSmartContract = false;
 const onJobGetDataFromSmartContract = async () => {
   try {
+    logger.info(
+      'onJobGetDataFromSmartContract:' + globalVariable.isSyncingGetDataFromSmartContract,
+    );
     if (globalVariable.isSyncingGetDataFromSmartContract) return;
     globalVariable.isSyncingGetDataFromSmartContract = true;
     const lastSynchronize = await Synchronize.findOne().sort({ last_block_number: -1 }).limit(1);
     const last_block_number = (lastSynchronize?.last_block_number || 0) + 1;
 
-    if (!last_block_number) {
+    if (!lastSynchronize?.last_block_number) {
       await Synchronize.create({
         last_block_number: 33395644,
       });
+      globalVariable.isSyncingGetDataFromSmartContract = false;
       return;
     }
     const listTxHash: string[] = [];
     const last_block_number_onchain = Math.min(
       await web3.eth.getBlockNumber(),
-      last_block_number + 500,
+      last_block_number + 100000,
     );
-
+    logger.info(`Synchronizing from ${last_block_number} to ${last_block_number_onchain}`);
     await synchronizeMarket(last_block_number, last_block_number_onchain, listTxHash);
     await synchronizeMusic(last_block_number, last_block_number_onchain, listTxHash);
     if (listTxHash.length > 0) {
@@ -63,14 +67,16 @@ const synchronizeMusic = async (
     fromBlock: last_block_number_sync,
     toBlock: last_block_number_onchain,
   });
+  logger.info(`Synchronizing ${transferSingleEvents.length} transfer single events`);
+  logger.info(`Synchronizing ${transferBatchEvents.length} transfer batch events`);
 
   for (const value of transferSingleEvents) {
     if (value.returnValues.from == Constant.ZERO_ADDRESS) {
-      await musicService.mintEvent(
-        value.returnValues.to.toLowerCase(),
-        value.returnValues.id,
-        value.transactionHash,
-      );
+      // await musicService.mintEvent(
+      //   value.returnValues.to.toLowerCase(),
+      //   value.returnValues.id,
+      //   value.transactionHash,
+      // );
     } else {
       await musicService.transferEvent(
         value.returnValues.from.toLowerCase(),
@@ -84,11 +90,11 @@ const synchronizeMusic = async (
 
   for (const value of transferBatchEvents) {
     if (value.returnValues.from == Constant.ZERO_ADDRESS) {
-      await musicService.mintBatchEvent(
-        value.returnValues.to.toLowerCase(),
-        value.returnValues.ids,
-        value.transactionHash,
-      );
+      // await musicService.mintBatchEvent(
+      //   value.returnValues.to.toLowerCase(),
+      //   value.returnValues.ids,
+      //   value.transactionHash,
+      // );
     } else {
       await musicService.transferBatchEvent(
         value.returnValues.from.toLowerCase(),
@@ -118,7 +124,8 @@ const synchronizeMarket = async (
     MarketContract.getPastEvents(Constant.MUSIC_MARKET_EVENT.ListSong, getPastEventsConfig),
     MarketContract.getPastEvents(Constant.MUSIC_MARKET_EVENT.BuySong, getPastEventsConfig),
   ]);
-
+  logger.info(`Synchronizing ${eventListSong.length} list song events`);
+  logger.info(`Synchronizing ${eventBuySong.length} buy song events`);
   const listListSongUpdate = eventListSong.sort(sortByTransactionIndex).map(e => ({
     id: e.returnValues['id'],
     seller: e.returnValues['seller'],

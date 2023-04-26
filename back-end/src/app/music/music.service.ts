@@ -1,76 +1,6 @@
-import { Constant } from '@constants';
 import { Market, User } from '@schemas';
 
 export class MusicService {
-  public async mintEvent(to_address: string, id: string, transactionHash: string) {
-    await User.findOneAndUpdate(
-      {
-        wallet_address: to_address,
-      },
-      {
-        $addToSet: {
-          ids: id,
-        },
-      },
-      {
-        upsert: true,
-        new: true,
-        setDefaultsOnInsert: true,
-      },
-    );
-
-    await Market.findOneAndUpdate(
-      {
-        id,
-      },
-      {
-        $addToSet: {
-          history: {
-            transaction_hash: transactionHash,
-            event: 'mint',
-            created_at: new Date(),
-            from: Constant.ZERO_ADDRESS,
-            to: to_address,
-          },
-        },
-      },
-    );
-  }
-  public async mintBatchEvent(to_address: string, ids: string[], transactionHash: string) {
-    await User.findOneAndUpdate(
-      {
-        wallet_address: to_address,
-      },
-      {
-        $addToSet: {
-          ids: ids,
-        },
-      },
-      {
-        upsert: true,
-        new: true,
-        setDefaultsOnInsert: true,
-      },
-    );
-    await Market.updateMany(
-      {
-        id: {
-          $in: ids,
-        },
-      },
-      {
-        $addToSet: {
-          history: {
-            transaction_hash: transactionHash,
-            event: 'mintBatch',
-            created_at: new Date(),
-            from: Constant.ZERO_ADDRESS,
-            to: to_address,
-          },
-        },
-      },
-    );
-  }
   public async transferEvent(
     from_address: string,
     to_address: string,
@@ -110,6 +40,7 @@ export class MusicService {
     await Market.findOneAndUpdate(
       {
         id,
+        'history.transaction_hash': { $ne: transactionHash },
       },
       {
         $addToSet: {
@@ -167,6 +98,7 @@ export class MusicService {
         id: {
           $in: ids,
         },
+        'history.transaction_hash': { $ne: transactionHash },
       },
       {
         $addToSet: {

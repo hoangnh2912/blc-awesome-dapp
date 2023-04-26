@@ -54,6 +54,7 @@ export class MarketService {
     await Market.findOneAndUpdate(
       {
         id,
+        'history.transaction_hash': { $ne: transaction_hash },
       },
       {
         left: (await MarketContract.methods.song(id).call())['amount'],
