@@ -23,6 +23,8 @@ import { decryptMessage, encryptMessage } from "../../constants/utils";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { AiOutlineSend } from "react-icons/ai";
 import { useAddress, useSDK } from "@thirdweb-dev/react";
+import { socketInstance } from "../../constants/socket";
+
 const Topbar = ({ avatar, username }: { avatar: string; username: string }) => {
   return (
     <Flex bg={"gray.100"} h="81px" w={"100%"} align="center" p={5}>
@@ -160,6 +162,29 @@ const GetMessageOfRoom = ({
 }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [page, setPage] = useState<number>(0);
+
+  useEffect(() => {
+    const signature = localStorage.getItem("signature");
+    const address = localStorage.getItem("address");
+    console.log(`signature: ${signature}`);
+
+    socketInstance
+      .getSocket(address || "", signature || "")
+      .on("message sent", async (data, res) => {
+        if (data) {
+          console.log(`new message: ${data}`);
+        }
+      });
+  }, [userStateData]);
+  // if (socketInstance.initStatus){
+
+  //   socketInstance.getSocket().on("message sent", async (data, res) => {
+  //     if (data) {
+  //       console.log(`new message: ${data}`);
+  //     }
+  //   });
+  // }
+
   const fetchMoreData = async ({ room_id }: { room_id: string }) => {
     try {
       if (room_id) {

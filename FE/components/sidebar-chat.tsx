@@ -40,7 +40,6 @@ import {
   useNetwork,
   useSDK,
 } from "@thirdweb-dev/react";
-import { CgProfile } from "react-icons/cg";
 import { useStoreActions, useStoreState } from "../services/redux/hook";
 import React, { ReactNode, useEffect, useState, memo } from "react";
 import { RiMoneyDollarCircleLine } from "react-icons/ri";
@@ -58,7 +57,18 @@ import {
 } from "../services/api/types";
 import { decryptMessage, encryptMessage } from "../constants/utils";
 import { createECDH } from "crypto";
-// import { redirect } from "next/dist/server/api-utils";
+import { ethers } from "ethers";
+
+const nameConverter = (name: string) => {
+  if (name.length >= CONSTANT.NAME_LENGTH_LIMIT) {
+    let validName = name.substring(0, 8) + "...";
+    if (ethers.utils.isAddress(name)) {
+      validName += name.substring(name.length - 4);
+    }
+    return validName;
+  }
+  return name;
+};
 
 const PopoverTrigger = (props: FlexProps) => {
   return <ExPopoverTrigger {...props} />;
@@ -433,7 +443,7 @@ const Room = ({
     const theOtherOne = users.filter(
       (user) => user.wallet_address != userStateData.wallet_address
     )[0];
-    roomName = theOtherOne.name || "";
+    roomName = nameConverter(theOtherOne.name) || "";
 
     roomAvatar = theOtherOne.avatar || "";
   }
@@ -474,6 +484,7 @@ const ChatSidebar: NextPage = () => {
     try {
       let user = await ApiServices.chatUser.userInfo();
       const address = localStorage.getItem("address");
+
       if (!user.data.data && address) {
         user = await ApiServices.chatUser.createOrUpdateUserInfo({
           name: address,
@@ -488,7 +499,7 @@ const ChatSidebar: NextPage = () => {
       getListRoom();
       getUser();
     }
-  }, [isLoginState]);
+  }, [isLoginState, userStateData]);
 
   return (
     <Flex
@@ -516,10 +527,7 @@ const ChatSidebar: NextPage = () => {
 
           <Text>
             {userStateData
-              ? userStateData.name.length <= CONSTANT.NAME_LENGTH_LIMIT
-                ? userStateData.name
-                : userStateData.name.substring(0, CONSTANT.NAME_LENGTH_LIMIT) +
-                  "..."
+              ? nameConverter(userStateData.name)
               : "Please log in"}
             {/* {(userStateData &&
             userStateData.name.length <= CONSTANT.NAME_LENGTH_LIMIT)
