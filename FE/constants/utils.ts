@@ -6,8 +6,10 @@ const ipfsToGateway = (ipfsUrl: string) => {
 };
 
 const decryptMessage = (message: string, encryptKey: string) => {
-  const hash = keccak256(encryptKey).toString("hex");
-  return AES.decrypt(message, hash).toString(enc.Utf8);
+  try {
+    const hash = keccak256(encryptKey).toString("hex");
+    return AES.decrypt(message, hash).toString(enc.Utf8);
+  } catch (error) {}
 };
 
 const encryptMessage = (message: string, encryptKey: string) => {

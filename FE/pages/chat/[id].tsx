@@ -77,6 +77,8 @@ const Bottombar = ({
       clearInput();
       const message_data = input;
       setInput("");
+      console.log(`secretKey: ${secretKey}`);
+
       const newMessage = await ApiServices.privateMessage.sendMessage({
         message_data: secretKey
           ? encryptMessage(message_data, secretKey)
@@ -162,6 +164,7 @@ const GetMessageOfRoom = ({
 }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [page, setPage] = useState<number>(0);
+  console.log(`secretKey: ${secretKey}`);
 
   useEffect(() => {
     const signature = localStorage.getItem("signature");
@@ -170,12 +173,28 @@ const GetMessageOfRoom = ({
 
     socketInstance
       .getSocket(address || "", signature || "")
-      .on("message sent", async (data, res) => {
+      .on("message sent", async (data) => {
         if (data) {
-          console.log(`new message: ${data}`);
+          console.log(`new message: ${JSON.stringify(data)}`);
+
+          addMessage({ data });
         }
       });
   }, [userStateData]);
+
+  const addMessage = ({ data }: { data: GetMessageOutput }) => {
+    console.log(`data: ${JSON.stringify(data)}`);
+    console.log(`messageList: ${JSON.stringify(messageList)}`);
+
+    if (messageList) {
+      setMessageList([...messageList, data]);
+      console.log(
+        `messageList + data: ${JSON.stringify([...messageList, data])}`
+      );
+    } else {
+      setMessageList([data]);
+    }
+  };
   // if (socketInstance.initStatus){
 
   //   socketInstance.getSocket().on("message sent", async (data, res) => {
@@ -259,7 +278,7 @@ const GetMessageOfRoom = ({
                     key={Math.random()}
                     message={
                       secretKey
-                        ? decryptMessage(message.message_data, secretKey)
+                        ? decryptMessage(message.message_data, secretKey) || ""
                         : message.message_data
                     }
                   />
@@ -270,7 +289,7 @@ const GetMessageOfRoom = ({
                     key={Math.random()}
                     message={
                       secretKey
-                        ? decryptMessage(message.message_data, secretKey)
+                        ? decryptMessage(message.message_data, secretKey) || ""
                         : message.message_data
                     }
                   />
@@ -287,8 +306,6 @@ const GetMessageOfRoom = ({
 
   return <></>;
 };
-
-const secretKey = () => {};
 
 const detail = () => {
   console.log(`rerendered`);
@@ -307,6 +324,16 @@ const detail = () => {
   const [messageList, setMessageList] = useState<GetMessageOutput[]>();
   const [room, setRoom] = useState<GetRoomInfo>();
   const [secret, setSecret] = useState<string>("");
+
+  const secretKey = Object.keys(secretKeyState).findIndex(
+    (key) => key == address?.toLowerCase()
+  );
+
+  const secretValue = Object.values(secretKeyState)[secretKey];
+
+  // console.log(`address localStorage: ${localStorage.getItem("address")}`);
+
+  // const addressSecret = secretKeyState[]
 
   const getRoom = async () => {
     try {
@@ -333,12 +360,11 @@ const detail = () => {
 
   const getSecretKey = async () => {
     if (userStateData) {
-      const address = localStorage.getItem("address");
+      // const address = localStorage.getItem("address");
       if (address) {
         const getBob = room?.users
           .filter(
-            (user) =>
-              user.wallet_address.toLowerCase() != address?.toLowerCase()
+            (user) => user.wallet_address.toLowerCase() != address.toLowerCase()
           )
           .pop();
 
@@ -355,12 +381,10 @@ const detail = () => {
         ecdh.setPrivateKey(Buffer.from(alicePrikey, "hex"));
 
         const secret = bobPubkey
-          ? ecdh.computeSecret(Buffer.from(bobPubkey, "hex"))
+          ? ecdh.computeSecret(Buffer.from(bobPubkey, "hex")).toString("hex")
           : "";
-        console.log(`bobPubkey: ${bobPubkey}`);
 
         setSecretKeyAction({ address, secret });
-        // setSecret(secretKey.toString("hex"));
       }
     }
   };
@@ -368,8 +392,11 @@ const detail = () => {
   useEffect(() => {
     getMessage();
     getRoom();
-    getSecretKey();
   }, [id]);
+
+  useEffect(() => {
+    getSecretKey();
+  }, [room]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -431,7 +458,7 @@ const detail = () => {
             userStateData={userStateData}
             room_id={id?.toString() || ""}
             setMessageList={setMessageList}
-            secretKey={secret}
+            secretKey={secretValue}
           />
         </Flex>
         <Bottombar
@@ -439,7 +466,7 @@ const detail = () => {
           id={id?.toString() || ""}
           messageList={messageList}
           setMessageList={setMessageList}
-          secretKey={secret}
+          secretKey={secretValue}
         />
       </Flex>
     </Flex>
