@@ -53,10 +53,8 @@ const Bottombar = ({
   secretKey,
 }: {
   id: string;
-  messageList: GetMessageOutput[] | undefined;
-  setMessageList: React.Dispatch<
-    React.SetStateAction<GetMessageOutput[] | undefined>
-  >;
+  messageList: GetMessageOutput[];
+  setMessageList: React.Dispatch<React.SetStateAction<GetMessageOutput[]>>;
   secretKey: string;
 }) => {
   const ref = useRef(null) as any;
@@ -86,9 +84,11 @@ const Bottombar = ({
         room_id: id,
       });
 
-      if (messageList) {
-        setMessageList([newMessage.data.data, ...messageList]);
-      }
+      setMessageList([newMessage.data.data, ...messageList]);
+      // if (messageList) {
+      // } else {
+      //   setMessageList([newMessage.data.data]);
+      // }
       setSending(false);
     }
   };
@@ -155,16 +155,14 @@ const GetMessageOfRoom = ({
   secretKey,
 }: {
   userStateData: GetChatUserOutput | undefined;
-  messageList: GetMessageOutput[] | undefined;
-  setMessageList: React.Dispatch<
-    React.SetStateAction<GetMessageOutput[] | undefined>
-  >;
+  messageList: GetMessageOutput[];
+  setMessageList: React.Dispatch<React.SetStateAction<GetMessageOutput[]>>;
   room_id: string;
   secretKey: string;
 }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [page, setPage] = useState<number>(0);
-  console.log(`secretKey: ${secretKey}`);
+  console.log(`messageList.length: ${messageList?.length || -1}`);
 
   useEffect(() => {
     const signature = localStorage.getItem("signature");
@@ -175,25 +173,24 @@ const GetMessageOfRoom = ({
       .getSocket(address || "", signature || "")
       .on("message sent", async (data) => {
         if (data) {
-          console.log(`new message: ${JSON.stringify(data)}`);
-
-          addMessage({ data });
+          await addMessage({ data });
         }
       });
   }, [userStateData]);
 
-  const addMessage = ({ data }: { data: GetMessageOutput }) => {
+  const addMessage = async ({ data }: { data: GetMessageOutput }) => {
     console.log(`data: ${JSON.stringify(data)}`);
-    console.log(`messageList: ${JSON.stringify(messageList)}`);
+    // console.log(`messageList: ${JSON.stringify(messageList)}`);
 
-    if (messageList) {
-      setMessageList([...messageList, data]);
-      console.log(
-        `messageList + data: ${JSON.stringify([...messageList, data])}`
-      );
-    } else {
-      setMessageList([data]);
+    // setMessageList([data, ...messageList]);
+    const findMessage = messageList.find((message) => message._id == data._id);
+    if (!findMessage) {
+      setMessageList((messageList) => [data, ...messageList]);
     }
+    // if (messageList) {
+    // } else {
+    //   await setMessageList([data]);
+    // }
   };
   // if (socketInstance.initStatus){
 
@@ -215,14 +212,14 @@ const GetMessageOfRoom = ({
           toPage,
           CONSTANT.MESSAGE_LIMIT
         );
-        if (messageList) {
-          await setMessageList([
-            ...messageList,
-            ...newMessage.data.data.messages,
-          ]);
-        } else {
-          await setMessageList([...newMessage.data.data.messages]);
-        }
+        await setMessageList([
+          ...messageList,
+          ...newMessage.data.data.messages,
+        ]);
+        // if (messageList) {
+        // } else {
+        //   await setMessageList([...newMessage.data.data.messages]);
+        // }
 
         document.getElementById(`top-page-${page - 1}`)?.scrollIntoView({
           behavior: "auto",
@@ -321,7 +318,7 @@ const detail = () => {
 
   const { id } = router.query;
 
-  const [messageList, setMessageList] = useState<GetMessageOutput[]>();
+  const [messageList, setMessageList] = useState<GetMessageOutput[]>([]);
   const [room, setRoom] = useState<GetRoomInfo>();
   const [secret, setSecret] = useState<string>("");
 
