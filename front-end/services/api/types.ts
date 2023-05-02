@@ -78,15 +78,24 @@ interface GetUserOutput {
 }
 
 interface GetPlaylistOutput {
+  _id: string;
   name: string;
   description: string;
-  id: string;
   audios: GetMarketOutput[];
   image: string;
   owner: string;
   created_at: Date;
   updated_at?: Date;
   deleted_at?: Date;
+}
+
+interface PlaylistInput {
+  id?: string;
+  name: string;
+  description: string;
+  audios: string[];
+  image: string;
+  owner: string;
 }
 
 interface GetMarketOutput {
@@ -144,4 +153,5 @@ export type {
   GetUserOutput,
   RentMarketInput,
   GetPlaylistOutput,
+  PlaylistInput,
 };

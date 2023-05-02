@@ -12,6 +12,7 @@ import {
   GetMarketOutput,
   GetUserOutput,
   RentMarketInput,
+  GetPlaylistOutput,
 } from "./types";
 type SuccessResponse<T> = {
   data: T;
@@ -175,6 +176,18 @@ const ApiServices = {
       }),
     uploadJson: (payload: any) =>
       AxiosPost<string>("/ipfs/upload-json", payload),
+  },
+  playlist: {
+    createPlaylist: (payload: any) =>
+      AxiosPost<GetPlaylistOutput>("/playlist/playlist", payload),
+    getPlaylist: (id: string) =>
+      AxiosGet<GetPlaylistOutput>("/playlist/playlist", {
+        params: {
+          id,
+        },
+      }),
+    getListPlaylist: () =>
+      AxiosGet<GetPlaylistOutput[]>("/playlist/list-playlist"),
   },
 };
 

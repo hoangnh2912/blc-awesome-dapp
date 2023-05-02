@@ -1,7 +1,7 @@
 import { Constant, logger, onError, onSuccess, OptionResponse } from '@constants';
 // import { SignatureMiddleware } from '@middlewares';
 import { Singleton } from '@providers';
-import { IUser } from '@schemas';
+import { IContract } from '@schemas';
 import {
   Body,
   Controller,
@@ -26,7 +26,7 @@ export class UserController extends Controller {
   public async createUser(
     @Request() request: any,
     @Body() payload: Omit<CreateUserInput, 'wallet_address'>,
-  ): Promise<OptionResponse<IUser>> {
+  ): Promise<OptionResponse<IContract>> {
     try {
       const address = request.headers.address;
 
@@ -44,7 +44,7 @@ export class UserController extends Controller {
   }
 
   @Get('get-user')
-  public async getUser(@Query() address: string): Promise<OptionResponse<IUser>> {
+  public async getUser(@Query() address: string): Promise<OptionResponse<IContract>> {
     try {
       return onSuccess(await Singleton.getUserInstance().getUser(`${address}`.toLowerCase()));
     } catch (error) {

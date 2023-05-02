@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-export interface IUser {
+export interface IContract {
   contract_address: string;
   owner_address: string;
   abi: any;
@@ -8,7 +8,7 @@ export interface IUser {
   deleted_at?: Date;
 }
 
-const contractSchema = new Schema<IUser>({
+const contractSchema = new Schema<IContract>({
   contract_address: { type: String, required: true, unique: true },
   owner_address: { type: String, required: true },
   abi: { type: Schema.Types.Mixed, required: true },

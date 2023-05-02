@@ -4,6 +4,7 @@ import { StealthServiceService } from '@app/stealth-address/stealth-address.serv
 import { TokenCreatorService } from '@app/token-creator/token-creator.service';
 import { UserService } from '@app/user/user.service';
 import { RentingService } from '@app/renting/renting.service';
+import { PlaylistService } from '@app/playlist/playlist.service';
 
 class Singleton {
   private static tokenCreatorInstance: TokenCreatorService;
@@ -12,6 +13,7 @@ class Singleton {
   private static musicInstance: MusicService;
   private static marketInstance: MarketService;
   private static rentingInstance: RentingService;
+  private static playlistInstance: PlaylistService;
 
   private constructor() {}
 
@@ -52,6 +54,12 @@ class Singleton {
       Singleton.rentingInstance = new RentingService();
     }
     return Singleton.rentingInstance;
+  }
+  public static getPlaylistInstance(): PlaylistService {
+    if (!Singleton.playlistInstance) {
+      Singleton.playlistInstance = new PlaylistService();
+    }
+    return Singleton.playlistInstance;
   }
 }
 
