@@ -65,6 +65,7 @@ import { useStoreActions, useStoreState } from "../services/redux/hook";
 import LinkScan from "./link-scan";
 import { useModalTransaction } from "./modal-transaction";
 import SongNFTSmallComponent from "./song-nft-small";
+import { GiUnicorn } from "react-icons/gi";
 
 export const ModalCheckConnect = () => {
   const setIsCheckConnectAction = useStoreActions(
@@ -217,7 +218,6 @@ export const ModalSignMessage = () => {
   const sdk = useSDK();
   const address = useAddress();
   const network = useActiveChain();
-  const setNetwork = useSwitchChain();
 
   const signMessage = async () => {
     if (sdk && address) {
@@ -670,7 +670,9 @@ const AppNav = ({ onOpen }: AppNavProps) => {
                 direction="row"
               >
                 <RiMoneyDollarCircleLine />
-                <Text fontFamily={"mono"}>{data?.displayValue} MUC</Text>
+                <Text fontFamily={"mono"}>
+                  {data?.displayValue.substring(0, 8)} MUC
+                </Text>
                 <Button
                   bg="#0D164D"
                   color="white"
@@ -682,6 +684,30 @@ const AppNav = ({ onOpen }: AppNavProps) => {
                 >
                   Faucet
                 </Button>
+              </Stack>
+              <Stack
+                p="4"
+                cursor="pointer"
+                borderTopWidth={1}
+                borderTopColor="rgba(0, 0, 0, 0.1)"
+                borderBottomColor="rgba(0, 0, 0, 0.1)"
+                borderBottomWidth={1}
+                _hover={{
+                  bg: "rgba(0, 0, 0, 0.1)",
+                }}
+                alignItems="center"
+                direction="row"
+                onClick={() => {
+                  window.open(
+                    `https://app.uniswap.org/#/swap?exactAmount=0.02&outputCurrency=${ABI_MUSIC.MUC.address}&inputCurrency=ETH`,
+                    "_blank"
+                  );
+                }}
+              >
+                <GiUnicorn color={"#FF007A"} />
+                <Text color={"#FF007A"} fontFamily={"mono"}>
+                  Get MUC on Uniswap
+                </Text>
               </Stack>
               <Stack
                 cursor="pointer"

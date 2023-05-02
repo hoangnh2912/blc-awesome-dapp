@@ -77,6 +77,18 @@ interface GetUserOutput {
   deleted_at?: Date;
 }
 
+interface GetPlaylistOutput {
+  name: string;
+  description: string;
+  id: string;
+  audios: GetMarketOutput[];
+  image: string;
+  owner: string;
+  created_at: Date;
+  updated_at?: Date;
+  deleted_at?: Date;
+}
+
 interface GetMarketOutput {
   name: string;
   amount: string;
@@ -131,4 +143,5 @@ export type {
   GetMarketOutput,
   GetUserOutput,
   RentMarketInput,
+  GetPlaylistOutput,
 };

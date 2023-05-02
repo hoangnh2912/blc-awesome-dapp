@@ -26,9 +26,7 @@ const Explore: NextPage = () => {
   return (
     <MusicBaseLayout selectTabIndex={0}>
       {data.map((item, index) => (
-        <div key={index}>
-          <ListMusicComponent data={item} />
-        </div>
+        <ListMusicComponent key={index} data={item} />
       ))}
     </MusicBaseLayout>
   );
