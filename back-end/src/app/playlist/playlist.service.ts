@@ -13,16 +13,18 @@ export class PlaylistService {
   }
 
   public async updateOrCreatePlaylist(payload: PlaylistInput) {
-    return await Playlist.findOneAndUpdate(
-      {
-        _id: payload.id,
-      },
-      (({ id, ...o }) => o)(payload),
-      {
-        upsert: true,
-        new: true,
-        setDefaultsOnInsert: true,
-      },
-    );
+    return payload.id
+      ? await Playlist.findOneAndUpdate(
+          {
+            _id: payload.id,
+          },
+          (({ id, ...o }) => o)(payload),
+          {
+            upsert: true,
+            new: true,
+            setDefaultsOnInsert: true,
+          },
+        )
+      : await Playlist.create((({ id, ...o }) => o)(payload));
   }
 }

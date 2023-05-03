@@ -27,9 +27,14 @@ const Playlist: NextPage = () => {
     (state) => state.user.setIsCheckConnect
   );
   const address = useAddress();
-  const { isOpen, onClose, onOpen } = useDisclosure();
-
+  const [playlistName, setPlaylistName] = useState<string>("");
   const [playlist, setPlaylist] = useState<GetPlaylistOutput[]>([]);
+  const { isOpen, onClose, onOpen } = useDisclosure({
+    onClose: () => {
+      setPlaylistName("");
+    },
+  });
+
   const checkIsConnect = () => {
     if (!address) {
       setIsCheckConnectAction({
@@ -48,6 +53,19 @@ const Playlist: NextPage = () => {
       setPlaylist(playlistRes.data.data);
     } catch (error: any) {
       console.log(`[getMyPlaylist]:${error.message}`);
+    }
+  };
+
+  const createPlaylist = async () => {
+    if (!address) return;
+    try {
+      await ApiServices.playlist.createPlaylist({
+        name: playlistName,
+      });
+      onClose();
+      getMyPlaylist();
+    } catch (error: any) {
+      console.log(`[createPlaylist]:${error.message}`);
     }
   };
 
@@ -80,8 +98,8 @@ const Playlist: NextPage = () => {
             </Text>
             <Input
               mt={"1.5rem"}
-              value={""}
-              // onChange={(e) => setTitle(e.target.value)}
+              value={playlistName}
+              onChange={(e) => setPlaylistName(e.target.value)}
               borderRadius="30"
               borderColor="gray.300"
               placeholder="Enter name of playlist"
@@ -110,6 +128,7 @@ const Playlist: NextPage = () => {
               bg={"#3443A0"}
               color={"#fcae00"}
               ml={"5%"}
+              onClick={createPlaylist}
               mr={"5%"}
             >
               Save
@@ -118,11 +137,15 @@ const Playlist: NextPage = () => {
         </ModalContent>
       </Modal>
       <Stack>
-        <HStack justifyContent={"space-between"}>
+        <Stack
+          direction={["column", "column", "row"]}
+          justifyContent={"space-between"}
+        >
           <Text
             fontFamily="mono"
             fontWeight="bold"
             fontSize={"24"}
+            alignSelf={["center"]}
             color="white"
           >
             Playlist
@@ -137,7 +160,7 @@ const Playlist: NextPage = () => {
           >
             Create Playlist
           </Button>
-        </HStack>
+        </Stack>
         <SimpleGrid columns={[1, 2, 2, 2, 4]} gap={5}>
           {playlist.map((item, index) => (
             <PlaylistItemComponent key={index} {...item} />

@@ -13,6 +13,7 @@ import {
   GetUserOutput,
   RentMarketInput,
   GetPlaylistOutput,
+  PlaylistInput,
 } from "./types";
 type SuccessResponse<T> = {
   data: T;
@@ -178,7 +179,7 @@ const ApiServices = {
       AxiosPost<string>("/ipfs/upload-json", payload),
   },
   playlist: {
-    createPlaylist: (payload: any) =>
+    createPlaylist: (payload: PlaylistInput) =>
       AxiosPost<GetPlaylistOutput>("/playlist/playlist", payload),
     getPlaylist: (id: string) =>
       AxiosGet<GetPlaylistOutput>("/playlist/playlist", {

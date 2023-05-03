@@ -92,10 +92,9 @@ interface GetPlaylistOutput {
 interface PlaylistInput {
   id?: string;
   name: string;
-  description: string;
-  audios: string[];
-  image: string;
-  owner: string;
+  description?: string;
+  audios?: string[];
+  image?: string;
 }
 
 interface GetMarketOutput {

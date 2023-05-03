@@ -1,9 +1,10 @@
-import { Box, Image, Stack, Text } from "@chakra-ui/react";
+import { Box, HStack, Image, Stack, Text, VStack } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { FaPlay } from "react-icons/fa";
 import { TiMediaPause } from "react-icons/ti";
 import { GetMarketOutput, GetPlaylistOutput } from "../services/api/types";
 import { useStoreActions, useStoreState } from "../services/redux/hook";
+import { EMPTY_PLAYLIST_IMAGE } from "../constants/constants";
 
 const PlaylistItemComponent = (props: GetPlaylistOutput) => {
   const { image, name, audios } = props;
@@ -20,12 +21,18 @@ const PlaylistItemComponent = (props: GetPlaylistOutput) => {
 
   const router = useRouter();
 
+  const openPlaylistDetail = (id: string) => {
+    router.push(`/music/playlist/${id}`, undefined, { shallow: true });
+  };
+
   return (
     <Box
       w={["full"]}
+      maxW={["250px"]}
       boxShadow="lg"
       borderRadius="lg"
       shadow="2xl"
+      onClick={() => openPlaylistDetail(props._id)}
       overflow="hidden"
       style={{
         boxShadow: "5px 5px 5px 5px rgba(0,0,0,0.15)",
@@ -40,23 +47,29 @@ const PlaylistItemComponent = (props: GetPlaylistOutput) => {
         h={["200px"]}
         fit="cover"
         cursor="pointer"
-        src={image}
+        src={image || `${EMPTY_PLAYLIST_IMAGE}`}
       />
       <Box
-        backgroundImage={`url(${image})`}
+        backgroundImage={`url(${image || `${EMPTY_PLAYLIST_IMAGE}`})`}
         backgroundSize="cover"
         backgroundColor="transparent"
       >
-        <Stack
+        <HStack
           p="3"
+          justifyContent={["space-between"]}
           zIndex="0"
           bgGradient="linear(rgba(0,0,0,0.6), transparent)"
           backdropFilter="auto"
           backdropBlur="1rem"
         >
-          <Text cursor="pointer" fontWeight="bold" color="white">
-            {name}
-          </Text>
+          <Stack>
+            <Text cursor="pointer" fontWeight="bold" color="white">
+              {name}
+            </Text>
+            <Text cursor="pointer" fontWeight="bold" color="white">
+              {audios.length} songs
+            </Text>
+          </Stack>
           <Stack
             alignItems="center"
             justifyContent="space-between"
@@ -64,13 +77,13 @@ const PlaylistItemComponent = (props: GetPlaylistOutput) => {
           >
             <Box
               w="40px"
-              cursor="pointer"
+              cursor={audios.length > 0 ? "pointer" : "not-allowed"}
               h="40px"
               borderRadius="full"
               justifyContent="center"
               alignItems="center"
               display="flex"
-              backgroundColor="white"
+              backgroundColor={audios.length > 0 ? "white" : "gray.500"}
               _hover={{
                 backgroundColor: "gray.300",
               }}
@@ -82,7 +95,7 @@ const PlaylistItemComponent = (props: GetPlaylistOutput) => {
               )}
             </Box>
           </Stack>
-        </Stack>
+        </HStack>
       </Box>
     </Box>
   );

@@ -274,13 +274,7 @@ const Music = ({ music }: { music: GetMarketOutput }) => {
         Transaction History
       </Text>
       <TableContainer>
-        <Table
-          display={{
-            base: "none",
-            md: "table",
-          }}
-          variant="simple"
-        >
+        <Table variant="simple">
           <Thead>
             <Tr>
               <Th
@@ -289,7 +283,7 @@ const Music = ({ music }: { music: GetMarketOutput }) => {
                 fontSize="16"
                 color="#fcae00"
               >
-                Date
+                Event
               </Th>
               <Th
                 fontFamily="mono"
@@ -307,15 +301,15 @@ const Music = ({ music }: { music: GetMarketOutput }) => {
               >
                 To
               </Th>
+
               <Th
                 fontFamily="mono"
                 fontWeight="bold"
                 fontSize="16"
                 color="#fcae00"
               >
-                Event
+                Date
               </Th>
-              <Th></Th>
             </Tr>
           </Thead>
           <Tbody>
@@ -338,10 +332,10 @@ const Music = ({ music }: { music: GetMarketOutput }) => {
                 fontSize="16"
                 color="white"
               >
-                <Td>{new Date(item.created_at).toDateString()}</Td>
+                <Td>{item.event}</Td>
                 <Td>{item.from}</Td>
                 <Td>{item.to}</Td>
-                <Td>{item.event}</Td>
+                <Td>{new Date(item.created_at).toDateString()}</Td>
               </Tr>
             ))}
           </Tbody>
