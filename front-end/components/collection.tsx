@@ -43,7 +43,6 @@ const Collection = ({
   setTotalCollection: any;
 }) => {
   const playMusicAction = useStoreActions((state) => state.music.playMusic);
-
   const currentSongState = useStoreState((state) => state.music.currentSong);
   const isPlayingState = useStoreState((state) => state.music.isPlaying);
   const [collection, setCollection] = useState<GetMarketOutput[]>([]);
@@ -221,12 +220,7 @@ const Collection = ({
                 </PaginationPrevious>
               )}
               <PaginationPageGroup
-                separator={
-                  <PaginationSeparator
-                    onClick={() => console.warn("I'm clicking the separator")}
-                    bg="white"
-                  />
-                }
+                separator={<PaginationSeparator bg="white" />}
                 gap={1}
               >
                 {pages.map((page: number) => (

@@ -1,4 +1,5 @@
 import {
+  HStack,
   Image,
   Stack,
   Table,
@@ -11,11 +12,22 @@ import {
   Tr,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import MusicBaseLayout from "../../../layouts/music.base";
 import ApiServices from "../../../services/api";
-import { GetPlaylistOutput } from "../../../services/api/types";
+import {
+  GetMarketOutput,
+  GetPlaylistOutput,
+} from "../../../services/api/types";
 import { EMPTY_PLAYLIST_IMAGE } from "../../../constants/constants";
+import { usePagination } from "@ajna/pagination";
+import { useAddress } from "@thirdweb-dev/react";
+import { FaPlay } from "react-icons/fa";
+import { IoAdd } from "react-icons/io5";
+import { MdRemove } from "react-icons/md";
+import { useMusicIsPlayingView } from "../../../hooks/music";
+import { BsPauseFill } from "react-icons/bs";
+import { useStoreActions, useStoreState } from "../../../services/redux/hook";
 
 const getPlaylist = async (id: string) => {
   try {
@@ -25,7 +37,9 @@ const getPlaylist = async (id: string) => {
       playlist: res.data.data,
     };
   } catch (error: any) {
-    console.log(`[PlaylistDetail.getInitialProps]:${error.message}`);
+    console.log(
+      `[PlaylistDetail.getInitialProps.getPlaylist]:${error.message}`
+    );
   }
   return { playlist: null };
 };
@@ -33,8 +47,45 @@ const getPlaylist = async (id: string) => {
 const PlaylistDetail = ({ playlist }: { playlist: GetPlaylistOutput }) => {
   const router = useRouter();
   const { id } = router.query;
+  const [collection, setCollection] = useState<GetMarketOutput[]>([]);
+  const address = useAddress();
+  const playMusicAction = useStoreActions((state) => state.music.playMusic);
+  const currentSongState = useStoreState((state) => state.music.currentSong);
+  const isPlayingState = useStoreState((state) => state.music.isPlaying);
+  const [total, setTotal] = useState(0);
+  const { currentPage, setCurrentPage, pagesCount, pages } = usePagination({
+    total,
+    initialState: {
+      currentPage: 1,
+      pageSize: 24,
+    },
+    limits: {
+      inner: 1,
+      outer: 1,
+    },
+  });
 
-  useEffect(() => {}, [id]);
+  const getCollection = async () => {
+    if (address) {
+      try {
+        const resStudio = await ApiServices.music.getMyCollection(currentPage);
+        setCollection(resStudio.data.data);
+        setTotal(resStudio.data.total);
+      } catch (error) {}
+    }
+  };
+
+  useEffect(() => {
+    getCollection();
+  }, []);
+
+  const isPlayView = useMusicIsPlayingView({
+    pauseComponent: <BsPauseFill size={"25px"} />,
+    playComponent: <FaPlay size={"25px"} />,
+    playMusicAction,
+    currentSongState,
+    isPlayingState,
+  });
 
   if (!playlist)
     return (
@@ -74,6 +125,7 @@ const PlaylistDetail = ({ playlist }: { playlist: GetPlaylistOutput }) => {
                   <Th fontFamily="mono" fontSize="16" color="white">
                     Time
                   </Th>
+                  <Th fontFamily="mono" fontSize="16" color="white"></Th>
                 </Tr>
               </Thead>
               <Tbody>
@@ -91,10 +143,40 @@ const PlaylistDetail = ({ playlist }: { playlist: GetPlaylistOutput }) => {
                     fontSize="16"
                     color="white"
                   >
-                    <Td>{item.name}</Td>
+                    <Td
+                      cursor="pointer"
+                      onClick={() => {
+                        router.push(`/music/${item.id}`);
+                      }}
+                      display="flex"
+                      alignItems="center"
+                      gap={3}
+                    >
+                      <Image
+                        _hover={{
+                          transform: "scale(1.2)",
+                        }}
+                        transition="all 0.3s ease-in-out"
+                        w={["50px"]}
+                        fit="cover"
+                        style={{
+                          aspectRatio: "1/1",
+                        }}
+                        borderRadius="lg"
+                        cursor="pointer"
+                        src={item.image}
+                      />
+                      {item.name}
+                    </Td>
                     <Td>
                       {Math.floor(item.duration / 60)}:
                       {Math.round(item.duration % 60)}
+                    </Td>
+                    <Td>
+                      <HStack gap={2}>
+                        {isPlayView(item)}
+                        <MdRemove cursor={"pointer"} size={"35px"} />
+                      </HStack>
                     </Td>
                   </Tr>
                 ))}
@@ -117,10 +199,11 @@ const PlaylistDetail = ({ playlist }: { playlist: GetPlaylistOutput }) => {
                 <Th fontFamily="mono" fontSize="16" color="white">
                   Time
                 </Th>
+                <Th fontFamily="mono" fontSize="16" color="white"></Th>
               </Tr>
             </Thead>
             <Tbody>
-              {playlist.audios.map((item, idx) => (
+              {collection.map((item, idx) => (
                 <Tr
                   fontFamily="mono"
                   fontWeight="bold"
@@ -134,10 +217,40 @@ const PlaylistDetail = ({ playlist }: { playlist: GetPlaylistOutput }) => {
                   fontSize="16"
                   color="white"
                 >
-                  <Td>{item.name}</Td>
+                  <Td
+                    cursor="pointer"
+                    onClick={() => {
+                      router.push(`/music/${item.id}`);
+                    }}
+                    display="flex"
+                    alignItems="center"
+                    gap={3}
+                  >
+                    <Image
+                      _hover={{
+                        transform: "scale(1.2)",
+                      }}
+                      transition="all 0.3s ease-in-out"
+                      w={["50px"]}
+                      fit="cover"
+                      style={{
+                        aspectRatio: "1/1",
+                      }}
+                      borderRadius="lg"
+                      cursor="pointer"
+                      src={item.image}
+                    />
+                    {item.name}
+                  </Td>
                   <Td>
                     {Math.floor(item.duration / 60)}:
                     {Math.round(item.duration % 60)}
+                  </Td>
+                  <Td>
+                    <HStack gap={2}>
+                      {isPlayView(item)}
+                      <IoAdd cursor={"pointer"} size={"35px"} />
+                    </HStack>
                   </Td>
                 </Tr>
               ))}

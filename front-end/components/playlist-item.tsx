@@ -28,7 +28,6 @@ const PlaylistItemComponent = (props: GetPlaylistOutput) => {
   return (
     <Box
       w={["full"]}
-      maxW={["250px"]}
       boxShadow="lg"
       borderRadius="lg"
       shadow="2xl"
