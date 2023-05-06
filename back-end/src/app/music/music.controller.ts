@@ -15,6 +15,7 @@ export class MusicController extends Controller {
     @Request() request: any,
     @Query() page: number = 1,
     @Query() limit: number = 24,
+    @Query() search: string = '',
   ): Promise<OptionResponse<IMarket[]>> {
     try {
       const address = request.headers['address'];
@@ -22,6 +23,7 @@ export class MusicController extends Controller {
         `${address}`,
         page,
         limit,
+        search,
       );
       return onSuccess(music, total);
     } catch (error) {

@@ -135,11 +135,16 @@ const ApiServices = {
           id,
         },
       }),
-    getMyCollection: (page: number = 1, limit: number = 24) =>
+    getMyCollection: (
+      page: number = 1,
+      limit: number = 24,
+      search: string = ""
+    ) =>
       AxiosGet<GetMarketOutput[]>("/music/list-song", {
         params: {
           page,
           limit,
+          search,
         },
       }),
     getMyMarket: (address: string, page: number = 1, limit: number = 24) =>

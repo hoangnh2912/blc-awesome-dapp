@@ -41,6 +41,9 @@ const store = createStore<StoreModel>({
       if (!state.playList.find((item) => item.id === payload.id))
         state.playList.push(payload);
     }),
+    addListToPlayList: action((state, payload) => {
+      state.playList = payload;
+    }),
     removeFromPlayList: action((state, payload) => {
       state.playList = state.playList.filter((item) => item.id !== payload.id);
     }),

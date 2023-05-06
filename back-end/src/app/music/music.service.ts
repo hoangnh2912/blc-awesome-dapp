@@ -114,7 +114,12 @@ export class MusicService {
     );
   }
 
-  public async getListSong(wallet_address: string, page: number = 1, limit: number = 24) {
+  public async getListSong(
+    wallet_address: string,
+    page: number = 1,
+    limit: number = 24,
+    search: string = '',
+  ) {
     const user = await User.findOne({ wallet_address });
     if (!user)
       return {
@@ -124,6 +129,7 @@ export class MusicService {
     const ids = user.ids;
     const query = {
       id: { $in: ids },
+      name: { $regex: search, $options: 'i' },
     };
     const listMarket = await Market.find(
       query,

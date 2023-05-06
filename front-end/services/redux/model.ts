@@ -12,6 +12,7 @@ interface Music {
   setIsPlaying: Action<Music, boolean>;
   playList: GetMarketOutput[];
   addToPlayList: Action<Music, GetMarketOutput>;
+  addListToPlayList: Action<Music, GetMarketOutput[]>;
   removeFromPlayList: Action<Music, GetMarketOutput>;
   playNext: Action<Music>;
   playPrevious: Action<Music>;

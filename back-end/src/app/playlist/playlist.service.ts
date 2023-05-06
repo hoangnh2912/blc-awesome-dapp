@@ -1,15 +1,46 @@
 import { Playlist } from '@schemas';
 import { PlaylistInput } from './playlist';
+import { ObjectId } from 'mongodb';
 
 export class PlaylistService {
   public async getListPlaylist(address: string) {
-    return await Playlist.find({
-      owner: address,
-    });
+    return await Playlist.aggregate([
+      {
+        $match: {
+          owner: address,
+        },
+      },
+      {
+        $lookup: {
+          from: 'markets',
+          localField: 'audios',
+          foreignField: 'id',
+          as: 'audios',
+        },
+      },
+    ]);
   }
 
   public async getPlaylistDetail(id: string) {
-    return await Playlist.findOne({ _id: id });
+    const playlist = await Playlist.aggregate([
+      {
+        $match: {
+          _id: new ObjectId(id),
+        },
+      },
+      {
+        $lookup: {
+          from: 'markets',
+          localField: 'audios',
+          foreignField: 'id',
+          as: 'audios',
+        },
+      },
+    ]);
+    if (playlist.length > 0) {
+      return playlist[0];
+    }
+    return null;
   }
 
   public async updateOrCreatePlaylist(payload: PlaylistInput) {

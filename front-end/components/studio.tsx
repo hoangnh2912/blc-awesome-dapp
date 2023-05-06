@@ -34,6 +34,7 @@ import { useEffect, useState } from "react";
 import ApiServices from "../services/api";
 import { GiShoppingCart } from "react-icons/gi";
 import { useAddress } from "@thirdweb-dev/react";
+import PaginationComponent from "./Pagination";
 const Studio = ({
   address,
   setTotalStudio,
@@ -50,7 +51,7 @@ const Studio = ({
   const isPlayingState = useStoreState((state) => state.music.isPlaying);
   const [studio, setStudio] = useState<GetMarketOutput[]>([]);
   const [total, setTotal] = useState(0);
-  const { currentPage, setCurrentPage, pagesCount, pages } = usePagination({
+  const pagination = usePagination({
     total,
     initialState: {
       currentPage: 1,
@@ -61,6 +62,8 @@ const Studio = ({
       outer: 1,
     },
   });
+
+  const { currentPage } = pagination;
 
   const getData = async () => {
     if (address) {
@@ -214,53 +217,7 @@ const Studio = ({
           <SongNFTSmallComponent {...item} key={idx} />
         ))}
       </Stack>
-      <Center mt={"10"}>
-        {pagesCount > 1 && (
-          <Pagination
-            pagesCount={pagesCount}
-            currentPage={currentPage}
-            onPageChange={setCurrentPage}
-          >
-            <PaginationContainer gap={2}>
-              {currentPage > 1 && (
-                <PaginationPrevious>
-                  <GrFormPrevious />
-                </PaginationPrevious>
-              )}
-              <PaginationPageGroup
-                separator={
-                  <PaginationSeparator
-                    onClick={() => console.warn("I'm clicking the separator")}
-                    bg="white"
-                  />
-                }
-                gap={1}
-              >
-                {pages.map((page: number) => (
-                  <PaginationPage
-                    _hover={{
-                      bg: "#fcae00",
-                    }}
-                    w={["30px"]}
-                    bg={page === currentPage ? "#fcae00" : "white"}
-                    key={`pagination_page_${page}`}
-                    page={page}
-                    _current={{
-                      bg: "#fcae00",
-                      color: "white",
-                    }}
-                  />
-                ))}
-              </PaginationPageGroup>
-              {currentPage < pagesCount && (
-                <PaginationNext>
-                  <GrFormNext />
-                </PaginationNext>
-              )}
-            </PaginationContainer>
-          </Pagination>
-        )}
-      </Center>
+      <PaginationComponent pagination={pagination} />
     </>
   );
 };

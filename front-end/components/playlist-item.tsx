@@ -1,23 +1,16 @@
-import { Box, HStack, Image, Stack, Text, VStack } from "@chakra-ui/react";
+import { Box, HStack, Image, Stack, Text } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { FaPlay } from "react-icons/fa";
-import { TiMediaPause } from "react-icons/ti";
-import { GetMarketOutput, GetPlaylistOutput } from "../services/api/types";
-import { useStoreActions, useStoreState } from "../services/redux/hook";
 import { EMPTY_PLAYLIST_IMAGE } from "../constants/constants";
+import { GetPlaylistOutput } from "../services/api/types";
+import { useStoreActions } from "../services/redux/hook";
 
 const PlaylistItemComponent = (props: GetPlaylistOutput) => {
   const { image, name, audios } = props;
   const playMusicAction = useStoreActions((state) => state.music.playMusic);
-  const addToPlayListAction = useStoreActions(
-    (state) => state.music.addToPlayList
+  const addListToPlayListAction = useStoreActions(
+    (state) => state.music.addListToPlayList
   );
-  const currentSongState = useStoreState((state) => state.music.currentSong);
-  const isPlayingState = useStoreState((state) => state.music.isPlaying);
-
-  const onPlayMusic = (audio: GetMarketOutput) => {
-    playMusicAction(audio);
-  };
 
   const router = useRouter();
 
@@ -31,7 +24,6 @@ const PlaylistItemComponent = (props: GetPlaylistOutput) => {
       boxShadow="lg"
       borderRadius="lg"
       shadow="2xl"
-      onClick={() => openPlaylistDetail(props._id)}
       overflow="hidden"
       style={{
         boxShadow: "5px 5px 5px 5px rgba(0,0,0,0.15)",
@@ -47,6 +39,7 @@ const PlaylistItemComponent = (props: GetPlaylistOutput) => {
         fit="cover"
         cursor="pointer"
         src={image || `${EMPTY_PLAYLIST_IMAGE}`}
+        onClick={() => openPlaylistDetail(props._id)}
       />
       <Box
         backgroundImage={`url(${image || `${EMPTY_PLAYLIST_IMAGE}`})`}
@@ -61,7 +54,7 @@ const PlaylistItemComponent = (props: GetPlaylistOutput) => {
           backdropFilter="auto"
           backdropBlur="1rem"
         >
-          <Stack>
+          <Stack onClick={() => openPlaylistDetail(props._id)}>
             <Text cursor="pointer" fontWeight="bold" color="white">
               {name}
             </Text>
@@ -78,6 +71,11 @@ const PlaylistItemComponent = (props: GetPlaylistOutput) => {
               w="40px"
               cursor={audios.length > 0 ? "pointer" : "not-allowed"}
               h="40px"
+              onClick={() => {
+                if (audios.length === 0) return;
+                addListToPlayListAction(audios);
+                playMusicAction(audios[0]);
+              }}
               borderRadius="full"
               justifyContent="center"
               alignItems="center"
@@ -87,11 +85,7 @@ const PlaylistItemComponent = (props: GetPlaylistOutput) => {
                 backgroundColor: "gray.300",
               }}
             >
-              {isPlayingState && currentSongState?.audio ? (
-                <TiMediaPause size="20px" color="black" />
-              ) : (
-                <FaPlay size="10px" color="black" />
-              )}
+              <FaPlay size="10px" color="black" />
             </Box>
           </Stack>
         </HStack>
