@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "deploy": "scp -i ~/.ssh/scimta.pem -r .next ubuntu@165.232.170.40:/home/ubuntu/blc-awesome-dapp/front-end",
+    "deploy": "rsync -Pa -e \"ssh -i ~/.ssh/scimta.pem\" .next ubuntu@165.232.170.40:/home/ubuntu/blc-awesome-dapp/front-end",
     "start": "next start -H 0.0.0.0 -p 8080",
     "lint": "next lint",
     "format": "yarn prettier --write ."
