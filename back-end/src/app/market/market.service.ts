@@ -3,6 +3,80 @@ import { MarketContract, readCID } from '@providers';
 import { Market, User } from '@schemas';
 
 export class MarketService {
+  public async getTopSeller() {
+    const mostSold = await Market.aggregate([
+      {
+        $match: {
+          'history.event': 'buy',
+        },
+      },
+      {
+        $unwind: '$history',
+      },
+      {
+        $match: {
+          'history.event': 'buy',
+        },
+      },
+      {
+        $project: {
+          history: 0,
+        },
+      },
+      {
+        $group: {
+          _id: '$id',
+          count: {
+            $sum: 1,
+          },
+        },
+      },
+      {
+        $sort: {
+          count: -1,
+        },
+      },
+      {
+        $lookup: { from: 'markets', localField: '_id', foreignField: 'id', as: 'data' },
+      },
+      {
+        $project: {
+          data: {
+            $arrayElemAt: ['$data', 0],
+          },
+          count: 1,
+        },
+      },
+    ]);
+
+    const mostPlayed = await Market.aggregate([
+      {
+        $sort: {
+          play_count: -1,
+        },
+      },
+      {
+        $limit: 10,
+      },
+    ]);
+    const mostViewed = await Market.aggregate([
+      {
+        $sort: {
+          view_count: -1,
+        },
+      },
+      {
+        $limit: 10,
+      },
+    ]);
+
+    return {
+      most_sold: mostSold,
+      most_played: mostPlayed,
+      most_viewed: mostViewed,
+    };
+  }
+
   public async listSong(
     id: string,
     seller: string,

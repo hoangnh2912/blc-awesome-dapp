@@ -139,7 +139,7 @@ const SongNFTComponent = (props: GetMarketOutput) => {
                 borderWidth="2px"
                 letterSpacing="widest"
               >
-                Add to playlist
+                Add to next play
               </Text>
             )}
             <Box

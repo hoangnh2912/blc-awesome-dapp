@@ -69,7 +69,7 @@ const StealthAddress: NextPage = () => {
           }
         }
       } catch (error) {
-        console.log("getPublicKey", error);
+        console.error(`[stealth-address][getPublicKey]`, error);
       } finally {
         setLoading.off();
       }
@@ -95,7 +95,7 @@ const StealthAddress: NextPage = () => {
         setPrivKey(privateKey);
         await ApiServices.stealthAddress.submitPrivateKey(privateKey, address);
       } catch (error) {
-        console.log("generateKeyPair", error);
+        console.error(`[stealth-address][generateKeyPair]`, error);
       } finally {
         getPublicKey();
       }
@@ -211,7 +211,10 @@ const StealthAddress: NextPage = () => {
           position: "top-right",
         });
       } catch (error) {
-        console.log(error);
+        console.error(
+          `[stealth-address][getPrivateKeyOfStealthAddress]`,
+          error
+        );
       }
     }
   };

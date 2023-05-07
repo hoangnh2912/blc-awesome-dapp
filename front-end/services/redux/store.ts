@@ -1,5 +1,6 @@
 import { createStore, action } from "easy-peasy";
 import StoreModel from "./model";
+import ApiServices from "../api";
 
 const store = createStore<StoreModel>({
   music: {
@@ -17,6 +18,10 @@ const store = createStore<StoreModel>({
           state.audio.audio.current.play();
         }
       } else {
+        ApiServices.music.playMusic(payload.id).catch((error) => {
+          console.error(`[Music][${payload.id}][playMusic] ${error.message}`);
+        });
+
         state.currentSong = payload;
         if (
           payload.id &&

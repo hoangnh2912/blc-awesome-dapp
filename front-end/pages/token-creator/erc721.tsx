@@ -116,7 +116,7 @@ const Erc721 = () => {
       } finally {
       }
     } catch (error) {
-      console.log(error);
+      console.error(`[erc721][deployToken]`, error);
     }
   };
 

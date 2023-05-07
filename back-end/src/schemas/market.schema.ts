@@ -25,6 +25,8 @@ export interface IMarket {
   duration: number;
   bitrate: number;
   search_key: string;
+  play_count: number;
+  view_count: number;
   created_at: Date;
   updated_at?: Date;
   deleted_at?: Date;
@@ -42,6 +44,8 @@ const marketSchema = new Schema<IMarket>({
   singer: { required: true, type: String },
   seller: { required: true, type: String },
   duration: { required: true, type: Number },
+  play_count: { required: false, type: Number, default: 0 },
+  view_count: { required: false, type: Number, default: 0 },
   bitrate: { required: true, type: Number },
   search_key: { required: true, type: String },
   attributes: { required: true, type: Schema.Types.Mixed, default: [] },

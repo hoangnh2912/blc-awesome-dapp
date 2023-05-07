@@ -97,6 +97,21 @@ interface PlaylistInput {
   image?: string;
 }
 
+interface GetTopMarketOutput {
+  most_sold: {
+    _id: string;
+    count: number;
+    data: GetMarketOutput;
+  }[];
+  most_viewed: GetMarketOutput[];
+  most_played: GetMarketOutput[];
+}
+
+interface GetHomeMarketOutput {
+  data: GetMarketOutput[];
+  genre: string;
+}
+
 interface GetMarketOutput {
   name: string;
   amount: string;
@@ -124,6 +139,8 @@ interface GetMarketOutput {
   }[];
   duration: number;
   bitrate: number;
+  play_count: number;
+  view_count: number;
   created_at: Date;
   updated_at?: Date;
   deleted_at?: Date;
@@ -153,4 +170,6 @@ export type {
   RentMarketInput,
   GetPlaylistOutput,
   PlaylistInput,
+  GetTopMarketOutput,
+  GetHomeMarketOutput,
 };

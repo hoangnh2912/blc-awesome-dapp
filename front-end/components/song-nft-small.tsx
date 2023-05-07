@@ -45,6 +45,7 @@ const SongNFTSmallComponent = ({
       w={["full"]}
       shadow="2xl"
       overflow="hidden"
+      borderRadius={"5px"}
       style={{
         boxShadow: "5px 5px 5px 5px rgba(0,0,0,0.15)",
       }}
@@ -87,7 +88,7 @@ const SongNFTSmallComponent = ({
                 textOverflow="ellipsis"
                 overflow="hidden"
                 whiteSpace="nowrap"
-                maxWidth="45vw"
+                maxWidth="60vw"
                 fontSize="sm"
               >
                 {name}

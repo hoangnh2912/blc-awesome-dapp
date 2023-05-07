@@ -14,6 +14,8 @@ import {
   RentMarketInput,
   GetPlaylistOutput,
   PlaylistInput,
+  GetTopMarketOutput,
+  GetHomeMarketOutput,
 } from "./types";
 type SuccessResponse<T> = {
   data: T;
@@ -108,13 +110,7 @@ const ApiServices = {
       ),
   },
   music: {
-    getHomeMarket: () =>
-      AxiosGet<
-        {
-          data: GetMarketOutput[];
-          genre: string;
-        }[]
-      >("/market/home-market"),
+    getHomeMarket: () => AxiosGet<GetHomeMarketOutput[]>("/market/home-market"),
     getListMarket: (
       search: string = "",
       page: number = 1,
@@ -156,6 +152,15 @@ const ApiServices = {
         },
       }),
     getNextId: () => AxiosGet<number>("/market/next-id"),
+    getTopMarket: () => AxiosGet<GetTopMarketOutput>("/market/top-market"),
+    viewMusic: (id: string) =>
+      AxiosPost<boolean>("/music/view-song", {
+        id,
+      }),
+    playMusic: (id: string) =>
+      AxiosPost<boolean>("/music/play-song", {
+        id,
+      }),
   },
   renting: {
     erc4907: (payload: ERC721Input) =>

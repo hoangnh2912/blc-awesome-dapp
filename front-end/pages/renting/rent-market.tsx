@@ -109,7 +109,7 @@ const RentMarket = () => {
       } finally {
       }
     } catch (error) {
-      console.log(error);
+      console.error(`[rent-market][deployToken]`, error);
     }
   };
   const onChangeCheckBoxAccessControl = () => {

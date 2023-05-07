@@ -13,6 +13,7 @@ import AudioLayout from "../layouts/_audio";
 import store from "../services/redux/store";
 import "../styles/globals.css";
 import "../styles/h5audio.css";
+import ErrorBoundary from "../layouts/error-boundary";
 
 function App({ Component, pageProps }: AppProps) {
   return (
@@ -23,9 +24,11 @@ function App({ Component, pageProps }: AppProps) {
             activeChain={Mumbai}
             supportedWallets={[metamaskWallet(), walletConnect()]}
           >
-            <ModalTransactionProvider>
-              <Component {...pageProps} />
-            </ModalTransactionProvider>
+            <ErrorBoundary>
+              <ModalTransactionProvider>
+                <Component {...pageProps} />
+              </ModalTransactionProvider>
+            </ErrorBoundary>
           </ThirdwebProvider>
         </AudioLayout>
       </ChakraProvider>

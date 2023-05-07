@@ -26,6 +26,17 @@ export class MarketController extends Controller {
     }
   }
 
+  @Get('top-market')
+  public async getTopSeller(): Promise<OptionResponse<IMarket[]>> {
+    try {
+      return onSuccess(await Singleton.getMarketInstance().getTopSeller());
+    } catch (error) {
+      logger.error(error);
+      this.setStatus(NETWORK_STATUS_CODE.INTERNAL_SERVER_ERROR);
+      return onError(NETWORK_STATUS_MESSAGE.INTERNAL_SERVER_ERROR);
+    }
+  }
+
   @Get('home-market')
   public async getHomeMarket(): Promise<OptionResponse<IMarket[]>> {
     try {

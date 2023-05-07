@@ -66,7 +66,7 @@ const PlaylistDetail = () => {
       const res = await ApiServices.playlist.getPlaylist(id as string);
       setPlaylist(res.data.data);
     } catch (error: any) {
-      console.log(`[PlaylistDetail.getPlaylist]:${error.message}`);
+      console.error(`[PlaylistDetail][${id}][getPlaylist]`, error);
     }
   };
 
@@ -85,7 +85,7 @@ const PlaylistDetail = () => {
         setCollection(data);
         setTotal(data.length);
       } catch (error: any) {
-        console.log(`[PlaylistDetail.getCollection]:${error.message}`);
+        console.error(`[PlaylistDetail][${id}][getCollection]`, error);
       }
     }
   };

@@ -113,7 +113,7 @@ const Erc721Renting = () => {
       } finally {
       }
     } catch (error) {
-      console.log(error);
+      console.error(`[erc721-renting][deployToken]`, error);
     }
   };
   const onChangeCheckBoxAccessControl = () => {

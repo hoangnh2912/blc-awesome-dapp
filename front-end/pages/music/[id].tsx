@@ -26,6 +26,7 @@ import MusicBaseLayout from "../../layouts/music.base";
 import ApiServices from "../../services/api";
 import { GetMarketOutput } from "../../services/api/types";
 import { useStoreActions, useStoreState } from "../../services/redux/hook";
+import { ZERO_ADDRESS } from "../../constants/constants";
 
 const Music = ({ music }: { music: GetMarketOutput }) => {
   const router = useRouter();
@@ -41,7 +42,7 @@ const Music = ({ music }: { music: GetMarketOutput }) => {
   const sdk = useSDK();
   const { onBuy } = useBuyMusic();
 
-  const getBalance = async () => {
+  const checkOwnerNFT = async () => {
     if (!id) return;
     if (!sdk) return;
     if (!currentAddress) return;
@@ -58,8 +59,20 @@ const Music = ({ music }: { music: GetMarketOutput }) => {
     }
   };
 
+  const viewMusic = async () => {
+    try {
+      await ApiServices.music.viewMusic(id as string);
+    } catch (error: any) {
+      console.error(`[Music][${id}][viewMusic] ${error.message}`);
+    }
+  };
+
   useEffect(() => {
-    getBalance();
+    viewMusic();
+  }, []);
+
+  useEffect(() => {
+    checkOwnerNFT();
   }, [id, sdk, currentAddress]);
 
   const onPlayMusic = () => {
@@ -333,8 +346,8 @@ const Music = ({ music }: { music: GetMarketOutput }) => {
                 color="white"
               >
                 <Td>{item.event}</Td>
-                <Td>{item.from}</Td>
-                <Td>{item.to}</Td>
+                <Td>{item.from == ZERO_ADDRESS ? "0x0" : item.from}</Td>
+                <Td>{item.to == ZERO_ADDRESS ? "0x0" : item.to}</Td>
                 <Td>{new Date(item.created_at).toDateString()}</Td>
               </Tr>
             ))}
@@ -353,7 +366,7 @@ Music.getInitialProps = async (ctx: any) => {
       music: res.data.data,
     };
   } catch (error) {
-    console.log(error);
+    console.error(`[Music][${id}][getMusic]`, error);
   }
   return { music: null };
 };

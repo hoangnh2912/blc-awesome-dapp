@@ -72,11 +72,6 @@ const synchronizeMusic = async (
 
   for (const value of transferSingleEvents) {
     if (value.returnValues.from == Constant.ZERO_ADDRESS) {
-      // await musicService.mintEvent(
-      //   value.returnValues.to.toLowerCase(),
-      //   value.returnValues.id,
-      //   value.transactionHash,
-      // );
     } else {
       await musicService.transferEvent(
         value.returnValues.from.toLowerCase(),
@@ -90,11 +85,6 @@ const synchronizeMusic = async (
 
   for (const value of transferBatchEvents) {
     if (value.returnValues.from == Constant.ZERO_ADDRESS) {
-      // await musicService.mintBatchEvent(
-      //   value.returnValues.to.toLowerCase(),
-      //   value.returnValues.ids,
-      //   value.transactionHash,
-      // );
     } else {
       await musicService.transferBatchEvent(
         value.returnValues.from.toLowerCase(),

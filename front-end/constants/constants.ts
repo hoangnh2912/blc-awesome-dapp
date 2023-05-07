@@ -4,7 +4,7 @@ const NO_AVATAR =
 const NO_IMAGE = "https://fl-1.cdn.flockler.com/embed/no-image.svg";
 const EMPTY_PLAYLIST_IMAGE =
   "https://ipfs.dmtp.tech/ipfs/QmarnS3qKFsxwFsA6PejGiHKPpmnNqhykBJ68wFoadgBbi";
-
+const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 const GENRE = [
   "Acoustic",
   "Alternative",
@@ -23,4 +23,12 @@ const MOOD = ["Happy", "Sad", "Romantic", "Angry", "Relax", "Party"];
 
 const INSTRUMENT = ["Piano", "Guitar", "Violin", "Drum", "Bass", "Saxophone"];
 
-export { NO_AVATAR, GENRE, MOOD, INSTRUMENT, NO_IMAGE, EMPTY_PLAYLIST_IMAGE };
+export {
+  NO_AVATAR,
+  GENRE,
+  MOOD,
+  INSTRUMENT,
+  NO_IMAGE,
+  EMPTY_PLAYLIST_IMAGE,
+  ZERO_ADDRESS,
+};

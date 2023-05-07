@@ -1,6 +1,30 @@
 import { Market, User } from '@schemas';
 
 export class MusicService {
+  public async viewMusic(id: string) {
+    const music = await Market.findOne({ id });
+    if (!music) return false;
+    await Market.updateOne(
+      { id },
+      {
+        view_count: (music.view_count || 0) + 1,
+      },
+    );
+    return true;
+  }
+
+  public async playMusic(id: string) {
+    const music = await Market.findOne({ id });
+    if (!music) return false;
+    await Market.updateOne(
+      { id },
+      {
+        play_count: (music.play_count || 0) + 1,
+      },
+    );
+    return true;
+  }
+
   public async transferEvent(
     from_address: string,
     to_address: string,

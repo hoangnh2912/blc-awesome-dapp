@@ -112,7 +112,7 @@ const Erc20 = () => {
         });
       }
     } catch (error) {
-      console.log(error);
+      console.error(`[erc20][deployToken]`, error);
     }
   };
 

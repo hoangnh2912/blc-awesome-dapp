@@ -52,7 +52,7 @@ const Playlist: NextPage = () => {
       const playlistRes = await ApiServices.playlist.getListPlaylist();
       setPlaylist(playlistRes.data.data);
     } catch (error: any) {
-      console.log(`[getMyPlaylist]:${error.message}`);
+      console.error(`[Playlist][getMyPlaylist]:${error.message}`);
     }
   };
 
@@ -65,7 +65,7 @@ const Playlist: NextPage = () => {
       onClose();
       getMyPlaylist();
     } catch (error: any) {
-      console.log(`[createPlaylist]:${error.message}`);
+      console.error(`[Playlist][createPlaylist]:${error.message}`);
     }
   };
 

@@ -114,8 +114,8 @@ const Erc1155 = () => {
         });
       } finally {
       }
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      console.error(`[erc1155][deployToken]:${error.message}`);
     }
   };
   const deployTokenWithCheck = () => {
