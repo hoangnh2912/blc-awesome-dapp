@@ -1,5 +1,5 @@
+import { usePagination } from "@ajna/pagination";
 import {
-  Center,
   Image,
   Stack,
   Table,
@@ -8,33 +8,21 @@ import {
   Td,
   Th,
   Thead,
-  Tooltip,
   Tr,
 } from "@chakra-ui/react";
-import {
-  Pagination,
-  usePagination,
-  PaginationNext,
-  PaginationPage,
-  PaginationPrevious,
-  PaginationContainer,
-  PaginationPageGroup,
-  PaginationSeparator,
-} from "@ajna/pagination";
 import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 import { BsPauseFill } from "react-icons/bs";
 import { FaPlay } from "react-icons/fa";
 import { MdSell } from "react-icons/md";
+import { ABI_MUSIC } from "../constants/abi";
 import { ipfsToGateway } from "../constants/utils";
 import { useMusicIsPlayingView } from "../hooks/music";
+import ApiServices from "../services/api";
 import { GetMarketOutput } from "../services/api/types";
 import { useStoreActions, useStoreState } from "../services/redux/hook";
+import PaginationComponent from "./pagination";
 import SongNFTSmallComponent from "./song-nft-small";
-import { ABI_MUSIC } from "../constants/abi";
-import { GrFormNext, GrFormPrevious } from "react-icons/gr";
-import { useEffect, useState } from "react";
-import ApiServices from "../services/api";
-import PaginationComponent from "./Pagination";
 
 const Collection = ({
   address,

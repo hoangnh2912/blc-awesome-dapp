@@ -23,7 +23,7 @@ import { BsPauseFill, BsSearch } from "react-icons/bs";
 import { FaPlay } from "react-icons/fa";
 import { IoAdd } from "react-icons/io5";
 import { MdCheck, MdEdit, MdRemove } from "react-icons/md";
-import PaginationComponent from "../../../components/Pagination";
+import PaginationComponent from "../../../components/pagination";
 import { EMPTY_PLAYLIST_IMAGE } from "../../../constants/constants";
 import { useMusicIsPlayingView } from "../../../hooks/music";
 import MusicBaseLayout from "../../../layouts/music.base";

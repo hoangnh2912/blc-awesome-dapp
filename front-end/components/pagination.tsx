@@ -8,7 +8,7 @@ import {
   PaginationSeparator,
   usePagination,
 } from "@ajna/pagination";
-import { Center, Link } from "@chakra-ui/react";
+import { Center } from "@chakra-ui/react";
 import { GrFormNext, GrFormPrevious } from "react-icons/gr";
 const PaginationComponent = ({
   pagination,
