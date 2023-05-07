@@ -13,6 +13,14 @@ import { useAddress } from "@thirdweb-dev/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { FaShareAlt, FaUserEdit } from "react-icons/fa";
+import {
+  FacebookIcon,
+  FacebookShareButton,
+  TelegramIcon,
+  TelegramShareButton,
+  TwitterIcon,
+  TwitterShareButton,
+} from "react-share";
 import Collection from "../../../components/collection";
 import Studio from "../../../components/studio";
 import { NO_AVATAR } from "../../../constants/constants";
@@ -21,7 +29,6 @@ import MusicBaseLayout from "../../../layouts/music.base";
 import ApiServices from "../../../services/api";
 import { GetUserOutput } from "../../../services/api/types";
 import { useStoreState } from "../../../services/redux/hook";
-
 const Profile = () => {
   const router = useRouter();
   const { address } = router.query;
@@ -137,21 +144,23 @@ const Profile = () => {
               Edit
             </Button>
           )}
-          <Button
-            bg="transparent"
-            boxShadow="5px 5px 5px 5px rgba(0,0,0,0.15)"
-            alignItems="center"
-            fontWeight="bold"
-            borderRadius="lg"
-            fontSize="16"
-            color="white"
-            width="120px"
-            justifyContent="space-around"
-            border="2px solid #fcae00"
-          >
-            <FaShareAlt />
-            Share
-          </Button>
+          <Stack direction="row" spacing={2}>
+            <FacebookShareButton
+              url={`https://scimta.com/music/address/${address}`}
+            >
+              <FacebookIcon size={"35px"} borderRadius={5} />
+            </FacebookShareButton>
+            <TelegramShareButton
+              url={`https://scimta.com/music/address/${address}`}
+            >
+              <TelegramIcon size={"35px"} borderRadius={5} />
+            </TelegramShareButton>
+            <TwitterShareButton
+              url={`https://scimta.com/music/address/${address}`}
+            >
+              <TwitterIcon size={"35px"} borderRadius={5} />
+            </TwitterShareButton>
+          </Stack>
         </Stack>
       </Stack>
       <Text
@@ -191,21 +200,23 @@ const Profile = () => {
           <FaUserEdit />
           Edit
         </Button>
-        <Button
-          bg="transparent"
-          boxShadow="5px 5px 5px 5px rgba(0,0,0,0.15)"
-          alignItems="center"
-          fontWeight="bold"
-          borderRadius="lg"
-          fontSize="16"
-          color="white"
-          flex={1}
-          gap={5}
-          border="2px solid #fcae00"
-        >
-          <FaShareAlt />
-          Share
-        </Button>
+        <Stack direction="row" spacing={2}>
+          <FacebookShareButton
+            url={`https://scimta.com/music/address/${address}`}
+          >
+            <FacebookIcon size={"35px"} borderRadius={5} />
+          </FacebookShareButton>
+          <TelegramShareButton
+            url={`https://scimta.com/music/address/${address}`}
+          >
+            <TelegramIcon size={"35px"} borderRadius={5} />
+          </TelegramShareButton>
+          <TwitterShareButton
+            url={`https://scimta.com/music/address/${address}`}
+          >
+            <TwitterIcon size={"35px"} borderRadius={5} />
+          </TwitterShareButton>
+        </Stack>
       </Stack>
       <Tabs my="2" variant="line">
         <TabList>
