@@ -1,13 +1,12 @@
 import { Constant, logger, onError, onSuccess, OptionResponse } from '@constants';
-// import { SignatureMiddleware } from '@middlewares';
+import { SignatureMiddleware } from '@middlewares';
 import { Singleton } from '@providers';
-import { IContract } from '@schemas';
+import { IUser } from '@schemas';
 import {
   Body,
   Controller,
   Get,
   Middlewares,
-  // Middlewares,
   Post,
   Query,
   Request,
@@ -16,7 +15,6 @@ import {
   Tags,
 } from 'tsoa';
 import { CreateUserInput } from './user';
-import { SignatureMiddleware } from '@middlewares';
 
 const { NETWORK_STATUS_CODE, NETWORK_STATUS_MESSAGE } = Constant;
 @Tags('user')
@@ -28,13 +26,12 @@ export class UserController extends Controller {
   public async createUser(
     @Request() request: any,
     @Body() payload: Omit<CreateUserInput, 'wallet_address'>,
-  ): Promise<OptionResponse<IContract>> {
+  ): Promise<OptionResponse<IUser>> {
     try {
       const address = request.headers.address;
-
       return onSuccess(
         await Singleton.getUserInstance().createUser({
-          wallet_address: address,
+          wallet_address: address.toLowerCase(),
           ...payload,
         }),
       );
@@ -46,7 +43,7 @@ export class UserController extends Controller {
   }
 
   @Get('get-user')
-  public async getUser(@Query() address: string): Promise<OptionResponse<IContract>> {
+  public async getUser(@Query() address: string): Promise<OptionResponse<IUser>> {
     try {
       return onSuccess(await Singleton.getUserInstance().getUser(`${address}`.toLowerCase()));
     } catch (error) {
