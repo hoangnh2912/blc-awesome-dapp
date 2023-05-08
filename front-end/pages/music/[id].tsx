@@ -348,7 +348,9 @@ const Music = ({ music }: { music: GetMarketOutput }) => {
                 <Td>{item.event}</Td>
                 <Td>{item.from == ZERO_ADDRESS ? "" : item.from}</Td>
                 <Td>{item.to == ZERO_ADDRESS ? "" : item.to}</Td>
-                <Td>{new Date(item.created_at).toUTCString()}</Td>
+                <Td>
+                  {new Date(parseInt(`${item.created_at}000`)).toUTCString()}
+                </Td>
               </Tr>
             ))}
           </Tbody>
