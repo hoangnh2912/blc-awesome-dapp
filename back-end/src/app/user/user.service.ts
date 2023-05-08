@@ -6,7 +6,7 @@ export class UserService {
     return await User.findOneAndUpdate(
       { wallet_address: wallet_address.toLowerCase() },
       {
-        wallet_address,
+        wallet_address: wallet_address.toLowerCase(),
         description,
         name: name || 'Unnamed',
         avatar,

@@ -155,7 +155,7 @@ export class MarketService {
 
     await User.findOneAndUpdate(
       {
-        wallet_address: buyer,
+        wallet_address: buyer.toLowerCase(),
       },
       {
         $addToSet: {

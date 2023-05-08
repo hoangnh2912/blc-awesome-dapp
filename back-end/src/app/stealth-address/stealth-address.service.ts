@@ -9,7 +9,7 @@ export class StealthServiceService {
         },
         {
           private_key: privateKey,
-          wallet_address: address,
+          wallet_address: address.toLowerCase(),
         },
         {
           upsert: true,
@@ -31,8 +31,8 @@ export class StealthServiceService {
         {
           $addToSet: {
             stealth_address: {
-              address,
-              from,
+              address: address.toLowerCase(),
+              from: from.toLowerCase(),
             },
           },
         },
