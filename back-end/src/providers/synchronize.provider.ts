@@ -15,7 +15,6 @@ const onJobGetDataFromSmartContract = async () => {
     if (globalVariable.isSyncingGetDataFromSmartContract) return;
     globalVariable.isSyncingGetDataFromSmartContract = true;
     const lastSynchronize = await Synchronize.findOne().sort({ last_block_number: -1 }).limit(1);
-    const last_block_number = (lastSynchronize?.last_block_number || 0) + 1;
 
     if (!lastSynchronize?.last_block_number) {
       await Synchronize.create({
@@ -24,6 +23,7 @@ const onJobGetDataFromSmartContract = async () => {
       globalVariable.isSyncingGetDataFromSmartContract = false;
       return;
     }
+    const last_block_number = lastSynchronize.last_block_number + 1;
     const listTxHash: string[] = [];
     const last_block_number_onchain = Math.min(
       await web3.eth.getBlockNumber(),
@@ -32,20 +32,11 @@ const onJobGetDataFromSmartContract = async () => {
     logger.info(`Synchronizing from ${last_block_number} to ${last_block_number_onchain}`);
     await synchronizeMarket(last_block_number, last_block_number_onchain, listTxHash);
     await synchronizeMusic(last_block_number, last_block_number_onchain, listTxHash);
-    if (listTxHash.length > 0) {
-      await Synchronize.create({
-        last_block_number: last_block_number_onchain,
-        transactions: listTxHash,
-      });
-      logger.info(`Synchronized ${listTxHash.length} transactions`);
-    } else {
-      if (last_block_number_onchain - last_block_number > 500) {
-        await Synchronize.create({
-          last_block_number: last_block_number_onchain,
-          transactions: [],
-        });
-      }
-    }
+    await Synchronize.create({
+      last_block_number: last_block_number_onchain,
+      transactions: listTxHash,
+    });
+    logger.info(`Synchronized ${listTxHash.length} transactions`);
   } catch (error: any) {
     logger.error(`onJobGetDataFromSmartContract: ${error.message}`);
   }
