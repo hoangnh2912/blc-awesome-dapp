@@ -131,20 +131,23 @@ export class MarketService {
     transaction_hash: string,
     timestamp: number | string,
   ) {
+    const marketSong = await MarketContract.methods.song(id).call();
+    const seller = marketSong['seller'];
+    const amount = marketSong['amount'];
     await Market.findOneAndUpdate(
       {
         id,
         'history.transaction_hash': { $ne: transaction_hash },
       },
       {
-        left: (await MarketContract.methods.song(id).call())['amount'],
+        left: amount,
         $addToSet: {
           history: {
             transaction_hash,
             event: 'buy',
             created_at: new Date(timestamp),
-            from: buyer,
-            to: Constant.ZERO_ADDRESS,
+            from: seller,
+            to: buyer,
           },
         },
       },
