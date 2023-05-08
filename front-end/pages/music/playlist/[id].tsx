@@ -214,7 +214,7 @@ const PlaylistDetail = () => {
             </AlertDialogHeader>
 
             <AlertDialogBody>
-              Are you sure? You can't undo this action.
+              {`Are you sure? You can't undo this action.`}
             </AlertDialogBody>
             <AlertDialogFooter>
               <Button ref={cancelRef} onClick={onClose}>
