@@ -161,7 +161,7 @@ const Collection = ({
                   {Math.round(item.duration % 60)}
                 </Td>
                 <Td>{item.price} MUC</Td>
-                <Td>{new Date(item.created_at).toDateString()}</Td>
+                <Td>{new Date(item.created_at).toUTCString()}</Td>
                 <Td>
                   <Stack
                     direction="row"

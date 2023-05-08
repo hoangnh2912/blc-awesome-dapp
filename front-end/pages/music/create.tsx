@@ -218,7 +218,7 @@ const Create: NextPage = () => {
   };
 
   return (
-    <MusicBaseLayout selectTabIndex={1}>
+    <MusicBaseLayout selectTabIndex={2}>
       <Stack direction={"column"}>
         <Text fontFamily="mono" fontWeight="bold" fontSize={"24"} color="white">
           Listing new music

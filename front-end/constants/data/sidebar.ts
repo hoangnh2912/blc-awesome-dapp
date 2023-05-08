@@ -1,6 +1,11 @@
 import { IconType } from "react-icons";
 import { BsCoin, BsPeople, BsEmojiSunglasses } from "react-icons/bs";
-import { MdOutlineSwapHorizontalCircle, MdPlaylistPlay } from "react-icons/md";
+import {
+  MdExplore,
+  MdLibraryAdd,
+  MdOutlineSwapHorizontalCircle,
+  MdPlaylistPlay,
+} from "react-icons/md";
 import { GiPayMoney, GiClockwork } from "react-icons/gi";
 import { RxBlendingMode } from "react-icons/rx";
 import { CgMusic } from "react-icons/cg";
@@ -34,13 +39,13 @@ export const SideBarData: Array<SideBarDataProps> = [
 export const SideBarDataMusic: Array<SideBarDataProps> = [
   {
     name: "Explore".toUpperCase(),
-    icon: MdOutlineSwapHorizontalCircle,
+    icon: MdExplore,
     link: "/music/explore",
   },
-  { name: "Create".toUpperCase(), icon: RxBlendingMode, link: "/music/create" },
   {
     name: "Playlist".toUpperCase(),
     icon: MdPlaylistPlay,
     link: "/music/playlist",
   },
+  { name: "Create".toUpperCase(), icon: MdLibraryAdd, link: "/music/create" },
 ];

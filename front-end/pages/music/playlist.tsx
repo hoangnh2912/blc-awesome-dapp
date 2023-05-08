@@ -75,7 +75,7 @@ const Playlist: NextPage = () => {
   }, [address]);
 
   return (
-    <MusicBaseLayout selectTabIndex={2}>
+    <MusicBaseLayout selectTabIndex={1}>
       <Modal
         isCentered
         isOpen={!!isOpen}

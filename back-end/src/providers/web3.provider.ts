@@ -8,7 +8,11 @@ const newContract = (abi: any, address: string): Contract => {
   return new web3.eth.Contract(abi, address);
 };
 
+const getBlockByNumber = async (blockNumber: number) => {
+  return await web3.eth.getBlock(blockNumber);
+};
+
 const MusicContract = newContract(ABI_MUSIC.Music.abi, ABI_MUSIC.Music.address);
 const MarketContract = newContract(ABI_MUSIC.MusicMarket.abi, ABI_MUSIC.MusicMarket.address);
 
-export { web3, newContract, MusicContract, MarketContract };
+export { web3, newContract, MusicContract, MarketContract, getBlockByNumber };

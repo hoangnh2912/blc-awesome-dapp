@@ -191,6 +191,8 @@ const ApiServices = {
   playlist: {
     createPlaylist: (payload: PlaylistInput) =>
       AxiosPost<GetPlaylistOutput>("/playlist/playlist", payload),
+    deletePlaylist: (payload: { id: string }) =>
+      AxiosPost<GetPlaylistOutput>("/playlist/delete-playlist", payload),
     getPlaylist: (id: string) =>
       AxiosGet<GetPlaylistOutput>("/playlist/playlist", {
         params: {

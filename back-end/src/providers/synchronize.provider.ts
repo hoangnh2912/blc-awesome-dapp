@@ -2,7 +2,7 @@ import { Constant, logger } from '@constants';
 import { Synchronize } from '@schemas';
 import cron from 'node-cron';
 import { EventData } from 'web3-eth-contract';
-import { Singleton, web3, MusicContract, MarketContract } from '.';
+import { Singleton, web3, MusicContract, MarketContract, getBlockByNumber } from '.';
 
 const globalVariable: any = global;
 
@@ -123,12 +123,14 @@ const synchronizeMarket = async (
     amount: e.returnValues['amount'],
     uri: e.returnValues['uri'],
     transactionHash: e.transactionHash,
+    blockNumber: e.blockNumber,
   }));
 
   const listBuySongUpdate = eventBuySong.sort(sortByTransactionIndex).map(e => ({
     id: e.returnValues['id'],
     buyer: e.returnValues['buyer'],
     transactionHash: e.transactionHash,
+    blockNumber: e.blockNumber,
   }));
 
   listTxHash.push(...eventListSong.map(e => e.transactionHash));
@@ -136,6 +138,7 @@ const synchronizeMarket = async (
 
   for (const priceUpdate of listListSongUpdate) {
     try {
+      const blockData = await getBlockByNumber(priceUpdate.blockNumber);
       await marketService.listSong(
         priceUpdate.id,
         priceUpdate.seller.toLowerCase(),
@@ -143,6 +146,7 @@ const synchronizeMarket = async (
         priceUpdate.amount,
         priceUpdate.uri,
         priceUpdate.transactionHash,
+        blockData.timestamp,
       );
     } catch (error: any) {
       logger.error(`Can not update market for music: ${priceUpdate.id}, error: ${error.message}`);
@@ -151,10 +155,12 @@ const synchronizeMarket = async (
 
   for (const buyUpdate of listBuySongUpdate) {
     try {
+      const blockData = await getBlockByNumber(buyUpdate.blockNumber);
       await marketService.createBuyHistory(
         buyUpdate.id,
         buyUpdate.buyer,
         buyUpdate.transactionHash,
+        blockData.timestamp,
       );
     } catch (error: any) {
       logger.error(`Can not update market for music: ${buyUpdate.id}, error: ${error.message}`);

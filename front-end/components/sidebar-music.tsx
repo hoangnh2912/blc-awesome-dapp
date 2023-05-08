@@ -325,6 +325,11 @@ export default function SidebarMusic({
       }}
       minH="100vh"
       pb={"200px"}
+      sx={{
+        "::-webkit-scrollbar": {
+          display: "none",
+        },
+      }}
     >
       <ModalCheckConnect />
       <ModalSwitchNetwork />
@@ -400,7 +405,16 @@ export default function SidebarMusic({
       </Drawer>
       {/* mobilenav */}
       <AppNav onOpen={onOpen} />
-      <Box ml={{ base: 0, md: 60 }} p="4" pt={20}>
+      <Box
+        ml={{ base: 0, md: 60 }}
+        sx={{
+          "::-webkit-scrollbar": {
+            display: "none",
+          },
+        }}
+        p="4"
+        pt={20}
+      >
         {isLoading ? (
           <Stack
             justifyContent="center"
@@ -524,15 +538,18 @@ const NavItem = ({ icon, children, isSelect, link, ...rest }: NavItemProps) => {
     >
       <Flex
         align="center"
-        p="4"
+        px="4"
         mx="4"
+        my={"2"}
+        py={"2"}
         borderRadius="lg"
         role="group"
         cursor="pointer"
-        color={isSelect ? "yellow.400" : "white"}
+        bg={isSelect ? "#C2A822" : "transparent"}
+        color={"white"}
         {...rest}
       >
-        {icon && <Icon mr="4" fontSize="16" as={icon} />}
+        {icon && <Icon mr="4" fontSize="18" as={icon} />}
         <Text fontFamily={"mono"} fontWeight={"bold"}>
           {children}
         </Text>

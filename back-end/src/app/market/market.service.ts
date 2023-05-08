@@ -84,6 +84,7 @@ export class MarketService {
     amount: string,
     uri: string,
     transaction_hash: string,
+    timestamp: number | string,
   ) {
     const data: any = await readCID(uri);
     await Market.findOneAndUpdate(
@@ -110,9 +111,9 @@ export class MarketService {
           history: {
             transaction_hash,
             event: 'list',
-            created_at: new Date(),
-            from: Constant.ZERO_ADDRESS,
-            to: seller,
+            created_at: new Date(timestamp),
+            from: seller,
+            to: Constant.ZERO_ADDRESS,
           },
         },
       },
@@ -124,7 +125,12 @@ export class MarketService {
     );
   }
 
-  public async createBuyHistory(id: string, buyer: string, transaction_hash: string) {
+  public async createBuyHistory(
+    id: string,
+    buyer: string,
+    transaction_hash: string,
+    timestamp: number | string,
+  ) {
     await Market.findOneAndUpdate(
       {
         id,
@@ -136,9 +142,9 @@ export class MarketService {
           history: {
             transaction_hash,
             event: 'buy',
-            created_at: new Date(),
-            from: Constant.ZERO_ADDRESS,
-            to: buyer,
+            created_at: new Date(timestamp),
+            from: buyer,
+            to: Constant.ZERO_ADDRESS,
           },
         },
       },

@@ -168,7 +168,7 @@ const Studio = ({
                 </Td>
                 <Td>{item.price} MUC</Td>
                 <Td>
-                  {item.left}/{item.amount}
+                  {parseInt(item.amount) - parseInt(item.left)}/{item.amount}
                 </Td>
                 <Td>
                   <Stack

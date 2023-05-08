@@ -326,7 +326,7 @@ const Music = ({ music }: { music: GetMarketOutput }) => {
             </Tr>
           </Thead>
           <Tbody>
-            {data.history.map((item, idx) => (
+            {[...data.history].reverse().map((item, idx) => (
               <Tr
                 fontFamily="mono"
                 fontWeight="bold"
@@ -346,9 +346,9 @@ const Music = ({ music }: { music: GetMarketOutput }) => {
                 color="white"
               >
                 <Td>{item.event}</Td>
-                <Td>{item.from == ZERO_ADDRESS ? "0x0" : item.from}</Td>
-                <Td>{item.to == ZERO_ADDRESS ? "0x0" : item.to}</Td>
-                <Td>{new Date(item.created_at).toDateString()}</Td>
+                <Td>{item.from == ZERO_ADDRESS ? "" : item.from}</Td>
+                <Td>{item.to == ZERO_ADDRESS ? "" : item.to}</Td>
+                <Td>{new Date(item.created_at).toUTCString()}</Td>
               </Tr>
             ))}
           </Tbody>

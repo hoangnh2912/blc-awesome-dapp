@@ -58,4 +58,11 @@ export class PlaylistService {
         )
       : await Playlist.create((({ id, ...o }) => o)(payload));
   }
+
+  public async deletePlaylist(id: string, address: string) {
+    return await Playlist.deleteOne({
+      _id: new ObjectId(id),
+      owner: address,
+    });
+  }
 }

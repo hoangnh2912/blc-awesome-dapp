@@ -61,4 +61,22 @@ export class PlaylistController extends Controller {
       return onError(NETWORK_STATUS_MESSAGE.INTERNAL_SERVER_ERROR);
     }
   }
+
+  @Post('delete-playlist')
+  public async deletePlaylist(
+    @Request() request: any,
+    @Body()
+    body: {
+      id: string;
+    },
+  ): Promise<OptionResponse<IMarket[]>> {
+    try {
+      const address = request.headers['address'];
+      return onSuccess(await Singleton.getPlaylistInstance().deletePlaylist(body?.id, address));
+    } catch (error) {
+      logger.error(error);
+      this.setStatus(NETWORK_STATUS_CODE.INTERNAL_SERVER_ERROR);
+      return onError(NETWORK_STATUS_MESSAGE.INTERNAL_SERVER_ERROR);
+    }
+  }
 }

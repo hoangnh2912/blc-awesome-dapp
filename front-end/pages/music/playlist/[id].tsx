@@ -1,5 +1,12 @@
 import { usePagination } from "@ajna/pagination";
 import {
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogOverlay,
+  Button,
   HStack,
   Image,
   Input,
@@ -15,10 +22,11 @@ import {
   Thead,
   Tr,
   useBoolean,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { useAddress } from "@thirdweb-dev/react";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BsPauseFill, BsSearch } from "react-icons/bs";
 import { FaPlay } from "react-icons/fa";
 import { IoAdd } from "react-icons/io5";
@@ -47,6 +55,8 @@ const PlaylistDetail = () => {
   const currentSongState = useStoreState((state) => state.music.currentSong);
   const isPlayingState = useStoreState((state) => state.music.isPlaying);
   const [total, setTotal] = useState(0);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const cancelRef = React.useRef<any>();
   const pagination = usePagination({
     total,
     initialState: {
@@ -171,6 +181,18 @@ const PlaylistDetail = () => {
     isPlayingState,
   });
 
+  const deletePlaylist = async () => {
+    if (!playlist) return;
+    try {
+      await ApiServices.playlist.deletePlaylist({
+        id: playlist._id,
+      });
+      router.replace("/music/playlist", undefined, { shallow: true });
+    } catch (error: any) {
+      console.error(`[PlaylistDetail][${id}][deletePlaylist]`, error);
+    }
+  };
+
   if (!playlist)
     return (
       <MusicBaseLayout selectTabIndex={2}>
@@ -179,50 +201,98 @@ const PlaylistDetail = () => {
     );
 
   return (
-    <MusicBaseLayout selectTabIndex={2}>
-      <HStack>
-        <Text
-          contentEditable={isEdit}
-          color="white"
-          fontSize="35"
-          fontFamily={"mono"}
-          fontWeight="bold"
-          borderWidth={isEdit ? "1px" : "0px"}
-          borderRadius={"lg"}
-          noOfLines={1}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              const playlistName = document.getElementById("playlist-name");
-              onUpdateName(playlistName?.textContent || "");
-              setIsEdit.toggle();
-            }
-          }}
-          my={"5px"}
-          pr={"10px"}
-          id="playlist-name"
-        >
-          {playlist.name}
-        </Text>
-        {isEdit ? (
-          <MdCheck
-            onClick={() => {
-              const playlistName = document.getElementById("playlist-name");
-              onUpdateName(playlistName?.textContent || "");
-              setIsEdit.toggle();
+    <MusicBaseLayout selectTabIndex={1}>
+      <AlertDialog
+        isOpen={isOpen}
+        leastDestructiveRef={cancelRef}
+        onClose={onClose}
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              Delete Playlist
+            </AlertDialogHeader>
+
+            <AlertDialogBody>
+              Are you sure? You can't undo this action.
+            </AlertDialogBody>
+            <AlertDialogFooter>
+              <Button ref={cancelRef} onClick={onClose}>
+                Cancel
+              </Button>
+              <Button
+                colorScheme="red"
+                onClick={() => {
+                  onClose();
+                  deletePlaylist();
+                }}
+                ml={3}
+              >
+                Delete
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
+      <Stack
+        direction={["column", "column", "row"]}
+        justifyContent={"space-between"}
+      >
+        <HStack>
+          <Text
+            contentEditable={isEdit}
+            color="white"
+            fontSize="35"
+            fontFamily={"mono"}
+            fontWeight="bold"
+            borderWidth={isEdit ? "1px" : "0px"}
+            borderRadius={"lg"}
+            noOfLines={1}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                const playlistName = document.getElementById("playlist-name");
+                onUpdateName(playlistName?.textContent || "");
+                setIsEdit.toggle();
+              }
             }}
-            cursor={"pointer"}
-            color="white"
-            size={"35px"}
-          />
-        ) : (
-          <MdEdit
-            onClick={setIsEdit.toggle}
-            cursor={"pointer"}
-            color="white"
-            size={"35px"}
-          />
-        )}
-      </HStack>
+            my={"5px"}
+            pr={"10px"}
+            id="playlist-name"
+          >
+            {playlist.name}
+          </Text>
+          {isEdit ? (
+            <MdCheck
+              onClick={() => {
+                const playlistName = document.getElementById("playlist-name");
+                onUpdateName(playlistName?.textContent || "");
+                setIsEdit.toggle();
+              }}
+              cursor={"pointer"}
+              color="white"
+              size={"35px"}
+            />
+          ) : (
+            <MdEdit
+              onClick={setIsEdit.toggle}
+              cursor={"pointer"}
+              color="white"
+              size={"35px"}
+            />
+          )}
+        </HStack>
+        <Button
+          fontFamily="mono"
+          fontWeight="bold"
+          fontSize={"24"}
+          bg={"#fff"}
+          onClick={onOpen}
+          color={"#A80707"}
+        >
+          Delete Playlist
+        </Button>
+      </Stack>
+
       <Stack direction={{ base: "column", md: "row" }}>
         <Image
           onClick={() => {
