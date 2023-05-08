@@ -64,11 +64,13 @@ const synchronizeMusic = async (
   for (const value of transferSingleEvents) {
     if (value.returnValues.from == Constant.ZERO_ADDRESS) {
     } else {
+      const blockData = await getBlockByNumber(value.blockNumber);
       await musicService.transferEvent(
         value.returnValues.from.toLowerCase(),
         value.returnValues.to.toLowerCase(),
         value.returnValues.id,
         value.transactionHash,
+        blockData.timestamp,
       );
     }
     listTxHash.push(value.transactionHash);
@@ -77,11 +79,13 @@ const synchronizeMusic = async (
   for (const value of transferBatchEvents) {
     if (value.returnValues.from == Constant.ZERO_ADDRESS) {
     } else {
+      const blockData = await getBlockByNumber(value.blockNumber);
       await musicService.transferBatchEvent(
         value.returnValues.from.toLowerCase(),
         value.returnValues.to.toLowerCase(),
         value.returnValues.ids,
         value.transactionHash,
+        blockData.timestamp,
       );
     }
     listTxHash.push(value.transactionHash);

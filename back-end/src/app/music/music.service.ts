@@ -30,6 +30,7 @@ export class MusicService {
     to_address: string,
     id: string,
     transactionHash: string,
+    timestamp: number | string,
   ) {
     await User.findOneAndUpdate(
       {
@@ -71,7 +72,7 @@ export class MusicService {
           history: {
             transaction_hash: transactionHash,
             event: 'transfer',
-            created_at: new Date(),
+            created_at: new Date(`${timestamp}000`),
             from: from_address,
             to: to_address,
           },
@@ -84,6 +85,7 @@ export class MusicService {
     to_address: string,
     ids: string[],
     transactionHash: string,
+    timestamp: number | string,
   ) {
     await User.findOneAndUpdate(
       {
@@ -129,7 +131,7 @@ export class MusicService {
           history: {
             transaction_hash: transactionHash,
             event: 'transferBatch',
-            created_at: new Date(),
+            created_at: new Date(`${timestamp}000`),
             from: from_address,
             to: to_address,
           },
