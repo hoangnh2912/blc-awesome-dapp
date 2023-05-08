@@ -72,7 +72,7 @@ export class MusicService {
           history: {
             transaction_hash: transactionHash,
             event: 'transfer',
-            created_at: new Date(`${timestamp}000`),
+            created_at: timestamp,
             from: from_address,
             to: to_address,
           },
@@ -131,7 +131,7 @@ export class MusicService {
           history: {
             transaction_hash: transactionHash,
             event: 'transferBatch',
-            created_at: new Date(`${timestamp}000`),
+            created_at: timestamp,
             from: from_address,
             to: to_address,
           },

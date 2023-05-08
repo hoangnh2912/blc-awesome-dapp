@@ -111,7 +111,7 @@ export class MarketService {
           history: {
             transaction_hash,
             event: 'list',
-            created_at: new Date(`${timestamp}000`),
+            created_at: timestamp,
             from: seller,
             to: Constant.ZERO_ADDRESS,
           },
@@ -145,7 +145,7 @@ export class MarketService {
           history: {
             transaction_hash,
             event: 'buy',
-            created_at: new Date(`${timestamp}000`),
+            created_at: timestamp,
             from: seller,
             to: buyer,
           },
