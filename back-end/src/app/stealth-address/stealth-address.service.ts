@@ -5,7 +5,7 @@ export class StealthServiceService {
     try {
       await User.findOneAndUpdate(
         {
-          wallet_address: address,
+          wallet_address: address.toLowerCase(),
         },
         {
           private_key: privateKey,
@@ -26,7 +26,7 @@ export class StealthServiceService {
     try {
       await User.findOneAndUpdate(
         {
-          wallet_address,
+          wallet_address: wallet_address.toLowerCase(),
         },
         {
           $addToSet: {

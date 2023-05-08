@@ -33,7 +33,7 @@ export class MusicService {
   ) {
     await User.findOneAndUpdate(
       {
-        wallet_address: from_address,
+        wallet_address: from_address.toLowerCase(),
       },
       {
         $pull: {
@@ -48,7 +48,7 @@ export class MusicService {
     );
     await User.findOneAndUpdate(
       {
-        wallet_address: to_address,
+        wallet_address: to_address.toLowerCase(),
       },
       {
         $addToSet: {
@@ -87,7 +87,7 @@ export class MusicService {
   ) {
     await User.findOneAndUpdate(
       {
-        wallet_address: from_address,
+        wallet_address: from_address.toLowerCase(),
       },
       {
         $pullAll: {
@@ -102,7 +102,7 @@ export class MusicService {
     );
     await User.findOneAndUpdate(
       {
-        wallet_address: to_address,
+        wallet_address: to_address.toLowerCase(),
       },
       {
         $addToSet: {

@@ -4,7 +4,7 @@ import { CreateUserInput } from './user';
 export class UserService {
   async createUser({ wallet_address, description, name, avatar }: CreateUserInput) {
     return await User.findOneAndUpdate(
-      { wallet_address },
+      { wallet_address: wallet_address.toLowerCase() },
       {
         wallet_address,
         description,
@@ -21,7 +21,7 @@ export class UserService {
 
   async getUser(wallet_address: string) {
     return await User.findOneAndUpdate(
-      { wallet_address },
+      { wallet_address: wallet_address.toLowerCase() },
       {},
       {
         upsert: true,
