@@ -6,6 +6,7 @@ import {
   Body,
   Controller,
   Get,
+  Middlewares,
   // Middlewares,
   Post,
   Query,
@@ -15,14 +16,15 @@ import {
   Tags,
 } from 'tsoa';
 import { CreateUserInput } from './user';
+import { SignatureMiddleware } from '@middlewares';
 
 const { NETWORK_STATUS_CODE, NETWORK_STATUS_MESSAGE } = Constant;
 @Tags('user')
 @Route('user')
 @Security('authorize')
-// @Middlewares([SignatureMiddleware])
 export class UserController extends Controller {
   @Post('create-user')
+  @Middlewares([SignatureMiddleware])
   public async createUser(
     @Request() request: any,
     @Body() payload: Omit<CreateUserInput, 'wallet_address'>,
