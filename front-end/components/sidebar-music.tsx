@@ -672,9 +672,9 @@ const AppNav = ({ onOpen }: AppNavProps) => {
           <PopoverBody>
             <ConnectWallet />
           </PopoverBody>
-          {address &&
-            address == "0x62636FFD17bB80B1a7c177e5F45d774A1eE0d228" && (
-              <>
+          {address && (
+            <>
+              {address == "0x62636FFD17bB80B1a7c177e5F45d774A1eE0d228" && (
                 <Stack
                   p="4"
                   borderTopWidth={1}
@@ -703,81 +703,82 @@ const AppNav = ({ onOpen }: AppNavProps) => {
                     Faucet
                   </Button>
                 </Stack>
-                <Stack
-                  p="4"
-                  cursor="pointer"
-                  borderTopWidth={1}
-                  borderTopColor="rgba(0, 0, 0, 0.1)"
-                  borderBottomColor="rgba(0, 0, 0, 0.1)"
-                  borderBottomWidth={1}
-                  _hover={{
-                    bg: "rgba(0, 0, 0, 0.1)",
-                  }}
-                  alignItems="center"
-                  direction="row"
-                  onClick={() => {
-                    window.open(
-                      `https://app.uniswap.org/#/swap?exactAmount=0.02&outputCurrency=${ABI_MUSIC.MUC.address}&inputCurrency=ETH&chain=polygon`,
-                      "_blank"
+              )}
+              <Stack
+                p="4"
+                cursor="pointer"
+                borderTopWidth={1}
+                borderTopColor="rgba(0, 0, 0, 0.1)"
+                borderBottomColor="rgba(0, 0, 0, 0.1)"
+                borderBottomWidth={1}
+                _hover={{
+                  bg: "rgba(0, 0, 0, 0.1)",
+                }}
+                alignItems="center"
+                direction="row"
+                onClick={() => {
+                  window.open(
+                    `https://app.uniswap.org/#/swap?exactAmount=0.02&outputCurrency=${ABI_MUSIC.MUC.address}&inputCurrency=ETH&chain=polygon`,
+                    "_blank"
+                  );
+                }}
+              >
+                <GiUnicorn color={"#FF007A"} />
+                <Text color={"#FF007A"} fontFamily={"mono"}>
+                  Get MUC on Uniswap
+                </Text>
+              </Stack>
+              <Stack
+                cursor="pointer"
+                p="4"
+                borderTopWidth={1}
+                borderTopColor="rgba(0, 0, 0, 0.1)"
+                borderBottomColor="rgba(0, 0, 0, 0.1)"
+                borderBottomWidth={1}
+                _hover={{
+                  bg: "rgba(0, 0, 0, 0.1)",
+                }}
+                alignItems="center"
+                direction="row"
+                onClick={() => {
+                  if (address)
+                    replace(
+                      {
+                        pathname: `/music/address/${address}`,
+                      },
+                      undefined,
+                      {
+                        shallow: true,
+                      }
                     );
-                  }}
-                >
-                  <GiUnicorn color={"#FF007A"} />
-                  <Text color={"#FF007A"} fontFamily={"mono"}>
-                    Get MUC on Uniswap
-                  </Text>
-                </Stack>
-                <Stack
-                  cursor="pointer"
-                  p="4"
-                  borderTopWidth={1}
-                  borderTopColor="rgba(0, 0, 0, 0.1)"
-                  borderBottomColor="rgba(0, 0, 0, 0.1)"
-                  borderBottomWidth={1}
-                  _hover={{
-                    bg: "rgba(0, 0, 0, 0.1)",
-                  }}
-                  alignItems="center"
-                  direction="row"
-                  onClick={() => {
-                    if (address)
-                      replace(
-                        {
-                          pathname: `/music/address/${address}`,
-                        },
-                        undefined,
-                        {
-                          shallow: true,
-                        }
-                      );
-                  }}
-                >
-                  <FaUser />
-                  <Text fontFamily={"mono"}>My Profile</Text>
-                </Stack>
-                <Stack
-                  cursor="pointer"
-                  p="4"
-                  onClick={() => {
-                    if (address) disconnect();
-                  }}
-                  borderTopWidth={1}
-                  borderTopColor="rgba(0, 0, 0, 0.1)"
-                  borderBottomColor="rgba(0, 0, 0, 0.1)"
-                  borderBottomWidth={1}
-                  _hover={{
-                    bg: "rgba(0, 0, 0, 0.1)",
-                  }}
-                  alignItems="center"
-                  direction="row"
-                >
-                  <IoLogOut color="#B12222" />
-                  <Text color="#B12222" fontWeight="bold" fontFamily={"mono"}>
-                    Logout
-                  </Text>
-                </Stack>
-              </>
-            )}
+                }}
+              >
+                <FaUser />
+                <Text fontFamily={"mono"}>My Profile</Text>
+              </Stack>
+              <Stack
+                cursor="pointer"
+                p="4"
+                onClick={() => {
+                  if (address) disconnect();
+                }}
+                borderTopWidth={1}
+                borderTopColor="rgba(0, 0, 0, 0.1)"
+                borderBottomColor="rgba(0, 0, 0, 0.1)"
+                borderBottomWidth={1}
+                _hover={{
+                  bg: "rgba(0, 0, 0, 0.1)",
+                }}
+                alignItems="center"
+                direction="row"
+              >
+                <IoLogOut color="#B12222" />
+                <Text color="#B12222" fontWeight="bold" fontFamily={"mono"}>
+                  Logout
+                </Text>
+              </Stack>
+            </>
+          )}
         </PopoverContent>
       </Popover>
     </Stack>
