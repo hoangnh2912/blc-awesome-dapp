@@ -170,7 +170,7 @@ const GetMessageOfRoom = ({
 
     socketInstance
       .getSocket(address || "", signature || "")
-      .on("message sent", async (data) => {
+      .on("message sent", async (data: any) => {
         if (data) {
           await addMessage({ data });
         }
