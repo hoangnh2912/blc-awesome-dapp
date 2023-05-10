@@ -162,7 +162,6 @@ const GetMessageOfRoom = ({
 }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [page, setPage] = useState<number>(0);
-  console.log(`messageList.length: ${messageList?.length || -1}`);
 
   useEffect(() => {
     const signature = localStorage.getItem("signature");
