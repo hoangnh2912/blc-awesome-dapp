@@ -171,6 +171,8 @@ const GetMessageOfRoom = ({
     socketInstance
       .getSocket(address || "", signature || "")
       .on("message sent", async (data: any) => {
+        console.log(`new message: ${JSON.stringify(data)}`);
+
         if (data) {
           await addMessage({ data });
         }

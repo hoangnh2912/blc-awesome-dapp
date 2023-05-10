@@ -7,6 +7,8 @@ class socketInstance {
 
   public static getSocket(address: string, signature: string): Socket {
     if (!socketInstance.socket) {
+      console.log(`connecting to socket`);
+
       socketInstance.socket = io("ws://localhost:3008", {
         extraHeaders: {
           authorize: signature,
@@ -15,10 +17,24 @@ class socketInstance {
           authorize: `${address}:${signature}`,
         },
         transports: ["websocket"],
-        //   reconnection: true,
+        reconnection: true,
       });
       socketInstance.socket.connect();
+      socketInstance.socket.on("connect", () => {
+        console.log(`Connected`, socketInstance.socket.id);
+      });
+      socketInstance.socket.on("connect_error", (err) => {
+        console.log(`Connect_error:`, err);
+      });
+      socketInstance.socket.on("reconnect", () => {
+        console.log(`reconnect`);
+      });
+      socketInstance.socket.on("disconnect", () => {
+        console.log(`disconnect`);
+      });
     }
+    console.log(`socket instance: ${socketInstance.socket}`);
+
     return socketInstance.socket;
   }
 }
