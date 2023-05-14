@@ -1,21 +1,11 @@
 import { Axios, AxiosRequestConfig, AxiosResponse } from "axios";
 import {
-  ERC20Input,
-  TokenCreatorOutput,
-  ERC721Input,
-  VerifyInput,
-  ERC1155Input,
-  GetAbiInput,
-  GetAbiOutput,
-  GetPrivateKeyOutput,
-  GetStealthAddressOutput,
-  GetMarketOutput,
-  GetUserOutput,
-  RentMarketInput,
-  GetPlaylistOutput,
-  PlaylistInput,
-  GetTopMarketOutput,
   GetHomeMarketOutput,
+  GetMarketOutput,
+  GetPlaylistOutput,
+  GetTopMarketOutput,
+  GetUserOutput,
+  PlaylistInput,
 } from "./types";
 type SuccessResponse<T> = {
   data: T;
@@ -67,48 +57,6 @@ const AxiosGet = <O>(url: string, config?: AxiosRequestConfig) =>
   axios.get<SuccessResponse<O>, AxiosResponse<SuccessResponse<O>>>(url, config);
 
 const ApiServices = {
-  tokenCreator: {
-    erc20: (payload: ERC20Input) =>
-      AxiosPost<TokenCreatorOutput>("/token-creator/erc20", payload),
-    erc721: (payload: ERC721Input) =>
-      AxiosPost<TokenCreatorOutput>("/token-creator/erc721", payload),
-    erc1155: (payload: ERC1155Input) =>
-      AxiosPost<TokenCreatorOutput>("/token-creator/erc1155", payload),
-    verify: (payload: VerifyInput) =>
-      AxiosPost<boolean>("/token-creator/verify-contract", payload),
-    abi: (payload: GetAbiInput) =>
-      AxiosGet<GetAbiOutput>("/token-creator/abi", {
-        params: payload,
-      }),
-  },
-  stealthAddress: {
-    submitPrivateKey: (privateKey: string, address: string) =>
-      AxiosPost<boolean>("/stealth-address/submit-private-key", {
-        privateKey,
-        address,
-      }),
-    submitStealthAddress: (
-      wallet_address: string,
-      address: string,
-      from: string
-    ) =>
-      AxiosPost<boolean>("/stealth-address/submit-stealth-address", {
-        wallet_address,
-        address,
-        from,
-      }),
-    getPrivateKey: (address: string) =>
-      AxiosGet<GetPrivateKeyOutput>("/stealth-address/get-private-key", {
-        params: { address },
-      }),
-    getStealthAddress: (address: string) =>
-      AxiosGet<GetStealthAddressOutput[]>(
-        "/stealth-address/get-list-stealth-address",
-        {
-          params: { address },
-        }
-      ),
-  },
   music: {
     getHomeMarket: () => AxiosGet<GetHomeMarketOutput[]>("/market/home-market"),
     getListMarket: (
@@ -161,12 +109,6 @@ const ApiServices = {
       AxiosPost<boolean>("/music/play-song", {
         id,
       }),
-  },
-  renting: {
-    erc4907: (payload: ERC721Input) =>
-      AxiosPost<TokenCreatorOutput>("renting/erc4907", payload),
-    rentMarket: (payload: RentMarketInput) =>
-      AxiosPost<TokenCreatorOutput>("renting/rent-market", payload),
   },
   user: {
     getUser: (address: string) =>

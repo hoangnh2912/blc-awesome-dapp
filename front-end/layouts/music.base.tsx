@@ -3,9 +3,8 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import SidebarMusic from "../components/sidebar-music";
 import { SideBarDataMusic } from "../constants/data/sidebar";
-import ApiServices from "../services/api";
-import styles from "../styles/Home.module.css";
 import { GetMarketOutput } from "../services/api/types";
+import styles from "../styles/Home.module.css";
 const MusicBaseLayout = ({
   children,
   selectTabIndex = 0,

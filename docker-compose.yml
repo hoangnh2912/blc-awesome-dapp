@@ -1,0 +1,20 @@
+version: "3"
+services:
+  db:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+  backend:
+    build: ./back-end
+    environment:
+      - DOCKER_MODE=docker
+    ports:
+      - "3001:3001"
+    depends_on:
+      - db
+  frontend:
+    build: ./front-end
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend

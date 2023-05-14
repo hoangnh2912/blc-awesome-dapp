@@ -1,8 +1,8 @@
 import type { NextPage } from "next";
-import TokenCreator from "./token-creator";
+import Explore from "./music/explore";
 
 const Home: NextPage = () => {
-  return <TokenCreator />;
+  return <Explore />;
 };
 
 export default Home;

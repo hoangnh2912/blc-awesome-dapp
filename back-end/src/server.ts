@@ -5,11 +5,11 @@ import express, { Request, Response } from 'express';
 import swaggerUi from 'swagger-ui-express';
 import { RegisterRoutes } from '../build/routes';
 import { logger } from './constants';
-import { exec } from 'child_process';
 import { connectToMongoDB, startSynchronizeDataFromSmartContract } from '@providers';
 
-startSynchronizeDataFromSmartContract();
-connectToMongoDB();
+connectToMongoDB().then(() => {
+  startSynchronizeDataFromSmartContract();
+});
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -43,11 +43,6 @@ app.use(function (req, _res, next) {
 
 app.use('/docs', swaggerUi.serve, async (_req: Request, res: Response) => {
   return res.send(swaggerUi.generateHTML(await import('../build/swagger.json')));
-});
-
-app.use('/push', async (_req: Request, _res: Response) => {
-  _res.json({ message: 'push' });
-  exec('cd ~/ubuntu/blc-awesome-dapp/BE && yarn && pm2 restart 0');
 });
 
 logger.info('Server start at ' + new Date().toUTCString());
