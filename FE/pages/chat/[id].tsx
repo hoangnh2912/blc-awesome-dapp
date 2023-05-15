@@ -163,6 +163,16 @@ const GetMessageOfRoom = ({
   const [loading, setLoading] = useState<boolean>(false);
   const [page, setPage] = useState<number>(0);
 
+  const processedMessageList = messageList.reduce(
+    (acc: GetMessageOutput[], cur) => {
+      if (!acc.includes(cur)) {
+        acc.push(cur);
+      }
+      return acc;
+    },
+    []
+  );
+
   useEffect(() => {
     const signature = localStorage.getItem("signature");
     const address = localStorage.getItem("address");
@@ -193,14 +203,6 @@ const GetMessageOfRoom = ({
     //   await setMessageList([data]);
     // }
   };
-  // if (socketInstance.initStatus){
-
-  //   socketInstance.getSocket().on("message sent", async (data, res) => {
-  //     if (data) {
-  //       console.log(`new message: ${data}`);
-  //     }
-  //   });
-  // }
 
   const fetchMoreData = async ({ room_id }: { room_id: string }) => {
     try {
@@ -236,11 +238,11 @@ const GetMessageOfRoom = ({
     } catch (error) {}
   };
 
-  if (userStateData && messageList) {
+  if (userStateData && processedMessageList) {
     return (
       <div>
         <InfiniteScroll
-          dataLength={messageList.length}
+          dataLength={processedMessageList.length}
           next={() => fetchMoreData({ room_id })}
           style={{ display: "flex", flexDirection: "column" }}
           inverse={true}
@@ -248,20 +250,28 @@ const GetMessageOfRoom = ({
           loader={<></>}
           scrollableTarget="scrollableFlex"
         >
-          {messageList
+          {processedMessageList
             .slice(0)
             .reverse()
             .map((message, index) => {
               const returnValues = [];
 
-              if ((messageList.length - index) % CONSTANT.MESSAGE_LIMIT == 0) {
+              if (
+                (processedMessageList.length - index) %
+                  CONSTANT.MESSAGE_LIMIT ==
+                0
+              ) {
                 returnValues.push(
                   <div
                     key={`top-page-${
-                      (messageList.length - index) / CONSTANT.MESSAGE_LIMIT - 1
+                      (processedMessageList.length - index) /
+                        CONSTANT.MESSAGE_LIMIT -
+                      1
                     }`}
                     id={`top-page-${
-                      (messageList.length - index) / CONSTANT.MESSAGE_LIMIT - 1
+                      (processedMessageList.length - index) /
+                        CONSTANT.MESSAGE_LIMIT -
+                      1
                     }`}
                   ></div>
                 );
@@ -358,7 +368,6 @@ const detail = () => {
 
   const getSecretKey = async () => {
     if (userStateData) {
-      // const address = localStorage.getItem("address");
       if (address) {
         const getBob = room?.users
           .filter(
@@ -394,7 +403,7 @@ const detail = () => {
 
   useEffect(() => {
     getSecretKey();
-  }, [room]);
+  }, [room, userStateData]);
 
   useEffect(() => {
     setTimeout(() => {
