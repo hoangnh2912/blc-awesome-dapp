@@ -628,7 +628,7 @@ class RoomService {
 
       const lookup = {
         $lookup: {
-          from: 'users',
+          from: 'chatusers',
           localField: 'users',
           foreignField: 'wallet_address',
           as: 'session',

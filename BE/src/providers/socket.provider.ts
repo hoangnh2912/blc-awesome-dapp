@@ -49,11 +49,15 @@ io.use(async (socket, next) => {
   }
 
   if (authorize) {
+    console.log(`authorize: ${authorize}`);
+
+    console.log(`someone is connecting`);
+
     if (Array.isArray(authorize)) {
       authorize.join('');
     }
     if (typeof authorize === 'string') {
-      const [address, addressFromMessage, expire] = authorizeExtractor(authorize);
+      const [address, addressFromMessage] = authorizeExtractor(authorize);
 
       if (addressFromMessage != address) {
         return next(new Error('invalid address not match'));
@@ -62,9 +66,9 @@ io.use(async (socket, next) => {
         return next(new Error('invalid address'));
       }
 
-      if (Date.now() > parseInt(expire)) {
-        return next(new Error('out of date authorize'));
-      }
+      // if (Date.now() > parseInt(expire)) {
+      //   return next(new Error('out of date authorize'));
+      // }
 
       await usersService.setSessionId(address.toLowerCase(), socket.id);
       const listRooms = await roomService.getRoomOfUser(address);
@@ -79,6 +83,7 @@ io.use(async (socket, next) => {
           ]),
         ),
       );
+      console.log(`new connection: ${socket.id}`);
 
       return next();
     }
@@ -168,9 +173,12 @@ const startSocket = () => {
 const authorizeExtractor = (authorize: string) => {
   const [message, signature] = authorize.split(':');
 
-  const address = web3.eth.accounts.recover(message, signature);
-  const [addressFromMessage, expire] = message.split('-');
-  return [address.toLowerCase(), addressFromMessage.toLowerCase(), expire, signature];
+  // const address = web3.eth.accounts.recover(message, signature);
+  const address = ethers.utils.verifyMessage(message, signature);
+  console.log(`address.toLowerCase(): ${address.toLowerCase()}`);
+  console.log(`message: ${message}`);
+
+  return [address.toLowerCase(), message];
 };
 
 const messageSyncHandle = async () => {};
@@ -179,6 +187,10 @@ const emitMessageV2 = async (message: IMessage & { _id: Types.ObjectId }) => {
   try {
     const roomService = Singleton.getRoomInstance();
     const sessions = await roomService.getSessionOfRoom(message.room_id);
+    console.log(`sessions: ${sessions}`);
+
+    console.log(`emitting new message`);
+
     sessions.map(session => {
       io.to(session.session_id)
         .timeout(ChatConstant.SOCKET_RESPONSE_TIMEOUT)

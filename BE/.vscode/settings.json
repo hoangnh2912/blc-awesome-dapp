@@ -1,3 +1,6 @@
 {
-  "cSpell.words": ["dmtp"]
+  "cSpell.words": [
+    "dmtp"
+  ],
+  "typescript.tsdk": "node_modules\\typescript\\lib"
 }
