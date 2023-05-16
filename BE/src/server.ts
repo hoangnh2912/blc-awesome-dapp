@@ -29,19 +29,6 @@ app.use(function (req, _res, next) {
   next();
 });
 
-// router.get("/file", (req, res) => {
-//   try {
-//     const { name } = req.query;
-//     let filePath = `${__dirname}/${PATH_UPLOAD_FILE}${name}`;
-//     if (fs.existsSync(filePath)) {
-//       var path = require("path");
-//       return res.sendFile(path.resolve(filePath));
-//     } else throw new Error("File not found");
-//   } catch (error) {
-//     return res.json(onError(error));
-//   }
-// });
-
 app.use('/docs', swaggerUi.serve, async (_req: Request, res: Response) => {
   return res.send(swaggerUi.generateHTML(await import('../build/swagger.json')));
 });

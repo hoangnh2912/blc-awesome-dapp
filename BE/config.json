@@ -119,5 +119,10 @@
       }
     ],
     "contractName": "CID"
+  },
+  "CMD": {
+    "address": "",
+    "abi": [],
+    "contractName": "ChatMind"
   }
 }

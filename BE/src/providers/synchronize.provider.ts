@@ -16,7 +16,7 @@ const onJobGetDataFromSmartContract = async () => {
 
     if (!last_block_number) {
       await Synchronize.create({
-        last_block_number: 33395644,
+        last_block_number: 0,
       });
       return;
     }
@@ -147,6 +147,8 @@ const synchronizeMarket = async (
     }
   }
 };
+
+const synchronizeActivePoint = async () => {};
 
 const startSynchronizeDataFromSmartContract = () => {
   cron.schedule('*/6 * * * * *', onJobGetDataFromSmartContract);
