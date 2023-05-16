@@ -1,4 +1,4 @@
-import { ChatConstant, Some } from '@constants';
+import { ChatConstant, logger, Some } from '@constants';
 import {
   // CidContract,
   emitAcceptFriend,
@@ -6,10 +6,11 @@ import {
   emitFriendRequest,
   emitNewNotification,
   emitUnFriend,
-  // sendTransaction,
+  sendTransaction,
   Singleton,
   stickerContract,
   uploadJson,
+  ChatMindRewardContract,
 } from '@providers';
 import {
   Avatar,
@@ -959,6 +960,36 @@ class ChatUserService {
       },
     );
     return apiKey;
+  }
+
+  public async submitActivePoint() {
+    try {
+      let listAddress = [];
+      let listPoint = [];
+      const findUser = await ChatUser.find({
+        $expr: {
+          $gt: ['$active_points', '$synced_active_points'],
+        },
+      });
+
+      findUser.map(user => {
+        listAddress.push(user.wallet_address);
+        listPoint.push(user.active_points - user.synced_active_points);
+      });
+
+      await Promise.all(
+        findUser.map(async user => {
+          user.synced_active_points = 0;
+          user.active_points = 0;
+          await user.save();
+        }),
+      );
+
+      // await sendTransaction(ChatMindRewardContract, "increaseBatch", [listAddress, ])
+    } catch (error) {
+      logger.error(error);
+      throw error;
+    }
   }
 }
 

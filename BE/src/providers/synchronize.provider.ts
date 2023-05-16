@@ -25,6 +25,7 @@ const onJobGetDataFromSmartContract = async () => {
 
     await synchronizeMarket(last_block_number, last_block_number_onchain, listTxHash);
     await synchronizeMusic(last_block_number, last_block_number_onchain, listTxHash);
+    await synchronizeActivePoint();
     if (listTxHash.length > 0) {
       await Synchronize.create({
         last_block_number: last_block_number_onchain,

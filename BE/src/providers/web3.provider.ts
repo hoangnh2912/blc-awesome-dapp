@@ -2,7 +2,6 @@ import { ABI_MUSIC, ABI_CHAT } from '@constants';
 import Web3 from 'web3';
 import { Contract } from 'web3-eth/node_modules/web3-eth-contract/types/index';
 import { logger } from '@constants';
-
 const web3 = new Web3(`${process.env.NETWORK_RPC}`);
 
 const newContract = (abi: any, address: string): Contract => {
@@ -14,6 +13,7 @@ const MarketContract = newContract(ABI_MUSIC.MusicMarket.abi, ABI_MUSIC.MusicMar
 const ChatMarketContract = newContract(ABI_CHAT.ChatMarket.abi, ABI_CHAT.ChatMarket.address);
 const stickerContract = newContract(ABI_CHAT.Sticker.abi, ABI_CHAT.Sticker.address);
 const CidContract = newContract(ABI_CHAT.CID.abi, ABI_CHAT.CID.address);
+const ChatMindRewardContract = newContract(ABI_CHAT.CMD.abi, ABI_CHAT.CMD.address);
 
 const sendTransaction = async (
   contract: any,
@@ -42,6 +42,7 @@ export {
   MusicContract,
   MarketContract,
   ChatMarketContract,
+  ChatMindRewardContract,
   stickerContract,
   CidContract,
   sendTransaction,

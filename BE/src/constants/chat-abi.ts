@@ -129,4 +129,9 @@ export const ABI_CHAT = {
     ],
     contractName: 'DMTPCid',
   },
+  CMD: {
+    address: '',
+    abi: [],
+    contractName: 'ChatMind',
+  },
 };
