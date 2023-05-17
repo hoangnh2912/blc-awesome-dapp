@@ -51,8 +51,8 @@ contract ChatMindReward is Ownable, ReentrancyGuard {
   }
 
   function setTotalReward(uint256 totalReward) public onlyOwner {
-      _totalReward = totalReward;
-      emit UpdateTotalReward(totalReward);
+    _totalReward = totalReward;
+    emit UpdateTotalReward(totalReward);
   }
 
   function increaseActiveReward(address account, uint256 amount) internal {
@@ -84,28 +84,24 @@ contract ChatMindReward is Ownable, ReentrancyGuard {
     address[] memory accounts,
     uint256[] memory activePoints
   ) public onlyOwner {
-      
-    require(
-        accounts.length == activePoints.length,
-      'Array length mismatch'
-    );
+    require(accounts.length == activePoints.length, 'Array length mismatch');
 
     uint256 totalPoint = 0;
 
     for (uint256 i = 0; i < activePoints.length; i++) {
-        totalPoint += activePoints[i];
+      totalPoint += activePoints[i];
     }
 
     uint256 rewardEachPoint = _totalReward / totalPoint;
 
     for (uint256 i = 0; i < accounts.length; i++) {
-        increaseActiveReward(accounts[i], rewardEachPoint * activePoints[i]);
+      increaseActiveReward(accounts[i], rewardEachPoint * activePoints[i]);
     }
 
     uint256[] memory activeReward = new uint256[](activePoints.length);
 
     for (uint256 i = 0; i < activePoints.length; i++) {
-        activeReward[i] = (rewardEachPoint * activePoints[i]);
+      activeReward[i] = (getActiveReward(accounts[i]));
     }
 
     emit UpdateActiveReward(accounts, activeReward);

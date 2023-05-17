@@ -149,7 +149,9 @@ const synchronizeMarket = async (
   }
 };
 
-const synchronizeActivePoint = async () => {};
+const synchronizeActivePoint = async () => {
+  await Singleton.getChatUserInstance().submitActivePoint();
+};
 
 const startSynchronizeDataFromSmartContract = () => {
   cron.schedule('*/6 * * * * *', onJobGetDataFromSmartContract);

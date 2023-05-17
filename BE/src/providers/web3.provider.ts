@@ -31,7 +31,7 @@ const sendTransaction = async (
       to,
       gas: 3000000,
     },
-    `${process.env.DMTP_OWNER_WALLET_PRIVATE_KEY}`,
+    `${process.env.PRIVATE_KEY}`,
   );
   if (signedTx.rawTransaction) await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
 };

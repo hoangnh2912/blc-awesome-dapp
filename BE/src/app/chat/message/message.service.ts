@@ -218,29 +218,6 @@ class MessageService {
 
       await emitMessageV2(messageEmit);
 
-      // if (!findRoom.is_disable.includes(to_address))
-      //   botSendMessageToWallets([to_address], {
-      //     embeds: [
-      //       {
-      //         title: `New message on DMTP`,
-      //         color: 0x9900ff,
-      //         url: `https://dmtp.tech/messages/${room_id}`,
-      //       },
-      //     ],
-      //     content: `Message from ${
-      //       !!sender_user.name ? sender_user.name : sender_user.wallet_address
-      //     } to ${to_address}`,
-      //     data: {
-      //       user: {
-      //         name: sender_user.name,
-      //         avatar: sender_user.avatar,
-      //         wallet_address: sender_user.wallet_address,
-      //       },
-      //       room_id,
-      //     },
-      //     type: Constant.NOTIFICATION_TYPE.NEW_MESSAGE,
-      //   });
-
       const sessionOfRoom = await Singleton.getRoomInstance().getSessionOfRoom(
         findRoom._id.toString(),
       );
@@ -252,13 +229,22 @@ class MessageService {
           }),
         );
       }
+
+      const isSpam = await Singleton.getChatUserInstance().spamVerifier(address, room_id);
+      console.log(`isSpam: ${isSpam}`);
+
+      if (!isSpam && sender_user.active_point < 100) {
+        sender_user.active_point += 1;
+        await sender_user.save();
+      }
+
       return messages;
     } catch (error) {
       throw error;
     }
   }
 
-  public async updateMessageV2(
+  public async updateMessage(
     messageId: string,
     address: string,
     message_data: string,

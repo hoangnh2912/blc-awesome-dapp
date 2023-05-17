@@ -75,7 +75,7 @@ export class MessageController extends Controller {
     try {
       const address = req.headers.address as string;
       const { message_data, message_id } = data;
-      const messages = await this.messageService.updateMessageV2(message_id, address, message_data);
+      const messages = await this.messageService.updateMessage(message_id, address, message_data);
       return onSuccess(messages);
     } catch (error) {
       logger.error(error);

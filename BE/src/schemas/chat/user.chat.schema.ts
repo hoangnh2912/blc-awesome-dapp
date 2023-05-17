@@ -34,6 +34,7 @@ export interface IChatUser {
   session: ChatSession[];
   active_points: number;
   synced_active_points: number;
+  active_point: number;
   wallet_score: number;
   campaign?: string;
   is_stake_eth: boolean;
@@ -60,6 +61,7 @@ const chatUserSchema = new Schema<IChatUser>({
   active_points: { required: false, type: Number, default: 0 },
   synced_active_points: { required: false, type: Number, default: 0 },
   wallet_score: { required: false, type: Number, default: 0 },
+  active_point: { required: false, type: Number, default: 0 },
   campaign: { required: false, type: String },
   is_stake_eth: { required: false, type: Boolean, default: false },
   avatar: { required: false, type: String },

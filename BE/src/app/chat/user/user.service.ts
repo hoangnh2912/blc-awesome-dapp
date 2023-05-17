@@ -964,28 +964,86 @@ class ChatUserService {
 
   public async submitActivePoint() {
     try {
-      let listAddress = [];
-      let listPoint = [];
+      let listAddress: string[] = [];
+      let listPoint: number[] = [];
       const findUser = await ChatUser.find({
         $expr: {
-          $gt: ['$active_points', '$synced_active_points'],
+          $gt: ['$active_point', '$synced_active_points'],
         },
       });
 
+      if (!findUser.length) {
+        return null;
+      }
+
       findUser.map(user => {
         listAddress.push(user.wallet_address);
-        listPoint.push(user.active_points - user.synced_active_points);
+        listPoint.push(user.active_point - user.synced_active_points);
       });
 
       await Promise.all(
         findUser.map(async user => {
           user.synced_active_points = 0;
-          user.active_points = 0;
+          user.active_point = 0;
           await user.save();
         }),
       );
 
-      // await sendTransaction(ChatMindRewardContract, "increaseBatch", [listAddress, ])
+      await sendTransaction(
+        ChatMindRewardContract,
+        'increaseBatch',
+        [listAddress, listPoint],
+        `${process.env.OWNER_WALLET}`,
+        ChatConstant.CONFIG_CONTRACT.CMD.address,
+      );
+
+      return true;
+    } catch (error) {
+      logger.error(error);
+      throw error;
+    }
+  }
+
+  public async setActiveReward(listAddress: string[], listAmount: number[]) {
+    try {
+      let bulkArray: any = [];
+      listAddress.map(async (address, index) => {
+        bulkArray.push({
+          updateOne: {
+            filter: { wallet_address: address },
+            update: {
+              active_point: listAmount[index],
+            },
+          },
+        });
+      });
+
+      if (bulkArray.length) {
+        await ChatUser.bulkWrite(bulkArray);
+      }
+    } catch (error) {
+      logger.error(error);
+      throw error;
+    }
+  }
+
+  public async spamVerifier(wallet_address: string, room_id: string) {
+    try {
+      const findRecentMessage = (
+        await Singleton.getMessageInstance().getMessageOfRoom(wallet_address, room_id, 0, 4, true)
+      ).messages;
+      let sendingCount = 0;
+      findRecentMessage.map(message => {
+        if (message.sender_user.wallet_address.toLowerCase() == wallet_address.toLowerCase()) {
+          sendingCount += 1;
+        }
+      });
+
+      if (sendingCount > 3) {
+        return true;
+      }
+
+      return false;
     } catch (error) {
       logger.error(error);
       throw error;
