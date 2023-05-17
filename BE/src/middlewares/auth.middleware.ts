@@ -21,6 +21,7 @@ const SignatureMiddleware = async (req: Request, res: Response, next: NextFuncti
 
     req.headers.address = address.toLowerCase();
     req.headers.signature = signature;
+
     return next();
   } catch (error) {
     logger.error(error);

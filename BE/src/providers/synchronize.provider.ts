@@ -2,7 +2,7 @@ import { Constant, logger } from '@constants';
 import { Synchronize } from '@schemas';
 import cron from 'node-cron';
 import { EventData } from 'web3-eth-contract';
-import { Singleton, web3, MusicContract, MarketContract } from '.';
+import { Singleton, web3, MusicContract, MarketContract, ChatMindRewardContract } from '.';
 
 const globalVariable: any = global;
 
@@ -25,7 +25,9 @@ const onJobGetDataFromSmartContract = async () => {
 
     await synchronizeMarket(last_block_number, last_block_number_onchain, listTxHash);
     await synchronizeMusic(last_block_number, last_block_number_onchain, listTxHash);
+    await synchronizeActiveToken(last_block_number, last_block_number_onchain, listTxHash);
     await synchronizeActivePoint();
+
     if (listTxHash.length > 0) {
       await Synchronize.create({
         last_block_number: last_block_number_onchain,
@@ -151,6 +153,35 @@ const synchronizeMarket = async (
 
 const synchronizeActivePoint = async () => {
   await Singleton.getChatUserInstance().submitActivePoint();
+};
+
+const synchronizeActiveToken = async (
+  last_block_number_sync: number,
+  last_block_number_onchain: number,
+  listTxHash: string[],
+) => {
+  const chatUserService = Singleton.getChatUserInstance();
+  const getPastEventsConfig = {
+    fromBlock: last_block_number_sync,
+    toBlock: last_block_number_onchain,
+  };
+
+  const eventListReward = await ChatMindRewardContract.getPastEvents(
+    Constant.CMD_REWARD_EVENT.UpdateActiveReward,
+    getPastEventsConfig,
+  );
+  console.log(`to here`);
+
+  const eventParam = eventListReward.pop();
+  console.log(eventParam);
+
+  if (eventParam) {
+    listTxHash.push(eventParam.transactionHash);
+    await chatUserService.setActiveReward(
+      eventParam.returnValues['accounts'],
+      eventParam.returnValues['amounts'],
+    );
+  }
 };
 
 const startSynchronizeDataFromSmartContract = () => {

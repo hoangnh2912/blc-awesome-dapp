@@ -130,6 +130,9 @@ const Constant = {
     ListSong: 'ListSong',
     BuySong: 'BuySong',
   },
+  CMD_REWARD_EVENT: {
+    UpdateActiveReward: 'UpdateActiveReward',
+  },
   ATTRIBUTES: {
     GENRE,
     MOOD,
