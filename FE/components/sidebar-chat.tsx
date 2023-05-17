@@ -270,6 +270,8 @@ const LoginButton = ({
   avatar: string;
   router: NextRouter;
 }) => {
+  const userStateData = useStoreState((state) => state.chatUser.data);
+  
   const disconnect = useDisconnect();
   const logout = useStoreActions((state) => state.chatUser.logout);
 
