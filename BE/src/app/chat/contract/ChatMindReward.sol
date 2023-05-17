@@ -10,12 +10,16 @@ contract ChatMindReward is Ownable, ReentrancyGuard {
   event UpdateActiveReward(address[] indexed accounts, uint256[] amounts);
   event UpdateActivePoints(address[] indexed accounts, uint256[] points);
   event UpdateAdmin(address indexed admin);
+  event UpdateTotalReward(uint256 indexed totalReward);
   event BlockUser(address indexed account);
   event UnblockUser(address indexed account);
 
   mapping(address => uint256) private _activePoints;
   mapping(address => uint256) private _activeReward;
   mapping(address => bool) private _isBlocked;
+
+  uint256 _totalReward;
+
   address private _admin;
   ERC20 private _chatMind;
 
@@ -31,7 +35,6 @@ contract ChatMindReward is Ownable, ReentrancyGuard {
     require(balanceOfPool() >= reward, 'Pool is exhausted');
     _chatMind.transferFrom(_admin, msg.sender, reward);
     resetActiveReward(msg.sender);
-    resetActivePoints(msg.sender);
 
     emit ClaimReward(msg.sender, reward);
   }
@@ -47,8 +50,14 @@ contract ChatMindReward is Ownable, ReentrancyGuard {
     emit UpdateAdmin(newAdmin);
   }
 
+  function setTotalReward(uint256 totalReward) public onlyOwner {
+      _totalReward = totalReward;
+      emit UpdateTotalReward(totalReward);
+  }
+
   function increaseActiveReward(address account, uint256 amount) internal {
     _activeReward[account] += amount;
+    resetActivePoints(account);
   }
 
   function resetActiveReward(address account) internal {
@@ -73,20 +82,33 @@ contract ChatMindReward is Ownable, ReentrancyGuard {
 
   function increaseBatch(
     address[] memory accounts,
-    uint256[] memory activeReward,
     uint256[] memory activePoints
   ) public onlyOwner {
+      
     require(
-      accounts.length == activeReward.length && accounts.length == activePoints.length,
+        accounts.length == activePoints.length,
       'Array length mismatch'
     );
-    for (uint i = 0; i < accounts.length; i++) {
-      increaseActiveReward(accounts[i], activeReward[i]);
-      increaseActivePoints(accounts[i], activePoints[i]);
+
+    uint256 totalPoint = 0;
+
+    for (uint256 i = 0; i < activePoints.length; i++) {
+        totalPoint += activePoints[i];
+    }
+
+    uint256 rewardEachPoint = _totalReward / totalPoint;
+
+    for (uint256 i = 0; i < accounts.length; i++) {
+        increaseActiveReward(accounts[i], rewardEachPoint * activePoints[i]);
+    }
+
+    uint256[] memory activeReward = new uint256[](activePoints.length);
+
+    for (uint256 i = 0; i < activePoints.length; i++) {
+        activeReward[i] = (rewardEachPoint * activePoints[i]);
     }
 
     emit UpdateActiveReward(accounts, activeReward);
-    emit UpdateActivePoints(accounts, activePoints);
   }
 
   function blockUser(address account) public onlyOwner {
