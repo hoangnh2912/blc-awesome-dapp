@@ -1010,13 +1010,15 @@ class ChatUserService {
       listAddress.map(async (address, index) => {
         bulkArray.push({
           updateOne: {
-            filter: { wallet_address: address },
+            filter: { wallet_address: address.toLowerCase() },
             update: {
-              active_point: listAmount[index],
+              $set: { active_token: listAmount[index] },
             },
           },
         });
       });
+
+      console.log(JSON.stringify(bulkArray));
 
       if (bulkArray.length) {
         await ChatUser.bulkWrite(bulkArray);

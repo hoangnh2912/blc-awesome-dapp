@@ -130,7 +130,7 @@ export const ABI_CHAT = {
     contractName: 'DMTPCid',
   },
   CMD: {
-    address: '0x2dfFEC664D7aEf4800e7444f206Ad96e691119ed',
+    address: '0xF128e3D400cf8F8B422E65989bC03Fc2f78E3884',
     abi: [
       {
         inputs: [
@@ -332,7 +332,7 @@ export const ABI_CHAT = {
         anonymous: false,
         inputs: [
           {
-            indexed: true,
+            indexed: false,
             internalType: 'address[]',
             name: 'accounts',
             type: 'address[]',
@@ -458,5 +458,178 @@ export const ABI_CHAT = {
       },
     ],
     contractName: 'ChatMindReward',
+  },
+  CMDERC20: {
+    address: '0x93b242539b6652163d72ecd20b347a965e6280a2',
+    abi: [
+      {
+        inputs: [
+          { internalType: 'address', name: 'chatMind', type: 'address' },
+          { internalType: 'address', name: 'admin', type: 'address' },
+        ],
+        stateMutability: 'nonpayable',
+        type: 'constructor',
+      },
+      {
+        anonymous: false,
+        inputs: [{ indexed: true, internalType: 'address', name: 'account', type: 'address' }],
+        name: 'BlockUser',
+        type: 'event',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          { indexed: true, internalType: 'address', name: 'account', type: 'address' },
+          { indexed: false, internalType: 'uint256', name: 'amount', type: 'uint256' },
+        ],
+        name: 'ClaimReward',
+        type: 'event',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'previousOwner',
+            type: 'address',
+          },
+          { indexed: true, internalType: 'address', name: 'newOwner', type: 'address' },
+        ],
+        name: 'OwnershipTransferred',
+        type: 'event',
+      },
+      {
+        anonymous: false,
+        inputs: [{ indexed: true, internalType: 'address', name: 'account', type: 'address' }],
+        name: 'UnblockUser',
+        type: 'event',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          { indexed: true, internalType: 'address[]', name: 'accounts', type: 'address[]' },
+          { indexed: false, internalType: 'uint256[]', name: 'points', type: 'uint256[]' },
+        ],
+        name: 'UpdateActivePoints',
+        type: 'event',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          { indexed: true, internalType: 'address[]', name: 'accounts', type: 'address[]' },
+          { indexed: false, internalType: 'uint256[]', name: 'amounts', type: 'uint256[]' },
+        ],
+        name: 'UpdateActiveReward',
+        type: 'event',
+      },
+      {
+        anonymous: false,
+        inputs: [{ indexed: true, internalType: 'address', name: 'admin', type: 'address' }],
+        name: 'UpdateAdmin',
+        type: 'event',
+      },
+      {
+        anonymous: false,
+        inputs: [{ indexed: true, internalType: 'uint256', name: 'totalReward', type: 'uint256' }],
+        name: 'UpdateTotalReward',
+        type: 'event',
+      },
+      {
+        inputs: [],
+        name: 'balanceOfPool',
+        outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [{ internalType: 'address', name: 'account', type: 'address' }],
+        name: 'blockUser',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'claimReward',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [{ internalType: 'address', name: 'account', type: 'address' }],
+        name: 'getActivePoints',
+        outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [{ internalType: 'address', name: 'account', type: 'address' }],
+        name: 'getActiveReward',
+        outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [
+          { internalType: 'address[]', name: 'accounts', type: 'address[]' },
+          { internalType: 'uint256[]', name: 'activePoints', type: 'uint256[]' },
+        ],
+        name: 'increaseBatch',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [{ internalType: 'address', name: 'account', type: 'address' }],
+        name: 'isBlocked',
+        outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'owner',
+        outputs: [{ internalType: 'address', name: '', type: 'address' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'renounceOwnership',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [{ internalType: 'address', name: 'newAdmin', type: 'address' }],
+        name: 'setNewAdmin',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [{ internalType: 'uint256', name: 'totalReward', type: 'uint256' }],
+        name: 'setTotalReward',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [{ internalType: 'address', name: 'newOwner', type: 'address' }],
+        name: 'transferOwnership',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [{ internalType: 'address', name: 'account', type: 'address' }],
+        name: 'unblockUser',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+    ],
+    contractName: 'CMD',
   },
 };

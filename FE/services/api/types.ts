@@ -168,6 +168,8 @@ interface GetRoomInfo {
 interface GetChatUserOutput {
   wallet_address: string;
   active_points: number;
+  active_point: number;
+  active_token: number;
   avatar: string;
   created_at: Date;
   description: string;

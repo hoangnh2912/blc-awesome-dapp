@@ -231,7 +231,6 @@ class MessageService {
       }
 
       const isSpam = await Singleton.getChatUserInstance().spamVerifier(address, room_id);
-      console.log(`isSpam: ${isSpam}`);
 
       if (!isSpam && sender_user.active_point < 100) {
         sender_user.active_point += 1;

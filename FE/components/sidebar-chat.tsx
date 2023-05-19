@@ -24,7 +24,7 @@ import {
 } from "@chakra-ui/react";
 
 import { CONSTANT } from "../constants/chat-constant";
-import { Text } from "@chakra-ui/layout";
+import { Box, HStack, Text } from "@chakra-ui/layout";
 import { IconButton } from "@chakra-ui/button";
 import type { NextPage } from "next";
 import BaseLayout from "../layouts/base";
@@ -43,7 +43,7 @@ import {
 import { useStoreActions, useStoreState } from "../services/redux/hook";
 import React, { ReactNode, useEffect, useState, memo } from "react";
 import { RiMoneyDollarCircleLine } from "react-icons/ri";
-import { ABI_MUSIC } from "../constants/abi";
+import { ABI_MUSIC, ABI_CMD } from "../constants/abi";
 import { useModalTransaction } from "./modal-transaction";
 import LinkScan from "./link-scan";
 import { FaUser } from "react-icons/fa";
@@ -271,14 +271,15 @@ const LoginButton = ({
   router: NextRouter;
 }) => {
   const userStateData = useStoreState((state) => state.chatUser.data);
-  
+
   const disconnect = useDisconnect();
   const logout = useStoreActions((state) => state.chatUser.logout);
 
   const avatarURL = userAvatarGetter({ avatar });
 
   const address = useAddress();
-  const { data, refetch } = useBalance(ABI_MUSIC.MUC.address);
+  const { data, refetch } = useBalance(ABI_CMD.CMDERC20.address);
+  // const {data2, refetch2}
   const sdk = useSDK();
   const { onOpen: onOpenModalTx, setTxResult } = useModalTransaction();
   const { replace, push, query } = useRouter();
@@ -290,12 +291,17 @@ const LoginButton = ({
   const onFaucet = async () => {
     if (sdk && onOpenModalTx) {
       try {
-        const mucContract = await sdk.getContractFromAbi(
-          ABI_MUSIC.MUC.address,
-          ABI_MUSIC.MUC.abi
+        // const mucContract = await sdk.getContractFromAbi(
+        //   ABI_MUSIC.MUC.address,
+        //   ABI_MUSIC.MUC.abi
+        // );
+        const cmdContract = await sdk.getContractFromAbi(
+          ABI_CMD.CMDReward.address,
+          ABI_CMD.CMDReward.abi
         );
         onOpenModalTx();
-        const res = await mucContract.call("faucet");
+        // const res = await mucContract.call("faucet");
+        const res = await cmdContract.call("claimReward");
         setTxResult({
           reason: "",
           content: [
@@ -351,18 +357,26 @@ const LoginButton = ({
               direction="row"
             >
               <RiMoneyDollarCircleLine />
-              <Text fontFamily={"mono"}>{data?.displayValue} MUC</Text>
-              <Button
-                bg="#0D164D"
-                color="white"
-                _hover={{ bg: "#0D166D" }}
-                onClick={onFaucet}
-                style={{
-                  marginLeft: "1rem",
-                }}
-              >
-                Faucet
-              </Button>
+              <HStack>
+                <Box width={"50%"}>
+                  <Text fontFamily={"mono"}>{data?.displayValue} CMD</Text>
+                </Box>
+                <Box>
+                  <Button
+                    bg="#0D164D"
+                    color="white"
+                    _hover={{ bg: "#0D166D" }}
+                    onClick={onFaucet}
+                    style={{
+                      marginLeft: "1rem",
+                    }}
+                  >
+                    <Text fontSize={"sm"}>
+                      Claim {userStateData?.active_token}
+                    </Text>
+                  </Button>
+                </Box>
+              </HStack>
             </Stack>
             <Stack
               cursor="pointer"

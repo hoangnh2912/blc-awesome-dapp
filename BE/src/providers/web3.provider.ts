@@ -2,10 +2,17 @@ import { ABI_MUSIC, ABI_CHAT } from '@constants';
 import Web3 from 'web3';
 import { Contract } from 'web3-eth/node_modules/web3-eth-contract/types/index';
 import { logger } from '@constants';
+import { ethers, Contract as EthersContract } from 'ethers';
+
 const web3 = new Web3(`${process.env.NETWORK_RPC}`);
 
 const newContract = (abi: any, address: string): Contract => {
   return new web3.eth.Contract(abi, address);
+};
+
+const newEthersContract = (abi: any, address: string): EthersContract => {
+  const provider = new ethers.providers.JsonRpcProvider(`${process.env.NETWORK_RPC}`);
+  return new ethers.Contract(address, abi, provider);
 };
 
 const MusicContract = newContract(ABI_MUSIC.Music.abi, ABI_MUSIC.Music.address);
@@ -14,6 +21,7 @@ const ChatMarketContract = newContract(ABI_CHAT.ChatMarket.abi, ABI_CHAT.ChatMar
 const stickerContract = newContract(ABI_CHAT.Sticker.abi, ABI_CHAT.Sticker.address);
 const CidContract = newContract(ABI_CHAT.CID.abi, ABI_CHAT.CID.address);
 const ChatMindRewardContract = newContract(ABI_CHAT.CMD.abi, ABI_CHAT.CMD.address);
+const ChatMindRewardEthersContract = newEthersContract(ABI_CHAT.CMD.abi, ABI_CHAT.CMD.address);
 
 const sendTransaction = async (
   contract: any,
@@ -43,6 +51,7 @@ export {
   MarketContract,
   ChatMarketContract,
   ChatMindRewardContract,
+  ChatMindRewardEthersContract,
   stickerContract,
   CidContract,
   sendTransaction,

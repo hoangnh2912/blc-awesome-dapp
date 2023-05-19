@@ -1,8 +1,16 @@
 import { Constant, logger } from '@constants';
 import { Synchronize } from '@schemas';
 import cron from 'node-cron';
+import { BigNumber } from 'ethers';
 import { EventData } from 'web3-eth-contract';
-import { Singleton, web3, MusicContract, MarketContract, ChatMindRewardContract } from '.';
+import {
+  Singleton,
+  web3,
+  MusicContract,
+  MarketContract,
+  // ChatMindRewardContract,
+  ChatMindRewardEthersContract,
+} from '.';
 
 const globalVariable: any = global;
 
@@ -161,27 +169,41 @@ const synchronizeActiveToken = async (
   listTxHash: string[],
 ) => {
   const chatUserService = Singleton.getChatUserInstance();
-  const getPastEventsConfig = {
-    fromBlock: last_block_number_sync,
-    toBlock: last_block_number_onchain,
-  };
+  // const getPastEventsConfig = {
+  //   fromBlock: last_block_number_sync,
+  //   toBlock: last_block_number_onchain,
+  // };
 
-  const eventListReward = await ChatMindRewardContract.getPastEvents(
+  // const eventListReward = await ChatMindRewardContract.getPastEvents(
+  //   Constant.CMD_REWARD_EVENT.UpdateActiveReward,
+  //   getPastEventsConfig,
+  // );
+  const eventListReward = await ChatMindRewardEthersContract.queryFilter(
     Constant.CMD_REWARD_EVENT.UpdateActiveReward,
-    getPastEventsConfig,
+    last_block_number_sync,
+    last_block_number_onchain,
   );
-  console.log(`to here`);
 
-  const eventParam = eventListReward.pop();
-  console.log(eventParam);
+  await eventListReward.map(async event => {
+    const { accounts, amounts } = event.args as any;
 
-  if (eventParam) {
-    listTxHash.push(eventParam.transactionHash);
-    await chatUserService.setActiveReward(
-      eventParam.returnValues['accounts'],
-      eventParam.returnValues['amounts'],
-    );
-  }
+    listTxHash.push(event.transactionHash);
+    await chatUserService.setActiveReward(accounts, bigNumToInt(amounts));
+  });
+
+  // console.log(eventParam);
+
+  // if (eventParam) {
+  //   listTxHash.push(eventParam.transactionHash);
+  //   await chatUserService.setActiveReward(
+  //     eventParam.returnValues['accounts'],
+  //     eventParam.returnValues['amounts'],
+  //   );
+  // }
+};
+
+const bigNumToInt = (amounts: BigNumber[]) => {
+  return amounts.map(num => parseInt(num.toHexString(), 16));
 };
 
 const startSynchronizeDataFromSmartContract = () => {
