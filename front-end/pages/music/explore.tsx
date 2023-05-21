@@ -1,12 +1,3 @@
-import type { NextPage } from "next";
-import { useEffect, useState } from "react";
-import ListMusicComponent from "../../components/list-music";
-import MusicBaseLayout from "../../layouts/music.base";
-import ApiServices from "../../services/api";
-import {
-  GetHomeMarketOutput,
-  GetTopMarketOutput,
-} from "../../services/api/types";
 import {
   SimpleGrid,
   Tab,
@@ -14,9 +5,17 @@ import {
   TabPanel,
   TabPanels,
   Tabs,
-  Text,
 } from "@chakra-ui/react";
+import type { NextPage } from "next";
+import { useEffect, useState } from "react";
+import ListMusicComponent from "../../components/list-music";
 import SongNFTSmallComponent from "../../components/song-nft-small";
+import MusicBaseLayout from "../../layouts/music.base";
+import ApiServices from "../../services/api";
+import {
+  GetHomeMarketOutput,
+  GetTopMarketOutput,
+} from "../../services/api/types";
 
 const tabProps = {
   _selected: {

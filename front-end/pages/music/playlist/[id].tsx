@@ -414,6 +414,7 @@ const PlaylistDetail = () => {
         <InputGroup w={["100%"]}>
           <Input
             borderWidth={0}
+            maxLength={256}
             bg={"rgba(0, 0, 0, 0.3)"}
             boxShadow={"2xl"}
             borderRadius={100}

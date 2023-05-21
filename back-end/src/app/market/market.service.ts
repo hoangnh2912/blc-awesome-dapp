@@ -176,21 +176,20 @@ export class MarketService {
     limit: number = 24,
     genre: string = '',
   ) {
-    return await Market.aggregate([
-      {
-        $match: {
-          $and: [
-            {
-              search_key: {
-                $regex: search,
-                $options: 'i',
-              },
-            },
-            ...(genre
-              ? [{ attributes: { $elemMatch: { trait_type: 'Genre', value: genre } } }]
-              : []),
-          ],
+    const query: any = {
+      $and: [
+        {
+          search_key: {
+            $regex: search,
+            $options: 'i',
+          },
         },
+        ...(genre ? [{ attributes: { $elemMatch: { trait_type: 'Genre', value: genre } } }] : []),
+      ],
+    };
+    const music = await Market.aggregate([
+      {
+        $match: query,
       },
       {
         $skip: (page - 1) * limit,
@@ -208,6 +207,11 @@ export class MarketService {
         },
       },
     ]);
+    const total = await Market.countDocuments(query);
+    return {
+      music,
+      total,
+    };
   }
 
   public async getMyMarket(seller: string, page: number = 1, limit: number = 24) {

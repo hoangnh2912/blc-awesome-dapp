@@ -12,8 +12,10 @@ import { Center } from "@chakra-ui/react";
 import { GrFormNext, GrFormPrevious } from "react-icons/gr";
 const PaginationComponent = ({
   pagination,
+  onPaginate,
 }: {
   pagination: ReturnType<typeof usePagination>;
+  onPaginate?: (page: number) => void;
 }) => {
   const { currentPage, setCurrentPage, pagesCount, pages } = pagination;
   return (
@@ -22,7 +24,10 @@ const PaginationComponent = ({
         <Pagination
           pagesCount={pagesCount}
           currentPage={currentPage}
-          onPageChange={setCurrentPage}
+          onPageChange={(pageSelect) => {
+            onPaginate && onPaginate(pageSelect);
+            setCurrentPage(pageSelect);
+          }}
         >
           <PaginationContainer gap={2}>
             {currentPage > 1 && (

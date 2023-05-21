@@ -108,6 +108,21 @@ const Create: NextPage = () => {
     });
   };
 
+  const clearForm = () => {
+    setImage(null);
+    setImageFile(null);
+    setAudio(null);
+    setUrl(null);
+    setTitle("");
+    setSinger("");
+    setGenre(GENRE[0]);
+    setMood(MOOD[0]);
+    setInstrument(INSTRUMENT[0]);
+    setPrice("");
+    setQuantity("");
+    setDescription("");
+  };
+
   const onCreate = async () => {
     try {
       if (!checkIsConnect()) return;
@@ -211,6 +226,7 @@ const Create: NextPage = () => {
         ],
       });
       await onList(`${id}`, price, quantity, resJson.data.data);
+      clearForm();
     } catch (error: any) {
       setTxResult({
         reason: error.message,
@@ -305,7 +321,7 @@ const Create: NextPage = () => {
               width="90%"
               overflow="hidden"
               textOverflow="ellipsis"
-              whiteSpace="nowrap"
+              noOfLines={1}
               fontFamily="mono"
             >
               {audio.name}
@@ -394,6 +410,7 @@ const Create: NextPage = () => {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           borderRadius="lg"
+          maxLength={256}
           borderColor="gray.300"
           placeholder="Your music title"
           color="white"
@@ -407,6 +424,7 @@ const Create: NextPage = () => {
           Singer
         </Text>
         <Input
+          maxLength={256}
           value={singer}
           onChange={(e) => setSinger(e.target.value)}
           borderRadius="lg"
@@ -511,6 +529,7 @@ const Create: NextPage = () => {
           Price (MUC)
         </Text>
         <Input
+          maxLength={256}
           value={price}
           onChange={(e) => setPrice(e.target.value)}
           type="number"
@@ -528,6 +547,7 @@ const Create: NextPage = () => {
           Quantity
         </Text>
         <Input
+          maxLength={18}
           value={quantity}
           onChange={(e) => setQuantity(e.target.value)}
           type="number"

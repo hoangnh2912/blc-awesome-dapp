@@ -86,9 +86,7 @@ const SongNFTSmallComponent = ({
                 fontWeight="bold"
                 color="white"
                 textOverflow="ellipsis"
-                overflow="hidden"
-                whiteSpace="nowrap"
-                maxWidth="60vw"
+                noOfLines={1}
                 fontSize="sm"
               >
                 {name}
@@ -96,9 +94,7 @@ const SongNFTSmallComponent = ({
               <Text
                 fontWeight="bold"
                 textOverflow="ellipsis"
-                overflow="hidden"
-                whiteSpace="nowrap"
-                maxWidth="45vw"
+                noOfLines={1}
                 fontSize="smaller"
                 color="white"
               >

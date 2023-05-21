@@ -20,26 +20,19 @@ import { GetUserOutput } from "../../services/api/types";
 import { useStoreActions, useStoreState } from "../../services/redux/hook";
 const EditProfile: NextPage = () => {
   const address = useAddress();
-
   const { back } = useRouter();
-
   const userInfo = useStoreState((state) => state.user.data);
-  const setUserInfo = useStoreActions((state) => state.user.setData);
+  const getUserInfo = useStoreActions((state) => state.user.getData);
   const image = userInfo?.avatar || null;
   const [file, setFile] = useState<File | null>(null);
-  const [username, setUsername] = useState<string>(userInfo?.name || "");
+  const [username, setUsername] = useState<string>(
+    userInfo?.name == "Unnamed" ? "" : userInfo?.name || ""
+  );
   const [description, setDescription] = useState<string>(
     userInfo?.description || ""
   );
   const getUserData = async () => {
-    if (address) {
-      try {
-        const res = await ApiServices.user.getUser(`${address}`);
-        setUserInfo(res.data.data);
-        setUsername(res.data.data.name == "Unnamed" ? "" : res.data.data.name);
-        setDescription(res.data.data.description);
-      } catch (error) {}
-    }
+    if (address) getUserInfo(`${address}`);
   };
 
   const toast = useToast();
@@ -193,6 +186,7 @@ const EditProfile: NextPage = () => {
             Username
           </Text>
           <Input
+            maxLength={256}
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             borderRadius="lg"

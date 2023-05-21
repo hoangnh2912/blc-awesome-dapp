@@ -1,4 +1,4 @@
-import { Action } from "easy-peasy";
+import { Action, Thunk } from "easy-peasy";
 import AudioPlayer from "react-h5-audio-player";
 import { GetMarketOutput, GetUserOutput } from "../api/types";
 
@@ -23,6 +23,7 @@ interface Music {
 interface User {
   data: GetUserOutput | undefined;
   setData: Action<User, GetUserOutput | undefined>;
+  getData: Thunk<User, string>;
   isCheckConnectData: {
     isCheckConnect: boolean;
     callback?: (...args: any) => any;

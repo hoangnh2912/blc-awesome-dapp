@@ -1,4 +1,4 @@
-import { createStore, action } from "easy-peasy";
+import { createStore, action, thunk } from "easy-peasy";
 import StoreModel from "./model";
 import ApiServices from "../api";
 
@@ -43,8 +43,9 @@ const store = createStore<StoreModel>({
     }),
     playList: [],
     addToPlayList: action((state, payload) => {
-      if (!state.playList.find((item) => item.id === payload.id))
+      if (!state.playList.find((item) => item.id === payload.id)) {
         state.playList.push(payload);
+      }
     }),
     addListToPlayList: action((state, payload) => {
       state.playList = payload;
@@ -78,6 +79,14 @@ const store = createStore<StoreModel>({
     data: undefined,
     setData: action((state, payload) => {
       state.data = payload;
+    }),
+    getData: thunk(async (actions, payload) => {
+      try {
+        const response = await ApiServices.user.getUser(payload);
+        actions.setData(response.data.data);
+      } catch (error: any) {
+        console.error(`[Thunk][User][getUser] ${error.message}`);
+      }
     }),
     isCheckConnectData: {
       isCheckConnect: false,

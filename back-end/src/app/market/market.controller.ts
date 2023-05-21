@@ -16,9 +16,13 @@ export class MarketController extends Controller {
     @Query() genre: string = '',
   ): Promise<OptionResponse<IMarket[]>> {
     try {
-      return onSuccess(
-        await Singleton.getMarketInstance().getListMarket(search, page, limit, genre),
+      const { music, total } = await Singleton.getMarketInstance().getListMarket(
+        search,
+        page,
+        limit,
+        genre,
       );
+      return onSuccess(music, total);
     } catch (error) {
       logger.error(error);
       this.setStatus(NETWORK_STATUS_CODE.INTERNAL_SERVER_ERROR);

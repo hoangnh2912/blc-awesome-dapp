@@ -35,7 +35,7 @@ const Music = ({ music }: { music: GetMarketOutput }) => {
   const currentSongState = useStoreState((state) => state.music.currentSong);
   const isPlayingState = useStoreState((state) => state.music.isPlaying);
   const currentAddress = useAddress();
-
+  const getUserData = useStoreActions((state) => state.user.getData);
   const data = music;
   const [isOwnNft, setIsOwnNft] = useState(false);
 
@@ -199,8 +199,11 @@ const Music = ({ music }: { music: GetMarketOutput }) => {
                 fontWeight="bold"
                 alignItems="center"
                 fontSize="3xl"
-                onClick={() => {
-                  onBuy(data.price, data.id);
+                onClick={async () => {
+                  await onBuy(data.price, data.id);
+                  setTimeout(() => {
+                    if (currentAddress) getUserData(currentAddress);
+                  }, 1000);
                 }}
                 gap={2}
               >

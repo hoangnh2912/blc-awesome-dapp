@@ -83,8 +83,7 @@ const AudioLayout = ({ children }: { children: React.ReactNode }) => {
                 fontWeight="bold"
                 fontSize="sm"
                 textOverflow="ellipsis"
-                overflow="hidden"
-                whiteSpace="nowrap"
+                noOfLines={1}
                 alignSelf="center"
                 pt={2}
               >

@@ -104,6 +104,7 @@ const Playlist: NextPage = () => {
               Create Playlist
             </Text>
             <Input
+              maxLength={256}
               mt={"1.5rem"}
               value={playlistName}
               onChange={(e) => setPlaylistName(e.target.value)}

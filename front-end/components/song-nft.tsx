@@ -6,17 +6,19 @@ import { ipfsToGateway } from "../constants/utils";
 import { GetMarketOutput } from "../services/api/types";
 import { useStoreActions, useStoreState } from "../services/redux/hook";
 import { useBuyMusic } from "../hooks/music";
+import { useAddress } from "@thirdweb-dev/react";
 
 const SongNFTComponent = (props: GetMarketOutput) => {
   const { image, name, singer, price, id, audio, ...rest } = props;
   const playMusicAction = useStoreActions((state) => state.music.playMusic);
+  const getUserData = useStoreActions((state) => state.user.getData);
+  const address = useAddress();
   const addToPlayListAction = useStoreActions(
     (state) => state.music.addToPlayList
   );
   const currentSongState = useStoreState((state) => state.music.currentSong);
   const isPlayingState = useStoreState((state) => state.music.isPlaying);
   const userInfoData = useStoreState((state) => state.user.data);
-
   const isOwnNft = userInfoData?.ids?.includes(id);
   const onPlayMusic = () => {
     playMusicAction({
@@ -85,6 +87,8 @@ const SongNFTComponent = (props: GetMarketOutput) => {
                 cursor="pointer"
                 onClick={goToMusic}
                 fontWeight="bold"
+                textOverflow="ellipsis"
+                noOfLines={1}
                 color="white"
               >
                 {name}
@@ -109,7 +113,12 @@ const SongNFTComponent = (props: GetMarketOutput) => {
           >
             {!isOwnNft ? (
               <Text
-                onClick={() => onBuy(price, id)}
+                onClick={async () => {
+                  await onBuy(price, id);
+                  setTimeout(() => {
+                    if (address) getUserData(address);
+                  }, 1000);
+                }}
                 cursor="pointer"
                 fontWeight="bold"
                 color="white"
@@ -127,6 +136,7 @@ const SongNFTComponent = (props: GetMarketOutput) => {
               <Text
                 onClick={() => {
                   addToPlayListAction(props);
+                  if (!isPlayingState) playMusicAction(props);
                 }}
                 cursor="pointer"
                 fontWeight="bold"

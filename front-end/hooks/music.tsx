@@ -1,4 +1,4 @@
-import { Spinner, useToast } from "@chakra-ui/react";
+import { Link, Spinner, useToast } from "@chakra-ui/react";
 import { useAddress, useSDK } from "@thirdweb-dev/react";
 import { signERC2612Permit } from "eth-permit";
 import { ethers } from "ethers";
@@ -146,6 +146,10 @@ const useBuyMusic = () => {
               title: "Transaction Hash",
               value: <LinkScan transactionHash={res.receipt.transactionHash} />,
             },
+            {
+              title: `NFT #${id} is listed`,
+              value: <Link href={`/music/${id}`}>View NFT #{id} on Music</Link>,
+            },
           ],
           txState: "success",
         });
@@ -215,6 +219,10 @@ const useListMusic = () => {
             {
               title: "Transaction Hash",
               value: <LinkScan transactionHash={res.receipt.transactionHash} />,
+            },
+            {
+              title: `NFT #${id} is listed`,
+              value: <Link href={`/music/${id}`}>View NFT #{id} on Music</Link>,
             },
           ],
           txState: "success",

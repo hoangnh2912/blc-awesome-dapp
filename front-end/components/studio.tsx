@@ -31,6 +31,7 @@ const Studio = ({
   setTotalStudio: any;
 }) => {
   const playMusicAction = useStoreActions((state) => state.music.playMusic);
+  const getUserData = useStoreActions((state) => state.user.getData);
   const { onBuy } = useBuyMusic();
 
   const currentAddress = useAddress();
@@ -182,8 +183,11 @@ const Studio = ({
                         style={{
                           cursor: "pointer",
                         }}
-                        onClick={() => {
-                          onBuy(item.price, item.id);
+                        onClick={async () => {
+                          await onBuy(item.price, item.id);
+                          setTimeout(() => {
+                            if (address) getUserData(address);
+                          }, 1000);
                         }}
                         size={"25px"}
                       />

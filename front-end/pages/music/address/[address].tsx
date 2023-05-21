@@ -93,7 +93,13 @@ const Profile = () => {
           }}
         />
         <Stack flex={5} justifyContent="center" px={2}>
-          <Text color="white" fontSize="24" fontWeight="bold">
+          <Text
+            color="white"
+            fontSize="24"
+            textOverflow="ellipsis"
+            noOfLines={1}
+            fontWeight="bold"
+          >
             {userInfo.name}
           </Text>
           <Text

@@ -204,6 +204,7 @@ export const ModalSwitchNetwork = () => {
 export const ModalSignMessage = () => {
   const disconnect = useDisconnect();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const getUserDataAction = useStoreActions((state) => state.user.getData);
   const setUserDataAction = useStoreActions((state) => state.user.setData);
   const sdk = useSDK();
   const address = useAddress();
@@ -220,12 +221,7 @@ export const ModalSignMessage = () => {
   };
 
   const getUserData = async () => {
-    if (address) {
-      try {
-        const resUser = await ApiServices.user.getUser(address);
-        setUserDataAction(resUser.data.data);
-      } catch (error) {}
-    }
+    if (address) getUserDataAction(address);
   };
 
   useEffect(() => {
@@ -631,6 +627,7 @@ const AppNav = ({ onOpen }: AppNavProps) => {
           bg={"rgba(0, 0, 0, 0.3)"}
           boxShadow={"2xl"}
           borderRadius={100}
+          maxLength={256}
           color={"white"}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
