@@ -93,7 +93,13 @@ const SongNFTComponent = (props: GetMarketOutput) => {
               >
                 {name}
               </Text>
-              <Text fontWeight="bold" fontSize="sm" color="white">
+              <Text
+                fontWeight="bold"
+                textOverflow="ellipsis"
+                noOfLines={1}
+                fontSize="sm"
+                color="white"
+              >
                 {singer}
               </Text>
             </Stack>

@@ -36,6 +36,7 @@ export class MarketService {
           count: -1,
         },
       },
+
       {
         $lookup: { from: 'markets', localField: '_id', foreignField: 'id', as: 'data' },
       },
@@ -46,6 +47,9 @@ export class MarketService {
           },
           count: 1,
         },
+      },
+      {
+        $limit: 10,
       },
     ]);
 
