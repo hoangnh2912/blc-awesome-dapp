@@ -1,7 +1,5 @@
 import {
-  Box,
   Button,
-  HStack,
   Input,
   Modal,
   ModalCloseButton,
@@ -13,15 +11,16 @@ import {
   Text,
   VStack,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import { useAddress } from "@thirdweb-dev/react";
 import type { NextPage } from "next";
 import { useEffect, useState } from "react";
 import PlaylistItemComponent from "../../components/playlist-item";
 import MusicBaseLayout from "../../layouts/music.base";
-import { useStoreActions } from "../../services/redux/hook";
 import ApiServices from "../../services/api";
 import { GetPlaylistOutput } from "../../services/api/types";
+import { useStoreActions } from "../../services/redux/hook";
 const Playlist: NextPage = () => {
   const setIsCheckConnectAction = useStoreActions(
     (state) => state.user.setIsCheckConnect
@@ -56,7 +55,15 @@ const Playlist: NextPage = () => {
     }
   };
 
+  const toast = useToast();
   const createPlaylist = async () => {
+    if (!playlistName)
+      return toast({
+        title: "Please enter name of playlist",
+        status: "error",
+        position: "top",
+      });
+    checkIsConnect();
     if (!address) return;
     try {
       await ApiServices.playlist.createPlaylist({

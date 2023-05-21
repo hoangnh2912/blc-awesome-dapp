@@ -7,6 +7,7 @@ import {
   Stack,
   Text,
   Textarea,
+  useToast,
 } from "@chakra-ui/react";
 import type { NextPage } from "next";
 import { useEffect, useState } from "react";
@@ -39,6 +40,8 @@ const Create: NextPage = () => {
   const setIsCheckConnectAction = useStoreActions(
     (state) => state.user.setIsCheckConnect
   );
+
+  const toast = useToast();
   const address = useAddress();
   const { onList } = useListMusic();
   const getAudioInfo = async () => {
@@ -97,11 +100,27 @@ const Create: NextPage = () => {
     }
   };
 
+  const showToastError = (title: string) => {
+    toast({
+      title,
+      status: "error",
+      position: "top-right",
+    });
+  };
+
   const onCreate = async () => {
     try {
-      if (!audio) return;
-      if (!imageFile) return;
       if (!checkIsConnect()) return;
+      if (!audio) return showToastError("Please upload audio");
+      if (!imageFile) return showToastError("Please upload image");
+      if (!title) return showToastError("Please enter title");
+      if (!singer) return showToastError("Please enter singer");
+      if (!genre) return showToastError("Please select genre");
+      if (!mood) return showToastError("Please select mood");
+      if (!instrument) return showToastError("Please select instrument");
+      if (!price) return showToastError("Please enter price");
+      if (!quantity) return showToastError("Please enter quantity");
+      if (!description) return showToastError("Please enter description");
       if (onOpenModalTx) onOpenModalTx();
       const resNextId = await ApiServices.music.getNextId();
       const id = resNextId.data.data;
@@ -426,14 +445,14 @@ const Create: NextPage = () => {
             </Text>
             <Select
               borderColor="gray.300"
-              color="white"
               value={genre}
+              color="white"
               onChange={(e) => {
                 setGenre(e.target.value);
               }}
             >
               {GENRE.map((item, idx) => (
-                <option key={idx} value={item}>
+                <option color="#fcae00" key={idx} value={item}>
                   {item}
                 </option>
               ))}
@@ -457,7 +476,7 @@ const Create: NextPage = () => {
               }}
             >
               {MOOD.map((item, idx) => (
-                <option key={idx} value={item}>
+                <option color="#fcae00" key={idx} value={item}>
                   {item}
                 </option>
               ))}
@@ -473,15 +492,15 @@ const Create: NextPage = () => {
               Instrument
             </Text>
             <Select
-              borderColor="gray.300"
               color="white"
+              borderColor="gray.300"
               value={instrument}
               onChange={(e) => {
                 setInstrument(e.target.value);
               }}
             >
               {INSTRUMENT.map((item, idx) => (
-                <option key={idx} value={item}>
+                <option color="#fcae00" key={idx} value={item}>
                   {item}
                 </option>
               ))}

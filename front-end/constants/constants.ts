@@ -16,7 +16,7 @@ const GENRE = [
   "Hip Hop",
   "Indie",
   "Pop",
-  "R&B",
+  // "R&B",
 ];
 
 const MOOD = ["Happy", "Sad", "Romantic", "Angry", "Relax", "Party"];

@@ -40,7 +40,6 @@ import {
   useActiveChain,
   useAddress,
   useBalance,
-  useCoinbaseWallet,
   useConnectionStatus,
   useDisconnect,
   useMetamask,
@@ -55,6 +54,7 @@ import { BsSearch } from "react-icons/bs";
 import { CgProfile } from "react-icons/cg";
 import { FaUser } from "react-icons/fa";
 import { FiMenu } from "react-icons/fi";
+import { GiUnicorn } from "react-icons/gi";
 import { IoLogOut } from "react-icons/io5";
 import { RiMoneyDollarCircleLine } from "react-icons/ri";
 import { ABI_MUSIC } from "../constants/abi";
@@ -65,7 +65,6 @@ import { useStoreActions, useStoreState } from "../services/redux/hook";
 import LinkScan from "./link-scan";
 import { useModalTransaction } from "./modal-transaction";
 import SongNFTSmallComponent from "./song-nft-small";
-import { GiUnicorn } from "react-icons/gi";
 
 export const ModalCheckConnect = () => {
   const setIsCheckConnectAction = useStoreActions(
@@ -87,7 +86,6 @@ export const ModalCheckConnect = () => {
   );
   const connectWithMetamask = useMetamask();
   const connectWithWalletConnect = useWalletConnect();
-  const connectCoinbase = useCoinbaseWallet();
 
   useEffect(() => {
     if (
@@ -133,14 +131,6 @@ export const ModalCheckConnect = () => {
               bg="#3443A0"
             >
               WalletConnect
-            </Button>
-            <Button
-              onClick={() => connectCoinbase()}
-              _hover={{ bg: "#3443DD" }}
-              color="white"
-              bg="#3443A0"
-            >
-              Coinbase
             </Button>
           </Stack>
         </ModalBody>
