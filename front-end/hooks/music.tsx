@@ -8,6 +8,7 @@ import { useModalTransaction } from "../components/modal-transaction";
 import { ABI_MUSIC } from "../constants/abi";
 import { GetMarketOutput } from "../services/api/types";
 import { useStoreActions } from "../services/redux/hook";
+import LinkNFT from "../components/link-nft";
 
 const useMusicIsPlayingView = ({
   pauseComponent,
@@ -147,8 +148,8 @@ const useBuyMusic = () => {
               value: <LinkScan transactionHash={res.receipt.transactionHash} />,
             },
             {
-              title: `NFT #${id} is listed`,
-              value: <Link href={`/music/${id}`}>View NFT #{id} on Music</Link>,
+              title: `NFT #${id} is now yours!`,
+              value: <LinkNFT isBuy id={id} />,
             },
           ],
           txState: "success",
@@ -222,7 +223,7 @@ const useListMusic = () => {
             },
             {
               title: `NFT #${id} is listed`,
-              value: <Link href={`/music/${id}`}>View NFT #{id} on Music</Link>,
+              value: <LinkNFT isBuy={false} id={id} />,
             },
           ],
           txState: "success",

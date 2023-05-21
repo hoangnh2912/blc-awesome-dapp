@@ -5,6 +5,7 @@ import { TiMediaPause } from "react-icons/ti";
 import { ipfsToGateway } from "../constants/utils";
 import { GetMarketOutput } from "../services/api/types";
 import { useStoreActions, useStoreState } from "../services/redux/hook";
+import { useModalTransaction } from "./modal-transaction";
 
 const SongNFTSmallComponent = ({
   image,
@@ -17,6 +18,7 @@ const SongNFTSmallComponent = ({
   const playMusicAction = useStoreActions((state) => state.music.playMusic);
   const currentSongState = useStoreState((state) => state.music.currentSong);
   const isPlayingState = useStoreState((state) => state.music.isPlaying);
+  const { onClose } = useModalTransaction();
   const onPlayMusic = () => {
     playMusicAction({
       audio: ipfsToGateway(audio),
@@ -38,6 +40,7 @@ const SongNFTSmallComponent = ({
       undefined,
       { shallow: true }
     );
+    onClose && onClose();
   };
 
   return (

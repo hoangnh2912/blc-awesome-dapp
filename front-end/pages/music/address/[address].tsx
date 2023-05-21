@@ -12,7 +12,7 @@ import {
 import { useAddress } from "@thirdweb-dev/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { FaShareAlt, FaUserEdit } from "react-icons/fa";
+import { FaUserEdit } from "react-icons/fa";
 import {
   FacebookIcon,
   FacebookShareButton,
@@ -31,7 +31,7 @@ import { GetUserOutput } from "../../../services/api/types";
 import { useStoreState } from "../../../services/redux/hook";
 const Profile = () => {
   const router = useRouter();
-  const { address } = router.query;
+  const { address, tab } = router.query;
   const currentAddress = useAddress();
   const isMyProfile =
     address &&
@@ -44,6 +44,7 @@ const Profile = () => {
   const [userInfo, setUserInfo] = useState<GetUserOutput>();
   const [totalCollection, setTotalCollection] = useState(0);
   const [totalStudio, setTotalStudio] = useState(0);
+  const [tabIndex, setTabIndex] = useState(tab ? parseInt(`${tab}`) : 0);
 
   const getUserProfileData = async () => {
     if (address) {
@@ -224,7 +225,7 @@ const Profile = () => {
           </TwitterShareButton>
         </Stack>
       </Stack>
-      <Tabs my="2" variant="line">
+      <Tabs my="2" index={tabIndex} onChange={setTabIndex} variant="line">
         <TabList>
           <Tab
             _selected={{
