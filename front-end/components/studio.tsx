@@ -1,5 +1,6 @@
 import { usePagination } from "@ajna/pagination";
 import {
+  Box,
   Image,
   Stack,
   Table,
@@ -33,6 +34,7 @@ const Studio = ({
   const playMusicAction = useStoreActions((state) => state.music.playMusic);
   const getUserData = useStoreActions((state) => state.user.getData);
   const { onBuy } = useBuyMusic();
+  const userInfoData = useStoreState((state) => state.user.data);
 
   const currentAddress = useAddress();
   const isMyProfile = currentAddress === address;
@@ -178,7 +180,7 @@ const Studio = ({
                     justifyContent="space-evenly"
                   >
                     {isPlayView(item)}
-                    {!isMyProfile && (
+                    {!isMyProfile && !userInfoData?.ids?.includes(item.id) ? (
                       <GiShoppingCart
                         style={{
                           cursor: "pointer",
@@ -191,6 +193,8 @@ const Studio = ({
                         }}
                         size={"25px"}
                       />
+                    ) : (
+                      <Box boxSize={"25px"}></Box>
                     )}
                   </Stack>
                 </Td>

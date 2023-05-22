@@ -107,7 +107,7 @@ const Music = ({ music }: { music: GetMarketOutput }) => {
           objectFit="cover"
           borderRadius="lg"
           alt={data.name}
-          src={ipfsToGateway(data.image)}
+          src={data.image}
           style={{
             boxShadow: "5px 5px 5px 5px rgba(0,0,0,0.15)",
             aspectRatio: "1/1",
