@@ -20,6 +20,7 @@ const SongNFTComponent = (props: GetMarketOutput) => {
   const isPlayingState = useStoreState((state) => state.music.isPlaying);
   const userInfoData = useStoreState((state) => state.user.data);
   const isOwnNft = userInfoData?.ids?.includes(id);
+  const isSeller = `${address}`.toLowerCase() == rest?.seller?.toLowerCase();
   const onPlayMusic = () => {
     playMusicAction({
       audio: ipfsToGateway(audio),
@@ -117,45 +118,62 @@ const SongNFTComponent = (props: GetMarketOutput) => {
             justifyContent="space-between"
             direction="row"
           >
-            {!isOwnNft ? (
-              <Text
-                onClick={async () => {
-                  await onBuy(price, id);
-                  setTimeout(() => {
-                    if (address) getUserData(address);
-                  }, 1000);
-                }}
-                cursor="pointer"
-                fontWeight="bold"
-                color="white"
-                borderRadius="3xl"
-                backgroundColor="#0D164D"
-                p="1"
-                px="2"
-                fontSize="sm"
-                borderWidth="2px"
-                letterSpacing="widest"
-              >
-                Buy now
-              </Text>
+            {!isSeller ? (
+              !isOwnNft ? (
+                <Text
+                  onClick={async () => {
+                    await onBuy(price, id);
+                    setTimeout(() => {
+                      if (address) getUserData(address);
+                    }, 1000);
+                  }}
+                  cursor="pointer"
+                  fontWeight="bold"
+                  color="white"
+                  borderRadius="3xl"
+                  backgroundColor="#0D164D"
+                  p="1"
+                  px="2"
+                  fontSize="sm"
+                  borderWidth="2px"
+                  letterSpacing="widest"
+                >
+                  Buy now
+                </Text>
+              ) : (
+                <Text
+                  onClick={() => {
+                    addToPlayListAction(props);
+                    if (!isPlayingState) playMusicAction(props);
+                  }}
+                  cursor="pointer"
+                  fontWeight="bold"
+                  color="white"
+                  borderRadius="3xl"
+                  backgroundColor="#fcae00"
+                  p="1"
+                  px="2"
+                  fontSize="sm"
+                  borderWidth="2px"
+                  letterSpacing="widest"
+                >
+                  Add to next play
+                </Text>
+              )
             ) : (
               <Text
-                onClick={() => {
-                  addToPlayListAction(props);
-                  if (!isPlayingState) playMusicAction(props);
-                }}
                 cursor="pointer"
                 fontWeight="bold"
                 color="white"
                 borderRadius="3xl"
-                backgroundColor="#fcae00"
+                backgroundColor="#fc8f00"
                 p="1"
                 px="2"
                 fontSize="sm"
                 borderWidth="2px"
                 letterSpacing="widest"
               >
-                Add to next play
+                {parseInt(rest.amount) - parseInt(rest.left)}/{rest.amount} sold
               </Text>
             )}
             <Box
