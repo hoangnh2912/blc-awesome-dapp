@@ -19,3 +19,4 @@ export * from './chat/shared.key.chat.schema';
 export * from './chat/update.chat.schema';
 export * from './chat/cid.chat.schema';
 export * from './chat/authorized.chat.schema';
+export * from './chat/statistic.chat.schema';
