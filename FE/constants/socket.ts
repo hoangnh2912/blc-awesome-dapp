@@ -7,8 +7,6 @@ class socketInstance {
 
   public static getSocket(address: string, signature: string): Socket {
     if (!socketInstance.socket) {
-      console.log(`connecting to socket`);
-
       socketInstance.socket = io("ws://localhost:3008", {
         extraHeaders: {
           authorize: signature,
@@ -33,7 +31,6 @@ class socketInstance {
         console.log(`disconnect`);
       });
     }
-    console.log(`socket instance: ${socketInstance.socket}`);
 
     return socketInstance.socket;
   }

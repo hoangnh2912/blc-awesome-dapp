@@ -58,6 +58,7 @@ import {
 import { decryptMessage, encryptMessage } from "../constants/utils";
 import { createECDH } from "crypto";
 import { ethers } from "ethers";
+import { socketInstance } from "../constants/socket";
 
 const nameConverter = (name: string) => {
   if (name.length >= CONSTANT.NAME_LENGTH_LIMIT) {
@@ -250,7 +251,6 @@ const addNewChat = async ({
     const newRoom = await ApiServices.roomChat.createRoom(payload);
 
     if (listRoom) {
-      console.log([newRoom.data.data, ...listRoom]);
       setListRoom([newRoom.data.data, ...listRoom]);
     } else {
       setListRoom([newRoom.data.data]);
@@ -271,7 +271,7 @@ const LoginButton = ({
   router: NextRouter;
 }) => {
   const userStateData = useStoreState((state) => state.chatUser.data);
-
+  const [activeReward, setActiveReward] = useState<number>(0)
   const disconnect = useDisconnect();
   const logout = useStoreActions((state) => state.chatUser.logout);
 
@@ -283,6 +283,21 @@ const LoginButton = ({
   const sdk = useSDK();
   const { onOpen: onOpenModalTx, setTxResult } = useModalTransaction();
   const { replace, push, query } = useRouter();
+
+  useEffect(() => {
+    setActiveReward(userStateData?.active_token || 0)
+
+    const address = localStorage.getItem("address");
+    const signature = localStorage.getItem("signature");
+    socketInstance
+    .getSocket(address || "", signature || "")
+    .on("active reward", async (data: any) => {
+      
+      if (data){
+        setActiveReward(data.active_reward)
+      }
+    });
+  }, [userStateData])
 
   const redirectHome = () => {
     router.replace("/chat/", undefined, { shallow: true });
@@ -362,7 +377,7 @@ const LoginButton = ({
                   <Text fontFamily={"mono"}>{data?.displayValue} CMD</Text>
                 </Box>
                 <Box>
-                  <Button
+                  <Button isDisabled={activeReward ? false : true}
                     bg="#0D164D"
                     color="white"
                     _hover={{ bg: "#0D166D" }}
@@ -372,7 +387,7 @@ const LoginButton = ({
                     }}
                   >
                     <Text fontSize={"sm"}>
-                      Claim {userStateData?.active_token}
+                      Claim {activeReward ? activeReward : ''}
                     </Text>
                   </Button>
                 </Box>

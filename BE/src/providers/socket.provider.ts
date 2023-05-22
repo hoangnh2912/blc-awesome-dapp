@@ -79,7 +79,6 @@ io.use(async (socket, next) => {
           ]),
         ),
       );
-      console.log(`new connection: ${socket.id}`);
 
       return next();
     }
@@ -414,6 +413,21 @@ const checkActiveSession = async (session_id: string) => {
   }
 };
 
+const emitActiveReward = async (address: string, active_reward: number) => {
+  try {
+    const userService = Singleton.getChatUserInstance();
+    const userSession = await userService.getSessionId(address);
+
+    userSession.data?.map(session =>
+      io.to(session.session_id).emit('active reward', {
+        active_reward,
+      }),
+    );
+  } catch (error) {
+    throw error;
+  }
+};
+
 export {
   startSocket,
   balanceUpdate,
@@ -437,4 +451,5 @@ export {
   emitUnFriend,
   emitAcceptFriend,
   emitSNS,
+  emitActiveReward,
 };

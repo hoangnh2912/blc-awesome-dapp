@@ -75,7 +75,6 @@ const Bottombar = ({
       clearInput();
       const message_data = input;
       setInput("");
-      console.log(`secretKey: ${secretKey}`);
 
       const newMessage = await ApiServices.privateMessage.sendMessage({
         message_data: secretKey
@@ -176,12 +175,10 @@ const GetMessageOfRoom = ({
   useEffect(() => {
     const signature = localStorage.getItem("signature");
     const address = localStorage.getItem("address");
-    console.log(`signature: ${signature}`);
 
     socketInstance
       .getSocket(address || "", signature || "")
       .on("message sent", async (data: any) => {
-        console.log(`new message: ${JSON.stringify(data)}`);
 
         if (data) {
           await addMessage({ data });
@@ -190,18 +187,11 @@ const GetMessageOfRoom = ({
   }, [userStateData]);
 
   const addMessage = async ({ data }: { data: GetMessageOutput }) => {
-    console.log(`data: ${JSON.stringify(data)}`);
-    // console.log(`messageList: ${JSON.stringify(messageList)}`);
 
-    // setMessageList([data, ...messageList]);
     const findMessage = messageList.find((message) => message._id == data._id);
     if (!findMessage) {
       setMessageList((messageList) => [data, ...messageList]);
     }
-    // if (messageList) {
-    // } else {
-    //   await setMessageList([data]);
-    // }
   };
 
   const fetchMoreData = async ({ room_id }: { room_id: string }) => {
@@ -316,7 +306,6 @@ const GetMessageOfRoom = ({
 };
 
 const detail = () => {
-  console.log(`rerendered`);
   const userStateData = useStoreState((state) => state.chatUser.data);
   const secretKeyState = useStoreState((state) => state.chatUser.secretKey);
   const setSecretKeyAction = useStoreActions(
@@ -339,9 +328,6 @@ const detail = () => {
 
   const secretValue = Object.values(secretKeyState)[secretKey];
 
-  // console.log(`address localStorage: ${localStorage.getItem("address")}`);
-
-  // const addressSecret = secretKeyState[]
 
   const getRoom = async () => {
     try {

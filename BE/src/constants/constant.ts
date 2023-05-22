@@ -132,6 +132,7 @@ const Constant = {
   },
   CMD_REWARD_EVENT: {
     UpdateActiveReward: 'UpdateActiveReward',
+    ClaimReward: 'ClaimReward',
   },
   ATTRIBUTES: {
     GENRE,

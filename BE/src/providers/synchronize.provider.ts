@@ -178,28 +178,29 @@ const synchronizeActiveToken = async (
   //   Constant.CMD_REWARD_EVENT.UpdateActiveReward,
   //   getPastEventsConfig,
   // );
-  const eventListReward = await ChatMindRewardEthersContract.queryFilter(
-    Constant.CMD_REWARD_EVENT.UpdateActiveReward,
+  // const eventListReward = await ChatMindRewardEthersContract.queryFilter(
+  //   Constant.CMD_REWARD_EVENT.UpdateActiveReward,
+  //   last_block_number_sync,
+  //   last_block_number_onchain,
+  // );
+
+  const eventList = await ChatMindRewardEthersContract.queryFilter(
+    '*',
     last_block_number_sync,
     last_block_number_onchain,
   );
 
-  await eventListReward.map(async event => {
-    const { accounts, amounts } = event.args as any;
-
-    listTxHash.push(event.transactionHash);
-    await chatUserService.setActiveReward(accounts, bigNumToInt(amounts));
+  eventList.map(async event => {
+    if (event.event == Constant.CMD_REWARD_EVENT.UpdateActiveReward) {
+      const { accounts, amounts } = event.args as any;
+      await chatUserService.setActiveReward(accounts, bigNumToInt(amounts));
+    } else if (event.event == Constant.CMD_REWARD_EVENT.ClaimReward) {
+      const { account } = event.args as any;
+      await chatUserService.claimReward(account.toLowerCase());
+    }
   });
 
-  // console.log(eventParam);
-
-  // if (eventParam) {
-  //   listTxHash.push(eventParam.transactionHash);
-  //   await chatUserService.setActiveReward(
-  //     eventParam.returnValues['accounts'],
-  //     eventParam.returnValues['amounts'],
-  //   );
-  // }
+  listTxHash.push(...eventList.map(event => event.transactionHash));
 };
 
 const bigNumToInt = (amounts: BigNumber[]) => {

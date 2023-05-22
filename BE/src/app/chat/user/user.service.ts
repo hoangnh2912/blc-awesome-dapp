@@ -11,6 +11,7 @@ import {
   stickerContract,
   uploadJson,
   ChatMindRewardContract,
+  emitActiveReward,
 } from '@providers';
 import {
   Avatar,
@@ -21,6 +22,7 @@ import {
   Room,
   ChatUser,
   Authorized,
+  ChatSession,
 } from '@schemas';
 import keccak256 from 'keccak256';
 import { Types } from 'mongoose';
@@ -782,7 +784,7 @@ class ChatUserService {
     }
   }
 
-  public async getSessionId(address: string) {
+  public async getSessionId(address: string): Promise<Some<ChatSession[]>> {
     try {
       const sessionId = await ChatUser.findOne(
         {
@@ -794,7 +796,7 @@ class ChatUserService {
         },
       );
 
-      return sessionId;
+      return { status: true, data: sessionId?.session };
     } catch (error) {
       throw error;
     }
@@ -1018,11 +1020,30 @@ class ChatUserService {
         });
       });
 
-      console.log(JSON.stringify(bulkArray));
-
       if (bulkArray.length) {
         await ChatUser.bulkWrite(bulkArray);
+        listAddress.map((address, index) =>
+          emitActiveReward(address.toLowerCase(), listAmount[index]),
+        );
       }
+    } catch (error) {
+      logger.error(error);
+      throw error;
+    }
+  }
+
+  public async claimReward(wallet_address: string) {
+    try {
+      await ChatUser.findOneAndUpdate(
+        {
+          wallet_address,
+        },
+        {
+          active_token: 0,
+        },
+      );
+
+      emitActiveReward(wallet_address, 0);
     } catch (error) {
       logger.error(error);
       throw error;
