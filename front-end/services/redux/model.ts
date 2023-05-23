@@ -37,6 +37,7 @@ interface User {
       args?: any;
     }
   >;
+  clearState: Action<User>;
 }
 
 interface StoreModel {

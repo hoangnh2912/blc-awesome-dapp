@@ -1,6 +1,6 @@
-import { createStore, action, thunk } from "easy-peasy";
-import StoreModel from "./model";
+import { action, createStore, thunk } from "easy-peasy";
 import ApiServices from "../api";
+import StoreModel from "./model";
 
 const store = createStore<StoreModel>({
   music: {
@@ -32,6 +32,7 @@ const store = createStore<StoreModel>({
     }),
     updateMusicMetadata: action((state, payload) => {
       state.currentSong = payload;
+      state.playList = [];
     }),
     audio: undefined,
     setAudio: action((state, payload) => {
@@ -93,6 +94,12 @@ const store = createStore<StoreModel>({
     },
     setIsCheckConnect: action((state, payload) => {
       state.isCheckConnectData = payload;
+    }),
+    clearState: action((state) => {
+      state.data = undefined;
+      state.isCheckConnectData = {
+        isCheckConnect: false,
+      };
     }),
   },
 });

@@ -35,29 +35,14 @@ const Music = ({ music }: { music: GetMarketOutput }) => {
   const currentSongState = useStoreState((state) => state.music.currentSong);
   const isPlayingState = useStoreState((state) => state.music.isPlaying);
   const currentAddress = useAddress();
+  const userData = useStoreState((state) => state.user.data);
+
   const getUserData = useStoreActions((state) => state.user.getData);
   const data = music;
-  const [isOwnNft, setIsOwnNft] = useState(false);
+  const isSoldOut = parseInt(data?.left) == 0;
+  const isOwnNft = userData?.ids?.includes(`${id}`);
 
-  const sdk = useSDK();
   const { onBuy } = useBuyMusic();
-
-  const checkOwnerNFT = async () => {
-    if (!id) return;
-    if (!sdk) return;
-    if (!currentAddress) return;
-    const musicNFTContract = await sdk.getContractFromAbi(
-      ABI_MUSIC.Music.address,
-      ABI_MUSIC.Music.abi
-    );
-    const balance = await musicNFTContract.call("balanceOf", [
-      currentAddress,
-      id,
-    ]);
-    if (balance.toString() != "0") {
-      setIsOwnNft(true);
-    }
-  };
 
   const viewMusic = async () => {
     try {
@@ -70,10 +55,6 @@ const Music = ({ music }: { music: GetMarketOutput }) => {
   useEffect(() => {
     viewMusic();
   }, []);
-
-  useEffect(() => {
-    checkOwnerNFT();
-  }, [id, sdk, currentAddress]);
 
   const onPlayMusic = () => {
     if (data)
@@ -150,10 +131,17 @@ const Music = ({ music }: { music: GetMarketOutput }) => {
             boxShadow="5px 5px 5px 5px rgba(0,0,0,0.15)"
           >
             <Text color="white" fontSize="20" fontWeight="bold">
-              {parseInt(data.amount) - parseInt(data.left)} / {data.amount} sold
+              {parseInt(data.amount) - parseInt(data.left)} / {data.amount}{" "}
+              {isSoldOut ? "sold out" : "sold"}
             </Text>
             <Progress
-              colorScheme="yellow"
+              colorScheme={
+                isSoldOut
+                  ? "red"
+                  : data.left == data.amount
+                  ? "green"
+                  : "yellow"
+              }
               isAnimated
               hasStripe
               borderRadius="md"
@@ -189,7 +177,7 @@ const Music = ({ music }: { music: GetMarketOutput }) => {
                 </>
               )}
             </Button>
-            {!isSameSeller && !isOwnNft && (
+            {!isSoldOut && !isSameSeller && !isOwnNft && (
               <Button
                 color="#3443A0"
                 bg="#fcae00BB"

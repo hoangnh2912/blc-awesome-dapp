@@ -70,6 +70,10 @@ export const ModalCheckConnect = () => {
   const setIsCheckConnectAction = useStoreActions(
     (state) => state.user.setIsCheckConnect
   );
+
+  const clearUserStateAction = useStoreActions(
+    (state) => state.user.clearState
+  );
   const { isOpen, onOpen, onClose } = useDisclosure({
     onClose: () => {
       setIsCheckConnectAction({
@@ -88,6 +92,10 @@ export const ModalCheckConnect = () => {
   const connectWithWalletConnect = useWalletConnect();
 
   useEffect(() => {
+    if (connectionStatus != "connected") {
+      clearUserStateAction();
+    }
+
     if (
       connectionStatus != "connected" &&
       isCheckConnectDataState.isCheckConnect
@@ -205,13 +213,16 @@ export const ModalSignMessage = () => {
   const disconnect = useDisconnect();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const getUserDataAction = useStoreActions((state) => state.user.getData);
-  const setUserDataAction = useStoreActions((state) => state.user.setData);
+  const clearUserStateAction = useStoreActions(
+    (state) => state.user.clearState
+  );
   const sdk = useSDK();
+  const connectionStatus = useConnectionStatus();
   const address = useAddress();
   const network = useActiveChain();
 
   const signMessage = async () => {
-    if (sdk && address) {
+    if (sdk && address && connectionStatus == "connected") {
       const signature = await sdk.wallet.sign("Music protocol");
       localStorage.setItem("address", address.toLowerCase());
       localStorage.setItem("signature", signature);
@@ -221,7 +232,7 @@ export const ModalSignMessage = () => {
   };
 
   const getUserData = async () => {
-    if (address) getUserDataAction(address);
+    if (address && connectionStatus == "connected") getUserDataAction(address);
   };
 
   useEffect(() => {
@@ -232,7 +243,7 @@ export const ModalSignMessage = () => {
           localStorage.getItem("address") != address.toLowerCase() ||
           !localStorage.getItem("signature")
         ) {
-          setUserDataAction(undefined);
+          clearUserStateAction();
           onOpen();
         } else {
           getUserData();

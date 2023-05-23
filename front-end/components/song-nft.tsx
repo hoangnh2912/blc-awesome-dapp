@@ -21,6 +21,7 @@ const SongNFTComponent = (props: GetMarketOutput) => {
   const userInfoData = useStoreState((state) => state.user.data);
   const isOwnNft = userInfoData?.ids?.includes(id);
   const isSeller = `${address}`.toLowerCase() == rest?.seller?.toLowerCase();
+  const isSoldOut = parseInt(rest.left) == 0;
   const onPlayMusic = () => {
     playMusicAction({
       audio: ipfsToGateway(audio),
@@ -118,8 +119,65 @@ const SongNFTComponent = (props: GetMarketOutput) => {
             justifyContent="space-between"
             direction="row"
           >
-            {!isSeller ? (
-              !isOwnNft ? (
+            {(() => {
+              if (isSeller) {
+                return (
+                  <Text
+                    cursor="pointer"
+                    fontWeight="bold"
+                    color="white"
+                    borderRadius="3xl"
+                    backgroundColor="#fc8f00"
+                    p="1"
+                    px="2"
+                    fontSize="sm"
+                    borderWidth="2px"
+                    letterSpacing="widest"
+                  >
+                    {parseInt(rest.amount) - parseInt(rest.left)}/{rest.amount}{" "}
+                    sold
+                  </Text>
+                );
+              }
+
+              if (isOwnNft)
+                return (
+                  <Text
+                    onClick={() => {
+                      addToPlayListAction(props);
+                      if (!isPlayingState) playMusicAction(props);
+                    }}
+                    cursor="pointer"
+                    fontWeight="bold"
+                    color="white"
+                    borderRadius="3xl"
+                    backgroundColor="#fcae00"
+                    p="1"
+                    px="2"
+                    fontSize="sm"
+                    borderWidth="2px"
+                    letterSpacing="widest"
+                  >
+                    Add to next play
+                  </Text>
+                );
+              if (isSoldOut)
+                return (
+                  <Text
+                    fontWeight="bold"
+                    color="white"
+                    borderRadius="3xl"
+                    backgroundColor="#ff5117"
+                    p="1"
+                    px="2"
+                    fontSize="sm"
+                    borderWidth="2px"
+                    letterSpacing="widest"
+                  >
+                    Sold out
+                  </Text>
+                );
+              return (
                 <Text
                   onClick={async () => {
                     await onBuy(price, id);
@@ -140,42 +198,8 @@ const SongNFTComponent = (props: GetMarketOutput) => {
                 >
                   Buy now
                 </Text>
-              ) : (
-                <Text
-                  onClick={() => {
-                    addToPlayListAction(props);
-                    if (!isPlayingState) playMusicAction(props);
-                  }}
-                  cursor="pointer"
-                  fontWeight="bold"
-                  color="white"
-                  borderRadius="3xl"
-                  backgroundColor="#fcae00"
-                  p="1"
-                  px="2"
-                  fontSize="sm"
-                  borderWidth="2px"
-                  letterSpacing="widest"
-                >
-                  Add to next play
-                </Text>
-              )
-            ) : (
-              <Text
-                cursor="pointer"
-                fontWeight="bold"
-                color="white"
-                borderRadius="3xl"
-                backgroundColor="#fc8f00"
-                p="1"
-                px="2"
-                fontSize="sm"
-                borderWidth="2px"
-                letterSpacing="widest"
-              >
-                {parseInt(rest.amount) - parseInt(rest.left)}/{rest.amount} sold
-              </Text>
-            )}
+              );
+            })()}
             <Box
               w="40px"
               cursor="pointer"

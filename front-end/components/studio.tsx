@@ -139,6 +139,10 @@ const Studio = ({
                 key={idx}
                 fontSize="16"
                 color="white"
+                _hover={{
+                  background: "#fcae00",
+                  color: "black",
+                }}
               >
                 <Td
                   cursor="pointer"

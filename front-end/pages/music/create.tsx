@@ -90,6 +90,12 @@ const Create: NextPage = () => {
     if (file && file.type.includes("audio")) {
       setAudio(file);
       setUrl(URL.createObjectURL(file));
+    } else {
+      toast({
+        title: "Please upload audio file",
+        status: "error",
+        position: "top-right",
+      });
     }
   };
 

@@ -1,5 +1,6 @@
 import { usePagination } from "@ajna/pagination";
 import {
+  HStack,
   Image,
   Stack,
   Table,
@@ -9,6 +10,7 @@ import {
   Th,
   Thead,
   Tr,
+  VStack,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -111,14 +113,6 @@ const Collection = ({
               >
                 Purchase Price
               </Th>
-              <Th
-                fontFamily="mono"
-                fontWeight="bold"
-                fontSize="16"
-                color="#fcae00"
-              >
-                Date
-              </Th>
               <Th></Th>
             </Tr>
           </Thead>
@@ -130,15 +124,19 @@ const Collection = ({
                 key={idx}
                 fontSize="16"
                 color="white"
+                _hover={{
+                  background: "#fcae00",
+                  color: "black",
+                }}
               >
                 <Td
                   cursor="pointer"
                   onClick={() => {
                     push(`/music/${item.id}`);
                   }}
-                  display="flex"
                   alignItems="center"
                   gap={3}
+                  display={"flex"}
                 >
                   <Image
                     _hover={{
@@ -161,9 +159,6 @@ const Collection = ({
                   {Math.round(item.duration % 60)}
                 </Td>
                 <Td>{item.price} MUC</Td>
-                <Td>
-                  {new Date(parseInt(`${item.created_at}000`)).toUTCString()}
-                </Td>
                 <Td>
                   <Stack
                     direction="row"
