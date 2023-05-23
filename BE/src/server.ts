@@ -6,11 +6,17 @@ import swaggerUi from 'swagger-ui-express';
 import { RegisterRoutes } from '../build/routes';
 import { logger } from './constants';
 import { exec } from 'child_process';
-import { connectToMongoDB, startSynchronizeDataFromSmartContract, startSocket } from '@providers';
+import {
+  connectToMongoDB,
+  startSynchronizeDataFromSmartContract,
+  startSubmitDataFromDatabase,
+  startSocket,
+} from '@providers';
 
 connectToMongoDB();
 startSocket();
 startSynchronizeDataFromSmartContract();
+startSubmitDataFromDatabase();
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

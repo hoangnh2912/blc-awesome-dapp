@@ -11,12 +11,12 @@ class StatisticService {
           message: 'STATISTIC: Empty result',
         };
       }
-      const returnValues = {
-        total_reward: {
-          value: findStatistic.total_reward,
-          percent: 0,
-        },
-      };
+      // const returnValues = {
+      //   total_reward: {
+      //     value: findStatistic.total_reward,
+      //     percent: 0,
+      //   },
+      // };
       return {
         status: true,
         data: findStatistic,

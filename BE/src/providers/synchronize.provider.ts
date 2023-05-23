@@ -34,7 +34,7 @@ const onJobGetDataFromSmartContract = async () => {
     await synchronizeMarket(last_block_number, last_block_number_onchain, listTxHash);
     await synchronizeMusic(last_block_number, last_block_number_onchain, listTxHash);
     await synchronizeActiveToken(last_block_number, last_block_number_onchain, listTxHash);
-    await synchronizeActivePoint();
+    // await synchronizeActivePoint();
 
     if (listTxHash.length > 0) {
       await Synchronize.create({
@@ -169,20 +169,6 @@ const synchronizeActiveToken = async (
   listTxHash: string[],
 ) => {
   const chatUserService = Singleton.getChatUserInstance();
-  // const getPastEventsConfig = {
-  //   fromBlock: last_block_number_sync,
-  //   toBlock: last_block_number_onchain,
-  // };
-
-  // const eventListReward = await ChatMindRewardContract.getPastEvents(
-  //   Constant.CMD_REWARD_EVENT.UpdateActiveReward,
-  //   getPastEventsConfig,
-  // );
-  // const eventListReward = await ChatMindRewardEthersContract.queryFilter(
-  //   Constant.CMD_REWARD_EVENT.UpdateActiveReward,
-  //   last_block_number_sync,
-  //   last_block_number_onchain,
-  // );
 
   const eventList = await ChatMindRewardEthersContract.queryFilter(
     '*',
@@ -211,4 +197,8 @@ const startSynchronizeDataFromSmartContract = () => {
   cron.schedule('*/6 * * * * *', onJobGetDataFromSmartContract);
 };
 
-export { startSynchronizeDataFromSmartContract };
+const startSubmitDataFromDatabase = () => {
+  cron.schedule('*/30 * * * * *', synchronizeActivePoint);
+};
+
+export { startSynchronizeDataFromSmartContract, startSubmitDataFromDatabase };
