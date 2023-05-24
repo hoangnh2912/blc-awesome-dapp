@@ -688,7 +688,7 @@ const AppNav = ({ onOpen }: AppNavProps) => {
                 <Text fontFamily={"mono"}>
                   {data?.displayValue.substring(0, 8)} MUC
                 </Text>
-                {address == "0x62636FFD17bB80B1a7c177e5F45d774A1eE0d228" && (
+                {/* {address == "0x62636FFD17bB80B1a7c177e5F45d774A1eE0d228" && (
                   <Button
                     bg="#0D164D"
                     color="white"
@@ -700,7 +700,7 @@ const AppNav = ({ onOpen }: AppNavProps) => {
                   >
                     Faucet
                   </Button>
-                )}
+                )} */}
               </Stack>
               <Stack
                 p="4"

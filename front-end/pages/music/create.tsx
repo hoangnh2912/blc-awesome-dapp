@@ -583,6 +583,24 @@ const Create: NextPage = () => {
           }}
           fontFamily="mono"
         />
+        <Text fontFamily="mono" fontWeight="bold" fontSize={"20"} color="white">
+          Fee each token (MUC)
+        </Text>
+        <Input
+          maxLength={18}
+          value={parseInt(price) * 0.03}
+          type="number"
+          disabled
+          borderRadius="lg"
+          borderColor="gray.300"
+          placeholder="Fee each token"
+          color="white"
+          w={{
+            base: "100%",
+            md: "60%",
+          }}
+          fontFamily="mono"
+        />
         <Button
           fontSize={"24"}
           fontFamily="mono"
