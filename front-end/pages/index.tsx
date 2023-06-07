@@ -1,5 +1,5 @@
 import type { NextPage } from "next";
-import TokenCreator from "./token-creator";
+import TokenCreator from "./play";
 
 const Home: NextPage = () => {
   return <TokenCreator />;

@@ -18,7 +18,7 @@ export interface SideBarDataProps {
 }
 
 export const SideBarData: Array<SideBarDataProps> = [
-  { name: "Token creator", icon: BsCoin, link: "/token-creator" },
+  { name: "Play", icon: BsCoin, link: "/play" },
   {
     name: "Stealth Address",
     icon: BsEmojiSunglasses,

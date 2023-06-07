@@ -24,9 +24,10 @@ type SuccessResponse<T> = {
   total: number;
 };
 const BASE_URL =
-  process.env.NODE_ENV === "development"
-    ? "http://localhost:3001"
-    : "https://api.scimta.com";
+  // process.env.NODE_ENV === "development"
+  //   ? "http://localhost:3001"
+  //   :
+  "https://api.scimta.com";
 
 const axios = new Axios({
   baseURL: BASE_URL,

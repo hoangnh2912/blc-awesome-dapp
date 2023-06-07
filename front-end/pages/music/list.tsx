@@ -4,7 +4,7 @@ import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import PaginationComponent from "../../components/pagination";
-import SongNFTComponent from "../../components/song-nft";
+import NFTComponent from "../../components/nft";
 import MusicBaseLayout from "../../layouts/music.base";
 import ApiServices from "../../services/api";
 import { GetMarketOutput } from "../../services/api/types";
@@ -47,7 +47,7 @@ const List: NextPage = () => {
     <MusicBaseLayout selectTabIndex={0}>
       <SimpleGrid columns={[1, 2, 2, 2, 4]} gap={5}>
         {data.map((item, index) => (
-          <SongNFTComponent key={index} {...item} />
+          <NFTComponent key={index} {...item} />
         ))}
       </SimpleGrid>
       <PaginationComponent

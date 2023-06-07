@@ -1,7 +1,7 @@
 import { Box, Center, SimpleGrid, Text } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { GetMarketOutput } from "../services/api/types";
-import SongNFTComponent from "./song-nft";
+import NFTComponent from "./nft";
 const ListMusicComponent = ({
   data,
 }: {
@@ -23,7 +23,7 @@ const ListMusicComponent = ({
       </Text>
       <SimpleGrid columns={[1, 2, 2, 2, 4]} gap={3}>
         {data.data.map((item, index) => (
-          <SongNFTComponent key={index} {...item} />
+          <NFTComponent key={index} {...item} />
         ))}
       </SimpleGrid>
       <Center>

@@ -1,10 +1,10 @@
-import { useActiveChain, useSwitchChain } from "@thirdweb-dev/react";
+import { useActiveChain } from "@thirdweb-dev/react";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Sidebar from "../components/sidebar";
 import { SideBarData } from "../constants/data/sidebar";
 import styles from "../styles/Home.module.css";
-import { useRouter } from "next/router";
 
 const BaseLayout = ({
   children,
@@ -35,7 +35,7 @@ const BaseLayout = ({
       router.events.off("routeChangeComplete", handleComplete);
       router.events.off("routeChangeError", handleComplete);
     };
-  }, []);
+  }, [router.events, router.asPath]);
 
   useEffect(() => {
     setIsBrowser(true);

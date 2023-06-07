@@ -52,28 +52,8 @@ export default function Sidebar({
       <ModalCheckConnect />
       <ModalSwitchNetwork />
       <ModalSignMessage />
-      <SidebarContent
-        data={data}
-        onClose={() => onClose}
-        display={{ base: "none", md: "block" }}
-      />
-      <Drawer
-        autoFocus={false}
-        isOpen={isOpen}
-        placement="left"
-        onClose={onClose}
-        returnFocusOnClose={false}
-        onOverlayClick={onClose}
-        size="full"
-      >
-        <DrawerContent>
-          <SidebarContent data={data} onClose={onClose} />
-        </DrawerContent>
-      </Drawer>
-      {/* mobilenav */}
       <AppNav title={data[selectIndex].name} onOpen={onOpen} />
       <Box
-        ml={{ base: 0, md: 60 }}
         style={{
           padding: "1rem",
           transition: "all 0.3s ease",
@@ -102,59 +82,6 @@ export default function Sidebar({
     </Box>
   );
 }
-
-interface SidebarProps extends BoxProps {
-  onClose: () => void;
-  data: Array<SideBarDataProps>;
-}
-
-const SidebarContent = ({ onClose, data, ...rest }: SidebarProps) => {
-  return (
-    <Box
-      transition="3s ease"
-      w={{ base: "full", md: 60 }}
-      pos="fixed"
-      h="full"
-      boxShadow={"2xl"}
-      bg={"#F9FAFB"}
-      {...rest}
-    >
-      <Flex
-        h="84px"
-        borderBottomWidth={"2px"}
-        borderBottomColor="yellow.400"
-        alignItems="center"
-        px="4"
-        bg={"white"}
-        justifyContent="space-between"
-      >
-        <Text fontFamily={"mono"} fontWeight="bold" fontSize="2xl">
-          SCIMTA
-        </Text>
-        <CloseButton
-          display={{ base: "flex", md: "none" }}
-          color={"white"}
-          bg={"green.400"}
-          onClick={onClose}
-        />
-      </Flex>
-      {data.map((link) => (
-        <NavItem
-          boxShadow={"lg"}
-          bg={"white"}
-          my={"5"}
-          key={link.name}
-          link={link.link}
-          maintain={link.disabled}
-          icon={link.icon}
-        >
-          {link.name}
-        </NavItem>
-      ))}
-    </Box>
-  );
-};
-
 interface NavItemProps extends FlexProps {
   icon: IconType;
   children: ReactNode;
@@ -222,7 +149,6 @@ const AppNav = ({ onOpen, title, ...rest }: AppNavProps) => {
       position={"fixed"}
       right={0}
       left={0}
-      ml={{ base: 0, md: 60 }}
       p={{ base: 1, md: 3 }}
       py={{ base: 2, md: 3 }}
       bg={"white"}
@@ -233,14 +159,16 @@ const AppNav = ({ onOpen, title, ...rest }: AppNavProps) => {
       justifyContent={"space-between"}
       alignItems={"center"}
     >
-      <IconButton
-        display={{ base: "flex", md: "none" }}
-        onClick={onOpen}
-        variant="outline"
-        color={"green"}
-        aria-label="open menu"
-        icon={<FiMenu />}
-      />
+      <Flex
+        h="58px"
+        alignItems="center"
+        bg={"white"}
+        justifyContent="space-between"
+      >
+        <Text fontFamily={"mono"} fontWeight="bold" fontSize="2xl">
+          SCIMTA
+        </Text>
+      </Flex>
       <Box></Box>
       <Stack height={"58px"} justifyContent={"center"}>
         <ConnectWallet />
