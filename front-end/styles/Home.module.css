@@ -4,6 +4,7 @@
   flex-direction: column;
   text-align: left;
   background-color: #ffffff;
+  overflow-x: hidden;
 }
 
 .AppHeader {

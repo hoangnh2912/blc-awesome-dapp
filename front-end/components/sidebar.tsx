@@ -48,16 +48,15 @@ export default function Sidebar({
   }, [connectedWallet]);
 
   return (
-    <Box minH="100vh" bg={"#F9FAFB"} pb={20}>
+    <Box minH="100vh" bg={"gray.50"} pb={20}>
       <ModalCheckConnect />
       <ModalSwitchNetwork />
       <ModalSignMessage />
       <AppNav title={data[selectIndex].name} onOpen={onOpen} />
       <Box
         style={{
-          padding: "1rem",
           transition: "all 0.3s ease",
-          paddingTop: "calc(1rem + 85px)",
+          paddingTop: "80px",
         }}
       >
         {isLoading ? (
@@ -151,7 +150,6 @@ const AppNav = ({ onOpen, title, ...rest }: AppNavProps) => {
       left={0}
       p={{ base: 1, md: 3 }}
       py={{ base: 2, md: 3 }}
-      bg={"white"}
       direction={"row"}
       borderBottomWidth={2.5}
       borderColor={"yellow.400"}
