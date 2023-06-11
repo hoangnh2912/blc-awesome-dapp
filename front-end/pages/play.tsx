@@ -28,12 +28,21 @@ import type { NextPage } from "next";
 import { useEffect, useRef, useState } from "react";
 import NFTComponent from "../components/nft";
 import BaseLayout from "../layouts/base";
+import $ from "jquery";
 
 interface ParallaxProps {
   children: any;
   select: any;
   onScroll: any;
 }
+
+const getOffset = (el: Element) => {
+  const rect = el.getBoundingClientRect();
+  return {
+    left: rect.left + window.scrollX,
+    top: rect.top + window.scrollY,
+  };
+};
 
 function ParallaxText({ children, select, onScroll }: ParallaxProps) {
   const baseX = useMotionValue(0);
@@ -61,20 +70,29 @@ function ParallaxText({ children, select, onScroll }: ParallaxProps) {
   useAnimationFrame(() => {
     speedFactor.current += accelerationFactor.current;
     speedFactor.current = Math.max(speedFactor.current, 0);
-
-    if (speedFactor.current >= 50) {
-      accelerationFactor.current = 0;
-    }
-    if (select != 0 && accelerationFactor.current == 0) {
+    if (select != 0 && speedFactor.current >= 50) {
       accelerationFactor.current = -0.1;
     }
+
     baseX.set(baseX.get() + speedFactor.current * 0.01);
     if (refList.current && speedFactor.current == 0 && isScrolling.current) {
-      const element = document.elementFromPoint(window.innerWidth / 2 + 3, 225);
-      if (element) {
+      const redLineCenterItem: HTMLElement = $("#red-line-center")[0];
+      const redLineCenterOffset = getOffset(redLineCenterItem);
+      let centerItem: HTMLElement = $(".box-item")[0];
+      for (const elem of $(".box-item")) {
+        const offset = getOffset(elem);
+        const centerOffset = getOffset(centerItem);
+        if (
+          Math.abs(offset.left - redLineCenterOffset.left) <
+          Math.abs(centerOffset.left - redLineCenterOffset.left)
+        ) {
+          centerItem = elem;
+        }
+      }
+      if (centerItem) {
         onScroll &&
-          onScroll(false, element.id, () => {
-            element.animate(
+          onScroll(false, centerItem.id, () => {
+            centerItem.animate(
               [
                 { transform: "scale(1)" },
                 { transform: "scale(2)" },
@@ -93,14 +111,6 @@ function ParallaxText({ children, select, onScroll }: ParallaxProps) {
     }
   });
 
-  /**
-   * The number of times to repeat the child text should be dynamically calculated
-   * based on the size of the text and viewport. Likewise, the x motion value is
-   * currently wrapped between -20 and -45% - this 25% is derived from the fact
-   * we have four children (100% / 4). This would also want deriving from the
-   * dynamically generated number of children.
-   */
-
   return (
     <div className="parallax">
       <motion.div ref={refList} style={{ x }}>
@@ -109,7 +119,6 @@ function ParallaxText({ children, select, onScroll }: ParallaxProps) {
     </div>
   );
 }
-
 const data = [
   {
     image:
@@ -151,6 +160,10 @@ const data = [
 
 let intervalSelect: any = null;
 const Play: NextPage = () => {
+  const scrollDataDefault = Array.from({ length: 10 }, () =>
+    JSON.parse(JSON.stringify(data))
+  ).flat();
+
   const [select, setSelect] = useState<number>(0);
   const [usdtAmount, setUSDTAmount] = useState<number>(5);
   const [isScroll, setIsScroll] = useState<boolean>(false);
@@ -161,24 +174,7 @@ const Play: NextPage = () => {
     name: "NFT",
   };
 
-  const [scrollData, setSrollData] = useState([
-    ...data,
-    ...data,
-    ...data,
-    ...data,
-    ...data,
-    ...data,
-    ...data,
-    ...data,
-    ...data,
-    ...data,
-    ...data,
-    ...data,
-    ...data,
-    ...data,
-    ...data,
-    ...data,
-  ]);
+  const [scrollData, setSrollData] = useState(scrollDataDefault);
 
   useEffect(() => {
     intervalSelect = setInterval(() => {
@@ -197,11 +193,16 @@ const Play: NextPage = () => {
     setIsScroll(isScroll);
     if (id) {
       const index = parseInt(id.split("-")[2]);
+      console.log("index", index);
+
       setSrollData((prev) => {
         if (!select) {
           return prev;
         }
-        const newData = [...prev]
+        const newData = Array.from({ length: 10 }, () =>
+          JSON.parse(JSON.stringify(data))
+        )
+          .flat()
           .map((value) => ({
             value,
             sort: Math.random() * 100 * Math.random(),
@@ -223,6 +224,7 @@ const Play: NextPage = () => {
           {scrollData.map((item, index) => (
             <NFTComponent
               key={index}
+              className="box-item"
               id={`box-item-${index}`}
               image={isScroll ? boxData.image : item.image}
               name={isScroll ? boxData.name : item.name}
@@ -232,6 +234,7 @@ const Play: NextPage = () => {
       </ParallaxText>
       <Center>
         <Box
+          id="red-line-center"
           position={"absolute"}
           top={"82px"}
           w={"3px"}
@@ -300,32 +303,24 @@ const Play: NextPage = () => {
                 justifyContent={"center"}
                 alignItems={"center"}
                 mb={"2rem"}
-                borderWidth={"1px"}
+                borderWidth={"1.5px"}
+                borderColor={"gray.400"}
                 borderRadius={"lg"}
               >
-                <NFTComponent
-                  id={`nft-bet-${index}`}
-                  image={item.image}
-                  name={item.name}
-                />
-                <HStack
-                  w={"100%"}
-                  px="0.5rem"
-                  pb={"0.5rem"}
-                  justifyContent={"space-between"}
-                >
-                  <HStack>
-                    <Text>
-                      Bet: <b>{item.bet}</b>
-                    </Text>
-                    <Image
-                      w={"1rem"}
-                      alt="USDT"
-                      src="https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/512/Tether-USDT-icon.png"
-                    />
-                  </HStack>
-                  <Button colorScheme="yellow">PLAY</Button>
+                <NFTComponent image={item.image} name={item.name} />
+                <HStack w={"100%"} px="0.5rem" justifyContent={"center"}>
+                  <Text>
+                    Total: <b>{item.bet}</b>
+                  </Text>
+                  <Image
+                    w={"1rem"}
+                    alt="USDT"
+                    src="https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/512/Tether-USDT-icon.png"
+                  />
                 </HStack>
+                <Button borderTopRadius={"0"} w={"100%"} colorScheme="yellow">
+                  Bet now
+                </Button>
               </Stack>
             ))}
           </SimpleGrid>
