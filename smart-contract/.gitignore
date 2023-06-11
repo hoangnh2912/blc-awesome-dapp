@@ -20,3 +20,5 @@ submodule
 .github/
 flat.sol
 temp/*.temp
+
+lib/*
