@@ -1,14 +1,5 @@
 import { IconType } from "react-icons";
-import { BsCoin, BsPeople, BsEmojiSunglasses } from "react-icons/bs";
-import {
-  MdExplore,
-  MdLibraryAdd,
-  MdOutlineSwapHorizontalCircle,
-  MdPlaylistPlay,
-} from "react-icons/md";
-import { GiPayMoney, GiClockwork } from "react-icons/gi";
-import { RxBlendingMode } from "react-icons/rx";
-import { CgMusic } from "react-icons/cg";
+import { BsCoin, BsEmojiSunglasses } from "react-icons/bs";
 
 export interface SideBarDataProps {
   name: string;
@@ -20,32 +11,8 @@ export interface SideBarDataProps {
 export const SideBarData: Array<SideBarDataProps> = [
   { name: "Play", icon: BsCoin, link: "/play" },
   {
-    name: "Stealth Address",
+    name: "NFT provider",
     icon: BsEmojiSunglasses,
-    link: "/stealth-address",
+    link: "/nft-provider",
   },
-  { name: "Music marketplace", icon: CgMusic, link: "/music-marketplace" },
-  {
-    name: "AMM",
-    icon: MdOutlineSwapHorizontalCircle,
-    link: "/amm",
-    disabled: true,
-  },
-  { name: "Staking", icon: GiPayMoney, link: "/staking", disabled: true },
-  { name: "Renting", icon: GiClockwork, link: "/renting", disabled: true },
-  { name: "DAO", icon: BsPeople, link: "/dao", disabled: true },
-];
-
-export const SideBarDataMusic: Array<SideBarDataProps> = [
-  {
-    name: "Explore".toUpperCase(),
-    icon: MdExplore,
-    link: "/music/explore",
-  },
-  {
-    name: "Playlist".toUpperCase(),
-    icon: MdPlaylistPlay,
-    link: "/music/playlist",
-  },
-  { name: "Create".toUpperCase(), icon: MdLibraryAdd, link: "/music/create" },
 ];

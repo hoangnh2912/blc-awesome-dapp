@@ -1,8 +1,8 @@
 import type { NextPage } from "next";
-import TokenCreator from "./play";
+import Play from "./play";
 
 const Home: NextPage = () => {
-  return <TokenCreator />;
+  return <Play />;
 };
 
 export default Home;

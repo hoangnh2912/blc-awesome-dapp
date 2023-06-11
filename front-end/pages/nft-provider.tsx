@@ -2,6 +2,7 @@ import {
   Box,
   Button,
   Center,
+  Container,
   HStack,
   Image,
   NumberDecrementStepper,
@@ -112,45 +113,44 @@ function ParallaxText({ children, select, onScroll }: ParallaxProps) {
 
 const data = [
   {
-    image:
-      "https://ipfs.io/ipfs/QmdorgUeVaet9TcDDf6eAYx8oh1Npsoi8vWgM4xA25WbFk",
+    image: "https://chainwitcher.com/wp-content/uploads/2022/06/BORED-APE.jpg",
     name: "Bored Ape Yacht Club 1",
     bet: 200,
   },
   {
     image:
-      "https://ipfs.io/ipfs/QmRWSXn26HaBdLrR42g3A2fM9aBUvrYpRPE6QMZvv9C6Zo",
+      "https://cdn.gfinityesports.com/images/ncavvykf/gfinityesports/72b75071425344d5dca2762dbeeb752b00132afe-1200x675.png",
     name: "Bored Ape Yacht Club 2",
     bet: 150,
   },
   {
     image:
-      "https://ipfs.io/ipfs/QmdnZNcduJ8sVA2D3qk9jVvJcsHMjyBMGqWyKCXB9U4WCj",
+      "https://s32659.pcdn.co/wp-content/uploads/2022/03/bayc11-850x477.png",
     name: "Bored Ape Yacht Club 3",
     bet: 100,
   },
   {
     image:
-      "https://ipfs.io/ipfs/QmSp2bvMbUjqfx7yxBCLBFCz425iTMmKmNUMX9oZ9s2PTJ",
+      "https://s32659.pcdn.co/wp-content/uploads/2022/03/bayc11-850x477.png",
     name: "Bored Ape Yacht Club 4",
     bet: 300,
   },
   {
     image:
-      "https://ipfs.io/ipfs/Qmcki5SrbtcvqiQs83153M77R71xed8WnZqUUyEfibXNE1",
+      "https://s32659.pcdn.co/wp-content/uploads/2022/03/bayc11-850x477.png",
     name: "Bored Ape Yacht Club 5",
     bet: 120,
   },
   {
     image:
-      "https://ipfs.io/ipfs/QmXXdMxiVr8hTrtRxsgEEjJ4rcQUqugTuBad6xLxLhsCNi",
+      "https://s32659.pcdn.co/wp-content/uploads/2022/03/bayc11-850x477.png",
     name: "Bored Ape Yacht Club 6",
     bet: 80,
   },
 ];
 
 let intervalSelect: any = null;
-const Play: NextPage = () => {
+const NFTProvider: NextPage = () => {
   const [select, setSelect] = useState<number>(0);
   const [usdtAmount, setUSDTAmount] = useState<number>(5);
   const [isScroll, setIsScroll] = useState<boolean>(false);
@@ -223,7 +223,7 @@ const Play: NextPage = () => {
           {scrollData.map((item, index) => (
             <NFTComponent
               key={index}
-              id={`box-item-${index}`}
+              id={index}
               image={isScroll ? boxData.image : item.image}
               name={isScroll ? boxData.name : item.name}
             />
@@ -303,11 +303,7 @@ const Play: NextPage = () => {
                 borderWidth={"1px"}
                 borderRadius={"lg"}
               >
-                <NFTComponent
-                  id={`nft-bet-${index}`}
-                  image={item.image}
-                  name={item.name}
-                />
+                <NFTComponent id={index} image={item.image} name={item.name} />
                 <HStack
                   w={"100%"}
                   px="0.5rem"
@@ -335,4 +331,4 @@ const Play: NextPage = () => {
   );
 };
 
-export default Play;
+export default NFTProvider;

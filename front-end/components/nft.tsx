@@ -1,6 +1,6 @@
-import { Box, Image, Stack, Text } from "@chakra-ui/react";
+import { Box, Stack, Text } from "@chakra-ui/react";
 
-const NFTComponent = (props: { image: string; name: string; id: number }) => {
+const NFTComponent = (props: { image: string; name: string; id?: string }) => {
   const { image, name, id } = props;
 
   return (
@@ -12,7 +12,7 @@ const NFTComponent = (props: { image: string; name: string; id: number }) => {
       overflow="hidden"
     >
       <Box
-        id={`box-item-${id}`}
+        id={id}
         transition="all 2s ease-in-out"
         w={["full"]}
         h={["200px"]}
@@ -32,6 +32,7 @@ const NFTComponent = (props: { image: string; name: string; id: number }) => {
         <Text
           cursor="pointer"
           fontWeight="bold"
+          fontSize={"sm"}
           textOverflow="ellipsis"
           noOfLines={1}
         >
