@@ -1,3 +1,14 @@
 {
-  "cSpell.words": ["dmtp"]
+  "solidity.packageDefaultDependenciesContractsDirectory": "src",
+  "solidity.packageDefaultDependenciesDirectory": "lib/",
+  "solidity.compileUsingRemoteVersion": "v0.8.16+commit.07a7930e",
+  "files.associations": {
+    ".gas-snapshot": "julia"
+  },
+  "editor.formatOnSave": true,
+  "[solidity]": {
+    "editor.defaultFormatter": "JuanBlanco.solidity"
+  },
+  "solidity.formatter": "forge",
+  "solidity.defaultCompiler": "remote"
 }
