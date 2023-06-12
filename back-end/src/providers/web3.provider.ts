@@ -1,4 +1,3 @@
-import { ABI_MUSIC } from '@constants';
 import Web3 from 'web3';
 import { Contract } from 'web3-eth/node_modules/web3-eth-contract';
 
@@ -12,7 +11,7 @@ const getBlockByNumber = async (blockNumber: number) => {
   return await web3.eth.getBlock(blockNumber);
 };
 
-const MusicContract = newContract(ABI_MUSIC.Music.abi, ABI_MUSIC.Music.address);
-const MarketContract = newContract(ABI_MUSIC.MusicMarket.abi, ABI_MUSIC.MusicMarket.address);
+const MusicContract = newContract([], '');
+const MarketContract = newContract([], '');
 
 export { web3, newContract, MusicContract, MarketContract, getBlockByNumber };
