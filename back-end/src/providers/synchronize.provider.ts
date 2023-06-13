@@ -48,7 +48,7 @@ const synchronizeMusic = async (
   last_block_number_onchain: number,
   listTxHash: string[],
 ) => {
-  const musicService = Singleton.getMusicInstance();
+  const musicService = Singleton.getUserInstance() as any;
   const transferSingleEvents = await MusicContract.getPastEvents('TransferSingle', {
     fromBlock: last_block_number_sync,
     toBlock: last_block_number_onchain,
@@ -100,7 +100,7 @@ const synchronizeMarket = async (
   last_block_number_onchain: number,
   listTxHash: string[],
 ) => {
-  const marketService = Singleton.getMarketInstance();
+  const marketService = Singleton.getUserInstance() as any;
   const getPastEventsConfig = {
     fromBlock: last_block_number_sync,
     toBlock: last_block_number_onchain,
