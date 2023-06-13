@@ -11,38 +11,42 @@ import "./NFTHolder.sol";
 contract VaultToken is Ownable {
     NFTHolder private _holder;
 
-    uint256 minBettingAmount = 1000 wei;
+    uint256 _minBettingAmount = 1000 wei;
+    uint256 _winnerFee = 10;
 
     constructor(NFTHolder holder) {
         _holder = holder;
     }
 
-    mapping(address => mapping(uint256 => uint256)) _bettingAmount;
+    mapping(bytes32 => uint256) _bettingAmount;
 
-    mapping(address => mapping(uint256 => mapping(address => uint256))) _bettingAmountOfUser;
+    mapping(bytes32 => address[]) _bettingUsers;
 
-    function getBettingAmount(address NFTContract, uint256 tokenId) public view returns (uint256) {
-        return _bettingAmount[NFTContract][tokenId];
+    mapping(bytes32 => mapping(address => uint256)) _bettingAmountOfUser;
+
+    function getBettingAmount(bytes32 tokenHashedId) public view returns (uint256) {
+        return _bettingAmount[tokenHashedId];
     }
 
-
-    function getBettingAmountOfUser(address NFTContract, uint256 tokenId, address sender) public view returns (uint256) {
-        return _bettingAmountOfUser[NFTContract][tokenId][sender];
+    function getBettingAmountOfUser(bytes32 tokenHashedId, address user) public view returns (uint256) {
+        return _bettingAmountOfUser[tokenHashedId][user];
     }
 
     function getHolder() public view returns (NFTHolder) {
         return _holder;
     }
 
-    function betting(address NFTContract, uint256 tokenId) public payable {
-        require(_holder.getIsStakedBy(NFTContract, tokenId) != address(0), "This token is not staked");
-        
-        // Check if the betting amount is greater than minBettingAmount
-        require(msg.value >= minBettingAmount, "The betting amount is less than minBettingAmount");
+    function betting(bytes32 tokenHashedId, uint256 amount) public payable {
+        require(_holder.getStakedNFTs(tokenHashedId).NFTContract != address(0), "This NFT is not staked");
+        require(_holder.getLockedStatus(tokenHashedId) == false, "This NFT is locked");
+        require(msg.value == amount, "You must send the exact amount of ETH");
+        require(amount >= _minBettingAmount, "You must bet at least 1000 wei");
+        require(_holder.getStakedNFTs(tokenHashedId).NFTContract != address(0), "This NFT is not staked");
+        _bettingAmount[tokenHashedId] += amount;
+        _bettingAmountOfUser[tokenHashedId][msg.sender] += amount;
+    }
 
-        // Add betting amount of user
-        _bettingAmountOfUser[NFTContract][tokenId][msg.sender] += msg.value;
-        // Add total betting amount of BFT
-        _bettingAmount[NFTContract][tokenId] += msg.value;
+    function payoutWinner() public onlyOwner {
+        uint256 totalBet = 0;
     }
 }

@@ -22,3 +22,5 @@ flat.sol
 temp/*.temp
 
 lib/*
+
+src/artifacts/
