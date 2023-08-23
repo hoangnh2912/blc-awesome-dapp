@@ -61,7 +61,8 @@ import { ethers } from "ethers";
 import { socketInstance } from "../constants/socket";
 
 const nameConverter = (name: string) => {
-  if (name.length >= CONSTANT.NAME_LENGTH_LIMIT) {
+  if (name && name.length >= CONSTANT.NAME_LENGTH_LIMIT) {
+
     let validName = name.substring(0, 8) + "...";
     if (ethers.utils.isAddress(name)) {
       validName += name.substring(name.length - 4);
@@ -474,6 +475,7 @@ const Room = ({
     const theOtherOne = users.filter(
       (user) => user.wallet_address != userStateData.wallet_address
     )[0];
+    
     roomName = nameConverter(theOtherOne.name) || "";
 
     roomAvatar = theOtherOne.avatar || "";

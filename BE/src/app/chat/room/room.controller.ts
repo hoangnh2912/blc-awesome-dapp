@@ -152,7 +152,7 @@ export class RoomController extends Controller {
       //       message_data,
       //     );
       // }
-      return onSuccess(newRoom);
+      return onSuccess(newRoom.data);
     } catch (error) {
       logger.error(error);
       this.setStatus(NETWORK_STATUS_CODE.INTERNAL_SERVER_ERROR);
