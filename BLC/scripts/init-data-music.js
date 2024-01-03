@@ -7,10 +7,14 @@ async function main() {
 
   console.log("Interact contracts with the account:", deployer.address);
   console.log("Account balance:", (await deployer.getBalance()).toString());
+  console.log(`here`);
   const contractFactory = await ethers.getContractFactory("MusicMarket");
+  console.log(`here`);
+
   const contractInteractInstance = await contractFactory.attach(
     abiMusic.MusicMarket.address
   );
+  console.log(`here`);
 
   const chunkSize = 50;
   for (let i = 0; i < musicData.length; i += chunkSize) {

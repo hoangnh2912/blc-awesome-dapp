@@ -20,6 +20,7 @@ const runCommand = (command) => {
 
 async function main() {
   const pathConfig = process.argv[2];
+  console.log(process.argv);
   const config = require(`../${pathConfig}`);
   for (let i = 0; i < Object.values(config).length; i++) {
     const contract = Object.values(config)[i];

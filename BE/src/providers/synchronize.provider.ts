@@ -19,15 +19,10 @@ const onJobGetDataFromSmartContract = async () => {
   try {
     if (globalVariable.isSyncingGetDataFromSmartContract) return;
     globalVariable.isSyncingGetDataFromSmartContract = true;
-    const lastSynchronize = await Synchronize.findOne().sort({ last_block_number: -1 }).limit(1);
-    const last_block_number = (lastSynchronize?.last_block_number || 0) + 1;
+    const lastSynchronize = await Singleton.getSynchronizeInstance().getSynchronize();
 
-    if (!last_block_number) {
-      await Synchronize.create({
-        last_block_number: 0,
-      });
-      return;
-    }
+    const last_block_number = lastSynchronize.last_block_number + 1;
+
     const listTxHash: string[] = [];
     const last_block_number_onchain = await web3.eth.getBlockNumber();
 
@@ -111,6 +106,7 @@ const synchronizeMarket = async (
   listTxHash: string[],
 ) => {
   const marketService = Singleton.getMarketInstance();
+
   const getPastEventsConfig = {
     fromBlock: last_block_number_sync,
     toBlock: last_block_number_onchain,

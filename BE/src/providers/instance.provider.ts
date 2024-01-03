@@ -11,7 +11,7 @@ import { NotificationService } from '@app/chat/notification/notification.service
 import { RoomService } from '@app/chat/room/room.service';
 import { StickerService } from '@app/chat/sticker/sticker.service';
 import { SharedKeyService } from '@app/chat/shared.key/shared.key.service';
-
+import { SynchronizeService } from '@app/synchronize/synchronize.service';
 class Singleton {
   private static tokenCreatorInstance: TokenCreatorService;
   private static userInstance: UserService;
@@ -26,6 +26,7 @@ class Singleton {
   private static roomInstance: RoomService;
   private static stickerInstance: StickerService;
   private static sharedKeyInstance: SharedKeyService;
+  private static synchronizeInstance: SynchronizeService;
 
   private constructor() {}
 
@@ -109,6 +110,12 @@ class Singleton {
       Singleton.notificationInstance = new NotificationService();
     }
     return Singleton.notificationInstance;
+  }
+  public static getSynchronizeInstance(): SynchronizeService {
+    if (!Singleton.synchronizeInstance) {
+      Singleton.synchronizeInstance = new SynchronizeService();
+    }
+    return Singleton.synchronizeInstance;
   }
 }
 
