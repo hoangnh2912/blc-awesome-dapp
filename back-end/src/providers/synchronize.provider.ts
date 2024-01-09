@@ -10,7 +10,7 @@ import {
   MarketContract,
   // ChatMindRewardContract,
   ChatMindRewardEthersContract,
-  getBlockByNumber
+  getBlockByNumber,
 } from '.';
 
 const globalVariable: any = global;
@@ -30,7 +30,7 @@ const onJobGetDataFromSmartContract = async () => {
     const listTxHash: string[] = [];
     const last_block_number_onchain = Math.min(
       await web3.eth.getBlockNumber(),
-      last_block_number + 100000,
+      last_block_number + 1000,
     );
     logger.info(`Synchronizing from ${last_block_number} to ${last_block_number_onchain}`);
     await synchronizeMarket(last_block_number, last_block_number_onchain, listTxHash);
@@ -48,7 +48,7 @@ const onJobGetDataFromSmartContract = async () => {
       if (last_block_number_onchain - last_block_number > 500) {
         await Synchronize.create({
           last_block_number: last_block_number_onchain,
-          transactions: listTxHash
+          transactions: listTxHash,
         });
       }
     }

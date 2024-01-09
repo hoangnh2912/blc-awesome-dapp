@@ -23,6 +23,7 @@ function App({ Component, pageProps }: AppProps) {
           <ThirdwebProvider
             activeChain={Mumbai}
             supportedWallets={[metamaskWallet(), walletConnect()]}
+            clientId="45a23bd3b3cd8b3181aedb3a9559e312"
           >
             <ErrorBoundary>
               <ModalTransactionProvider>

@@ -240,4 +240,6 @@ const useListMusic = () => {
 
   return { onList };
 };
+useMusicIsPlayingView.displayName = "useMusicIsPlayingView";
+
 export { useMusicIsPlayingView, useBuyMusic, useListMusic };

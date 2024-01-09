@@ -29,6 +29,7 @@ import { useStoreActions, useStoreState } from "../../services/redux/hook";
 import { ZERO_ADDRESS } from "../../constants/constants";
 
 const Music = ({ music }: { music: GetMarketOutput }) => {
+  const sdk = useSDK();
   const router = useRouter();
   const { id } = router.query;
   const playMusicAction = useStoreActions((state) => state.music.playMusic);
@@ -60,16 +61,17 @@ const Music = ({ music }: { music: GetMarketOutput }) => {
       ABI_MUSIC.Music.address,
       ABI_MUSIC.Music.abi
     );
-    const balance = await musicNFTContract.call(
-      "balanceOf",
+    const balance = await musicNFTContract.call("balanceOf", [
       currentAddress,
-      id
-    );
+      id,
+    ]);
     if (balance.toString() != "0") {
-      setIsOwnNft(true);
-      await ApiServices.music.viewMusic(id as string);
-    } catch (error: any) {
-      console.error(`[Music][${id}][viewMusic] ${error.message}`);
+      // setIsOwnNft(true);
+      try {
+        await ApiServices.music.viewMusic(id as string);
+      } catch (error: any) {
+        console.error(`[Music][${id}][viewMusic] ${error.message}`);
+      }
     }
   };
 

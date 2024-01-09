@@ -179,7 +179,6 @@ const GetMessageOfRoom = ({
     socketInstance
       .getSocket(address || "", signature || "")
       .on("message sent", async (data: any) => {
-
         if (data) {
           await addMessage({ data });
         }
@@ -187,7 +186,6 @@ const GetMessageOfRoom = ({
   }, [userStateData]);
 
   const addMessage = async ({ data }: { data: GetMessageOutput }) => {
-
     const findMessage = messageList.find((message) => message._id == data._id);
     if (!findMessage) {
       setMessageList((messageList) => [data, ...messageList]);
@@ -305,7 +303,7 @@ const GetMessageOfRoom = ({
   return <></>;
 };
 
-const detail = () => {
+const Detail = () => {
   const userStateData = useStoreState((state) => state.chatUser.data);
   const secretKeyState = useStoreState((state) => state.chatUser.secretKey);
   const setSecretKeyAction = useStoreActions(
@@ -327,7 +325,6 @@ const detail = () => {
   );
 
   const secretValue = Object.values(secretKeyState)[secretKey];
-
 
   const getRoom = async () => {
     try {
@@ -465,4 +462,4 @@ const detail = () => {
     </Flex>
   );
 };
-export default detail;
+export default Detail;

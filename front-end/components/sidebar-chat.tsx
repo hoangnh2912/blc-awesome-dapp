@@ -34,6 +34,7 @@ import {
   ConnectWallet,
   useAddress,
   useBalance,
+  useChainId,
   useContract,
   useContractWrite,
   useDisconnect,
@@ -62,7 +63,6 @@ import { socketInstance } from "../constants/socket";
 
 const nameConverter = (name: string) => {
   if (name && name.length >= CONSTANT.NAME_LENGTH_LIMIT) {
-
     let validName = name.substring(0, 8) + "...";
     if (ethers.utils.isAddress(name)) {
       validName += name.substring(name.length - 4);
@@ -72,32 +72,27 @@ const nameConverter = (name: string) => {
   return name;
 };
 
-const PopoverTrigger = (props: FlexProps) => {
-  return <ExPopoverTrigger {...props} />;
-};
-
 const ModalSwitchNetwork = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [network, setNetwork] = useNetwork();
+  const [chainId, setChainId] = useState<number | undefined>(useChainId());
   const disconnect = useDisconnect();
   const switchNetwork = async () => {
-    if (network.data.chain?.id == ChainId.Mumbai && isOpen) {
+    if (chainId == ChainId.Mumbai && isOpen) {
       onClose();
-    } else if (setNetwork) {
-      await setNetwork(ChainId.Mumbai);
+    } else if (setChainId) {
+      setChainId(ChainId.Mumbai);
     }
   };
 
   useEffect(() => {
-    if (network.data.chain) {
-      const currentChainId = network.data.chain.id;
-      if (currentChainId !== ChainId.Mumbai && !isOpen) {
+    if (chainId) {
+      if (chainId !== ChainId.Mumbai && !isOpen) {
         onOpen();
-      } else if (currentChainId == ChainId.Mumbai && isOpen) {
+      } else if (chainId == ChainId.Mumbai && isOpen) {
         onClose();
       }
     }
-  }, [network.data.chain?.id]);
+  }, [chainId]);
 
   return (
     <Modal
@@ -140,7 +135,7 @@ const ModalSignMessage = () => {
 
   const sdk = useSDK();
   const address = useAddress();
-  const [network] = useNetwork();
+  const [chainId, setChainId] = useState<number | undefined>(useChainId());
   const disconnect = useDisconnect();
 
   const signMessage = async () => {
@@ -157,7 +152,7 @@ const ModalSignMessage = () => {
   const getUserData = async () => {
     if (address) {
       try {
-        let resUser = (await (await ApiServices.chatUser.userInfo()).data).data;
+        let resUser = (await ApiServices.chatUser.userInfo()).data.data;
         const signature = localStorage.getItem("signature") || "";
         const ecdh = createECDH("secp256k1");
 
@@ -182,9 +177,8 @@ const ModalSignMessage = () => {
   };
 
   useEffect(() => {
-    if (network.data.chain && sdk) {
-      const currentChainId = network.data.chain.id;
-      if (currentChainId == ChainId.Mumbai && address) {
+    if (chainId && sdk) {
+      if (chainId == ChainId.Mumbai && address) {
         if (
           localStorage.getItem("address") != address.toLowerCase() ||
           !localStorage.getItem("signature")
@@ -198,7 +192,7 @@ const ModalSignMessage = () => {
         onClose();
       }
     }
-  }, [sdk, network.data.chain?.id, address]);
+  }, [sdk, chainId, address]);
 
   return (
     <Modal
@@ -272,7 +266,7 @@ const LoginButton = ({
   router: NextRouter;
 }) => {
   const userStateData = useStoreState((state) => state.chatUser.data);
-  const [activeReward, setActiveReward] = useState<number>(0)
+  const [activeReward, setActiveReward] = useState<number>(0);
   const disconnect = useDisconnect();
   const logout = useStoreActions((state) => state.chatUser.logout);
 
@@ -286,19 +280,18 @@ const LoginButton = ({
   const { replace, push, query } = useRouter();
 
   useEffect(() => {
-    setActiveReward(userStateData?.active_token || 0)
+    setActiveReward(userStateData?.active_token || 0);
 
     const address = localStorage.getItem("address");
     const signature = localStorage.getItem("signature");
     socketInstance
-    .getSocket(address || "", signature || "")
-    .on("active reward", async (data: any) => {
-      
-      if (data){
-        setActiveReward(data.active_reward)
-      }
-    });
-  }, [userStateData])
+      .getSocket(address || "", signature || "")
+      .on("active reward", async (data: any) => {
+        if (data) {
+          setActiveReward(data.active_reward);
+        }
+      });
+  }, [userStateData]);
 
   const redirectHome = () => {
     router.replace("/chat/", undefined, { shallow: true });
@@ -341,7 +334,7 @@ const LoginButton = ({
 
   return (
     <Popover closeOnBlur={false} trigger="hover" placement="bottom-start">
-      <PopoverTrigger>
+      <ExPopoverTrigger>
         <Avatar
           src={avatar ? avatarURL : ""}
           marginEnd={3}
@@ -350,7 +343,7 @@ const LoginButton = ({
         >
           <AvatarBadge boxSize="1em" bg="green.500" />
         </Avatar>
-      </PopoverTrigger>
+      </ExPopoverTrigger>
       <PopoverContent>
         <PopoverHeader>Wallet</PopoverHeader>
         <PopoverArrow />
@@ -378,7 +371,8 @@ const LoginButton = ({
                   <Text fontFamily={"mono"}>{data?.displayValue} CMD</Text>
                 </Box>
                 <Box>
-                  <Button isDisabled={activeReward ? false : true}
+                  <Button
+                    isDisabled={activeReward ? false : true}
                     bg="#0D164D"
                     color="white"
                     _hover={{ bg: "#0D166D" }}
@@ -388,7 +382,7 @@ const LoginButton = ({
                     }}
                   >
                     <Text fontSize={"sm"}>
-                      Claim {activeReward ? activeReward : ''}
+                      Claim {activeReward ? activeReward : ""}
                     </Text>
                   </Button>
                 </Box>
@@ -475,7 +469,7 @@ const Room = ({
     const theOtherOne = users.filter(
       (user) => user.wallet_address != userStateData.wallet_address
     )[0];
-    
+
     roomName = nameConverter(theOtherOne.name) || "";
 
     roomAvatar = theOtherOne.avatar || "";
@@ -594,10 +588,10 @@ const ChatSidebar: NextPage = () => {
         flex={1}
         //   sx={{ scrollbarWidth: "none" }}
       >
-        {listRoom?.map((item) => {
+        {listRoom?.map((item, index) => {
           return (
             <Room
-              key={Math.random()}
+              key={index}
               name={item.name}
               avatar={CONSTANT.IPFS_PREFIX + item.avatar}
               id={item._id}

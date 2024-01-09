@@ -1,5 +1,10 @@
 import { IconType } from "react-icons";
-import { BsCoin, BsPeople, BsEmojiSunglasses } from "react-icons/bs";
+import {
+  BsCoin,
+  BsPeople,
+  BsEmojiSunglasses,
+  BsChatQuoteFill,
+} from "react-icons/bs";
 import {
   MdExplore,
   MdLibraryAdd,
@@ -34,6 +39,7 @@ export const SideBarData: Array<SideBarDataProps> = [
   { name: "Staking", icon: GiPayMoney, link: "/staking", disabled: true },
   { name: "Renting", icon: GiClockwork, link: "/renting", disabled: true },
   { name: "DAO", icon: BsPeople, link: "/dao", disabled: true },
+  { name: "Chat", icon: BsChatQuoteFill, link: "/chat" },
 ];
 
 export const SideBarDataMusic: Array<SideBarDataProps> = [
