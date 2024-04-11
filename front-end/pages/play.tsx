@@ -24,11 +24,11 @@ import {
   useMotionValue,
   useTransform,
 } from "framer-motion";
+import $ from "jquery";
 import type { NextPage } from "next";
 import { useEffect, useRef, useState } from "react";
 import NFTComponent from "../components/nft";
 import BaseLayout from "../layouts/base";
-import $ from "jquery";
 
 interface ParallaxProps {
   children: any;
@@ -39,8 +39,8 @@ interface ParallaxProps {
 const getOffset = (el: Element) => {
   const rect = el.getBoundingClientRect();
   return {
-    left: rect.left + window.scrollX,
-    top: rect.top + window.scrollY,
+    x: rect.left + window.scrollX + rect.width / 2,
+    y: rect.top + window.scrollY + rect.height / 2,
   };
 };
 
@@ -56,7 +56,7 @@ function ParallaxText({ children, select, onScroll }: ParallaxProps) {
   const isScrolling = useRef<boolean>(false);
 
   useEffect(() => {
-    if (select && !isScrolling.current) {
+    if (select >= 0 && !isScrolling.current) {
       speedFactor.current = 1;
       accelerationFactor.current = 0.1;
       isScrolling.current = true;
@@ -70,7 +70,7 @@ function ParallaxText({ children, select, onScroll }: ParallaxProps) {
   useAnimationFrame(() => {
     speedFactor.current += accelerationFactor.current;
     speedFactor.current = Math.max(speedFactor.current, 0);
-    if (select != 0 && speedFactor.current >= 50) {
+    if (select != -1 && speedFactor.current >= 50) {
       accelerationFactor.current = -0.1;
     }
 
@@ -83,8 +83,8 @@ function ParallaxText({ children, select, onScroll }: ParallaxProps) {
         const offset = getOffset(elem);
         const centerOffset = getOffset(centerItem);
         if (
-          Math.abs(offset.left - redLineCenterOffset.left) <
-          Math.abs(centerOffset.left - redLineCenterOffset.left)
+          Math.abs(offset.x - redLineCenterOffset.x) <=
+          Math.abs(centerOffset.x - redLineCenterOffset.x)
         ) {
           centerItem = elem;
         }
@@ -158,13 +158,13 @@ const data = [
   },
 ];
 
-let intervalSelect: any = null;
+
 const Play: NextPage = () => {
   const scrollDataDefault = Array.from({ length: 10 }, () =>
     JSON.parse(JSON.stringify(data))
   ).flat();
 
-  const [select, setSelect] = useState<number>(0);
+  const [select, setSelect] = useState<number>(-1);
   const [usdtAmount, setUSDTAmount] = useState<number>(5);
   const [isScroll, setIsScroll] = useState<boolean>(false);
 
@@ -175,15 +175,6 @@ const Play: NextPage = () => {
   };
 
   const [scrollData, setSrollData] = useState(scrollDataDefault);
-
-  useEffect(() => {
-    intervalSelect = setInterval(() => {
-      setSelect(Math.floor(Math.random() * data.length + 1));
-    }, 15000);
-    return () => {
-      if (intervalSelect) clearInterval(intervalSelect);
-    };
-  }, []);
 
   const onScrollSelect = (
     isScroll: boolean,
@@ -196,9 +187,7 @@ const Play: NextPage = () => {
       console.log("index", index);
 
       setSrollData((prev) => {
-        if (!select) {
-          return prev;
-        }
+        if (select < 0) return prev;
         const newData = Array.from({ length: 10 }, () =>
           JSON.parse(JSON.stringify(data))
         )
@@ -209,8 +198,8 @@ const Play: NextPage = () => {
           }))
           .sort((a, b) => a.sort - b.sort)
           .map(({ value }) => value);
-        newData[index].image = data[select - 1].image;
-        newData[index].name = data[select - 1].name;
+        newData[index].image = data[select].image;
+        newData[index].name = data[select].name;
         return newData;
       });
       callback && callback();
@@ -219,6 +208,7 @@ const Play: NextPage = () => {
 
   return (
     <BaseLayout>
+
       <ParallaxText onScroll={onScrollSelect} select={select}>
         <HStack my={"4"} mr={"4"}>
           {scrollData.map((item, index) => (
@@ -249,7 +239,13 @@ const Play: NextPage = () => {
               src="https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/512/Tether-USDT-icon.png"
             />
             <NumberInput
-              w={"120px"}
+              w={
+                {
+                  base: "100%",
+                  md: "65%",
+                  xl: "45%",
+                }
+              }
               value={usdtAmount}
               onChange={(valueString) => setUSDTAmount(parseInt(valueString))}
               min={5}
@@ -266,7 +262,13 @@ const Play: NextPage = () => {
             </NumberInput>
           </HStack>
           <Center>
-            <Box w={"40%"}>
+            <Box w={{
+              base: "100%",
+              md: "70%",
+              xl: "50%",
+            }}
+              mt={"2rem"}
+            >
               <Slider
                 flex={1}
                 focusThumbOnChange={false}
@@ -318,7 +320,9 @@ const Play: NextPage = () => {
                     src="https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/512/Tether-USDT-icon.png"
                   />
                 </HStack>
-                <Button borderTopRadius={"0"} w={"100%"} colorScheme="yellow">
+                <Button borderTopRadius={"0"}
+                  onClick={setSelect.bind(null, index)}
+                  w={"100%"} colorScheme="yellow">
                   Bet now
                 </Button>
               </Stack>

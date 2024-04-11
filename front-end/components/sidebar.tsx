@@ -24,18 +24,16 @@ import {
   ConnectWallet,
   useActiveChain,
   useAddress,
-  useConnectedWallet,
   useConnectionStatus,
   useDisconnect,
   useMetamask,
   useSDK,
   useSwitchChain,
-  useWalletConnect,
+  useWalletConnect
 } from "@thirdweb-dev/react";
 import { useRouter } from "next/router";
 import React, { ReactNode, useCallback, useEffect, useMemo } from "react";
 import { IconType } from "react-icons";
-import { FiSettings } from "react-icons/fi";
 import { SideBarData, SideBarDataProps } from "../constants/data/sidebar";
 import { useStoreActions, useStoreState } from "../services/redux/hook";
 export const ModalCheckConnect = () => {
@@ -268,14 +266,6 @@ export default function Sidebar({
   selectIndex: number;
   isLoading: boolean;
 }) {
-  const connectedWallet = useConnectedWallet();
-
-  useEffect(() => {
-    if (connectedWallet) {
-      // addNetwork();
-    }
-  }, [connectedWallet]);
-
   return (
     <Box minH="100vh" bg={"gray.50"} pb={20}>
       <ModalCheckConnect />
@@ -317,7 +307,7 @@ interface NavItemProps extends FlexProps {
   maintain?: boolean;
 }
 
-const NavItem = ({ icon, children, link, maintain, ...rest }: NavItemProps) => {
+const NavItem = ({ icon, children, link, ...rest }: NavItemProps) => {
   const { pathname, replace } = useRouter();
   const isSelect = useMemo(() => {
     if (pathname == "/" && link == SideBarData[0].link) {
@@ -328,13 +318,13 @@ const NavItem = ({ icon, children, link, maintain, ...rest }: NavItemProps) => {
   return (
     <Box
       onClick={() => {
-        if (isSelect || maintain) {
+        if (isSelect) {
           return;
         } else {
           replace(link, undefined, { shallow: true });
         }
       }}
-      cursor={maintain ? "not-allowed" : "pointer"}
+      cursor={"pointer"}
       style={{ textDecoration: "none" }}
     >
       <Flex
@@ -344,23 +334,13 @@ const NavItem = ({ icon, children, link, maintain, ...rest }: NavItemProps) => {
         borderRadius="lg"
         role="group"
         cursor="pointer"
-        color={maintain ? "gray" : isSelect ? "green" : "black"}
+        color={isSelect ? "green" : "black"}
         {...rest}
       >
         {icon && <Icon mr="4" fontSize="16" as={icon} />}
         <Text fontFamily={"mono"} fontWeight={"bold"}>
           {children}
         </Text>
-        {maintain && (
-          <FiSettings
-            style={{
-              marginLeft: "auto",
-              transition: "all 0.3s ease",
-            }}
-            className="rotate"
-            fontSize="16"
-          />
-        )}
       </Flex>
     </Box>
   );
