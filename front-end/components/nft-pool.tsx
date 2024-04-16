@@ -37,12 +37,12 @@ const NftPool = () => {
             key={index}
             image={item.image}
             name={item.name}
-            numberBet={Math.round(Math.random() * 50000)} 
+            numberBet={Math.round(Math.random() * 1000)}
             onClick={setNftTokenId.bind(null, index)}
             bottom={
               <HStack w={"100%"} pb="0.5rem" justifyContent={"center"}>
                 <Text color={colors.primary.text}>
-                  Total: <b>{item.bet}</b>
+                  Total: <b>{Number(item.bet + Math.round(Math.random() * 10000)).toLocaleString()}</b>
                 </Text>
                 <Image w={"1.5rem"} h={"1.5rem"} alt="USDT" src={USDT_ICON} />
               </HStack>
