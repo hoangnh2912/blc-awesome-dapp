@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import {
   Box,
   Button,
@@ -19,130 +18,48 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
+import { PolygonAmoyTestnet } from "@thirdweb-dev/chains";
 import {
-  ChainId,
   ConnectWallet,
-  useActiveChain,
   useAddress,
+  useChain,
   useConnectionStatus,
   useDisconnect,
-  useMetamask,
   useSDK,
   useSwitchChain,
-  useWalletConnect
 } from "@thirdweb-dev/react";
 import { useRouter } from "next/router";
 import React, { ReactNode, useCallback, useEffect, useMemo } from "react";
 import { IconType } from "react-icons";
+import { colors } from "../constants/constants";
 import { SideBarData, SideBarDataProps } from "../constants/data/sidebar";
-import { useStoreActions, useStoreState } from "../services/redux/hook";
-export const ModalCheckConnect = () => {
-  const setIsCheckConnectAction = useStoreActions(
-    (state) => state.user.setIsCheckConnect
-  );
-
-  const clearUserStateAction = useStoreActions(
-    (state) => state.user.clearState
-  );
-  const { isOpen, onOpen, onClose } = useDisclosure({
-    onClose: () => {
-      setIsCheckConnectAction({
-        isCheckConnect: false,
-        args: undefined,
-        callback: undefined,
-      });
-    },
-  });
-  const connectionStatus = useConnectionStatus();
-
-  const isCheckConnectDataState = useStoreState(
-    (state) => state.user.isCheckConnectData
-  );
-  const connectWithMetamask = useMetamask();
-  const connectWithWalletConnect = useWalletConnect();
-
-  useEffect(() => {
-    if (connectionStatus != "connected") {
-      clearUserStateAction();
-    }
-
-    if (
-      connectionStatus != "connected" &&
-      isCheckConnectDataState.isCheckConnect
-    ) {
-      onOpen();
-    } else {
-      onClose();
-      if (isCheckConnectDataState.args && isCheckConnectDataState.callback) {
-        isCheckConnectDataState.callback(...isCheckConnectDataState.args);
-      }
-    }
-  }, [connectionStatus, isCheckConnectDataState.isCheckConnect]);
-
-  return (
-    <Modal
-      isCentered
-      isOpen={isOpen}
-      closeOnOverlayClick
-      onClose={onClose}
-      scrollBehavior="inside"
-    >
-      <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(10px) " />
-      <ModalContent>
-        <ModalHeader>Wallet connect</ModalHeader>
-        <ModalCloseButton />
-        <ModalBody>
-          <Text>Connect your wallet to using this app</Text>
-          <Stack mt={4}>
-            <Button
-              onClick={() => connectWithMetamask()}
-              _hover={{ bg: "#3443DD" }}
-              color="white"
-              bg="#3443A0"
-            >
-              Metamask
-            </Button>
-            <Button
-              onClick={() => connectWithWalletConnect()}
-              _hover={{ bg: "#3443DD" }}
-              color="white"
-              bg="#3443A0"
-            >
-              WalletConnect
-            </Button>
-          </Stack>
-        </ModalBody>
-
-        <ModalFooter />
-      </ModalContent>
-    </Modal>
-  );
-};
+import fonts from "../constants/font";
+import { useStoreActions } from "../services/redux/hook";
 
 export const ModalSwitchNetwork = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const disconnect = useDisconnect();
-  const network = useActiveChain();
+  const network = useChain();
   const setNetwork = useSwitchChain();
 
-  const switchNetwork = async () => {
-    if (network?.chainId == ChainId.Mumbai && isOpen) {
+  const switchNetwork = () => {
+    if (network && network.chainId == PolygonAmoyTestnet.chainId && isOpen) {
       onClose();
     } else if (setNetwork) {
-      await setNetwork(ChainId.Mumbai);
+      setNetwork(PolygonAmoyTestnet.chainId);
     }
   };
 
   useEffect(() => {
-    if (network && network?.chainId) {
+    if (network && network.chainId) {
       const currentChainId = network.chainId;
-      if (currentChainId !== ChainId.Mumbai && !isOpen) {
+      if (currentChainId !== PolygonAmoyTestnet.chainId && !isOpen) {
         onOpen();
-      } else if (currentChainId == ChainId.Mumbai && isOpen) {
+      } else if (currentChainId == PolygonAmoyTestnet.chainId && isOpen) {
         onClose();
       }
     }
-  }, [network?.chainId]);
+  }, [network, isOpen, onOpen, onClose]);
 
   return (
     <Modal
@@ -157,18 +74,18 @@ export const ModalSwitchNetwork = () => {
     >
       <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(10px) " />
       <ModalContent>
-        <ModalHeader>Wrong network</ModalHeader>
+        <ModalHeader>Unsupported network</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <Text>Current network not support</Text>
           <Center mt={4}>
             <Button
               onClick={switchNetwork}
-              _hover={{ bg: "#3443DD" }}
+              _hover={{ bg: colors.primary.select }}
               color="white"
-              bg="#3443A0"
+              bg={colors.primary.default}
             >
-              Switch to Mumbai network
+              Switch to Polygon Amoy Testnet network
             </Button>
           </Center>
         </ModalBody>
@@ -188,11 +105,11 @@ export const ModalSignMessage = () => {
   const sdk = useSDK();
   const connectionStatus = useConnectionStatus();
   const address = useAddress();
-  const network = useActiveChain();
+  const network = useChain();
 
   const signMessage = async () => {
     if (sdk && address && connectionStatus == "connected") {
-      const signature = await sdk.wallet.sign("Music protocol");
+      const signature = await sdk.wallet.sign("GAMBLOCK");
       localStorage.setItem("address", address.toLowerCase());
       localStorage.setItem("signature", signature);
       await getUserData();
@@ -203,10 +120,11 @@ export const ModalSignMessage = () => {
   const getUserData = useCallback(async () => {
     if (address && connectionStatus == "connected") getUserDataAction(address);
   }, [address, connectionStatus, getUserDataAction]);
+
   useEffect(() => {
     if (network?.chainId && sdk) {
       const currentChainId = network.chainId;
-      if (currentChainId == ChainId.Mumbai && address) {
+      if (currentChainId == PolygonAmoyTestnet.chainId && address) {
         if (
           localStorage.getItem("address") != address.toLowerCase() ||
           !localStorage.getItem("signature")
@@ -220,7 +138,16 @@ export const ModalSignMessage = () => {
         onClose();
       }
     }
-  }, [sdk, network?.chainId]);
+  }, [
+    network,
+    sdk,
+    address,
+    clearUserStateAction,
+    getUserData,
+    isOpen,
+    onClose,
+    onOpen,
+  ]);
 
   return (
     <Modal
@@ -240,9 +167,9 @@ export const ModalSignMessage = () => {
           <Center>
             <Button
               onClick={signMessage}
-              _hover={{ bg: "#3443DD" }}
+              _hover={{ bg: colors.primary.select }}
               color="white"
-              bg="#3443A0"
+              bg={colors.primary.default}
             >
               Sign message
             </Button>
@@ -267,8 +194,7 @@ export default function Sidebar({
   isLoading: boolean;
 }) {
   return (
-    <Box minH="100vh" bg={"gray.50"} pb={20}>
-      <ModalCheckConnect />
+    <Box minH="100vh" bgGradient={colors.gradient.background} pb={20}>
       <ModalSwitchNetwork />
       <ModalSignMessage />
       <AppNav data={data} selectIndex={selectIndex} />
@@ -289,7 +215,7 @@ export default function Sidebar({
               thickness="7px"
               speed="1s"
               emptyColor="gray.200"
-              color="yellow.400"
+              color={colors.primary.default}
               size="xl"
             />
           </Stack>
@@ -334,11 +260,11 @@ const NavItem = ({ icon, children, link, ...rest }: NavItemProps) => {
         borderRadius="lg"
         role="group"
         cursor="pointer"
-        color={isSelect ? "green" : "black"}
+        color={isSelect ? colors.primary.select : colors.primary.text}
         {...rest}
       >
         {icon && <Icon mr="4" fontSize="16" as={icon} />}
-        <Text fontFamily={"mono"} fontWeight={"bold"}>
+        <Text className={fonts.bungeeShade.className} fontWeight={"bold"}>
           {children}
         </Text>
       </Flex>
@@ -359,21 +285,21 @@ const AppNav = ({ data, selectIndex }: AppNavProps) => {
       left={0}
       p={{ base: 1, md: 3 }}
       py={{ base: 2, md: 3 }}
-      bg={"white"}
       direction={"row"}
+      bgGradient={colors.gradient.background}
       borderBottomWidth={2.5}
-      borderColor={"yellow.400"}
+      borderColor={colors.primary.default}
       zIndex={10}
       justifyContent={"space-between"}
       alignItems={"center"}
     >
-      <Flex
-        h="58px"
-        alignItems="center"
-        bg={"white"}
-        justifyContent="space-between"
-      >
-        <Text fontFamily={"mono"} fontWeight="bold" fontSize="2xl">
+      <Flex h="58px" alignItems="center" justifyContent="space-between">
+        <Text
+          fontWeight="bold"
+          color={colors.primary.text}
+          className={fonts.bungeeShade.className}
+          fontSize="2xl"
+        >
           GAMBLOCK
         </Text>
       </Flex>

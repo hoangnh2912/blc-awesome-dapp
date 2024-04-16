@@ -1,6 +1,7 @@
 import { action, createStore, thunk } from "easy-peasy";
 import ApiServices from "../api";
 import StoreModel from "./model";
+import { watchBlockNumber } from "@thirdweb-dev/sdk";
 
 const store = createStore<StoreModel>({
   user: {
@@ -27,6 +28,32 @@ const store = createStore<StoreModel>({
       state.isCheckConnectData = {
         isCheckConnect: false,
       };
+    }),
+  },
+  bet: {
+    usdt: 5,
+    nftTokenId: -1,
+    setUsdt: action((state, payload) => {
+      state.usdt = payload;
+    }),
+    setNftTokenId: action((state, payload) => {
+      state.nftTokenId = payload;
+    }),
+    betResult: -1,
+    setBetResult: action((state, payload) => {
+      state.betResult = payload;
+    }),
+  },
+  app: {
+    currentBlockNumber: 0,
+    setCurrentBlockNumber: action((state, payload) => {
+      state.currentBlockNumber = payload;
+    }),
+    startWatchBlockNumber: thunk((actions, payload) => {
+      watchBlockNumber({
+        network: payload,
+        onBlockNumber: actions.setCurrentBlockNumber,
+      });
     }),
   },
 });
