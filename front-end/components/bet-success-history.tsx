@@ -1,17 +1,19 @@
-import { Box, Flex, Stack, Text } from "@chakra-ui/react";
+import { Box, Flex, Stack, Text, useToken } from "@chakra-ui/react";
 import { colors, mock } from "../constants/constants";
 import fonts from "../constants/font";
 import NFTComponent from "./nft";
 import { useStoreState } from "../services/redux/hook";
 
 const BetSuccessHistory = () => {
+  console.log(useToken("colors", colors.primary.select));
+
   const historyBet = useStoreState((states) => states.bet.historyBet);
   return (
     <Stack
       flex={1}
       borderWidth={"2px"}
       p={"1rem"}
-      height={"650px"}
+      height={"500px"}
       borderRadius={"25px"}
       borderColor={colors.primary.default}
       position={"relative"}
@@ -36,7 +38,6 @@ const BetSuccessHistory = () => {
           <Stack flexDir={"row"} alignItems={"center"} key={index}>
             <Flex>
               <NFTComponent
-                widthPx={180}
                 image={mock.nftData[data.nft_id].image}
                 name={mock.nftData[data.nft_id].name}
               />

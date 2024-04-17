@@ -15,6 +15,7 @@ import { ConnectWallet, useConnectionStatus } from "@thirdweb-dev/react";
 import { IoCloseCircle } from "react-icons/io5";
 import AutosizeInput from "react-input-autosize";
 import {
+  MAX_BET,
   USDT_ICON,
   blurs,
   colors,
@@ -52,7 +53,7 @@ const NftBetSelect = () => {
     <ScaleFade in={nftTokenId !== -1} initialScale={0.01}>
       <Stack
         flex={1}
-        height={"650px"}
+        height={"500px"}
         borderWidth={"2px"}
         p={"1rem"}
         transition="all 0.5s ease-in-out"
@@ -96,7 +97,7 @@ const NftBetSelect = () => {
         >
           {nftTokenId > -1 && (
             <NFTComponent
-              widthPx={380}
+              widthPx={245}
               image={mock.nftData[nftTokenId].image}
               name={mock.nftData[nftTokenId].name}
             />
@@ -108,7 +109,6 @@ const NftBetSelect = () => {
           </AbsoluteCenter>
         )}
         <Stack
-          overflowY={"scroll"}
           filter={connectionStatus !== "connected" ? blurs.blur10 : undefined}
           pointerEvents={connectionStatus !== "connected" ? "none" : undefined}
         >
@@ -116,7 +116,13 @@ const NftBetSelect = () => {
             <AutosizeInput
               value={usdtAmount}
               onChange={(valueString) =>
-                setUSDTAmount(parseInt(valueString.target.value || "0"))
+                setUSDTAmount(
+                  Math.min(
+                    parseInt(valueString.target.value || "0"),
+                    walletUsdtBalance,
+                    MAX_BET
+                  )
+                )
               }
               inputStyle={{
                 color: colorHex,
@@ -137,7 +143,14 @@ const NftBetSelect = () => {
               {exampleBetUsdt.map((item, index) => (
                 <Button
                   key={index}
-                  onClick={setUSDTAmount.bind(null, usdtAmount + item.value)}
+                  onClick={setUSDTAmount.bind(
+                    null,
+                    Math.min(
+                      usdtAmount + (item.value || walletUsdtBalance),
+                      walletUsdtBalance,
+                      MAX_BET
+                    )
+                  )}
                   boxShadow={"0 0 15px 0 rgba(0,0,0,0.5)"}
                   bgGradient={colors.gradient.button}
                   flex={1}

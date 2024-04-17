@@ -142,7 +142,7 @@ const exampleBetUsdt = [
 
 const THIRDWEB_CLIENTID =
   "cce88ba586b9a9772e27e52376f7f39aa9fcaacc6097af98866edc47fab20cbfdc4a85d41ea11f49148cfc9fb25499d93248ef1080eec4978bc4b978b9d6770b";
-
+const MAX_BET = 1000000;
 export {
   THIRDWEB_CLIENTID,
   ZERO_ADDRESS,
@@ -151,4 +151,5 @@ export {
   exampleBetUsdt,
   mock,
   USDT_ICON,
+  MAX_BET,
 };

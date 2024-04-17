@@ -27,17 +27,17 @@ function RouletteNFT({ children, select, onScroll }: RouletteNFTProps) {
     return `${wrap(-20, 0, v)}%`;
   });
 
-  const accelerationFactor = useRef<number>(0);
-  const speedFactor = useRef<number>(0);
-  const isScrolling = useRef<boolean>(false);
+  const accelerationFactor = useRef<number>(0.05);
+  const speedFactor = useRef<number>(1);
+  const isScrolling = useRef<boolean>(true);
 
   useEffect(() => {
     if (select >= 0 && isScrolling.current) {
-      accelerationFactor.current = -0.5;
+      accelerationFactor.current = -0.05;
     }
     if (select === -1) {
       speedFactor.current = 1;
-      accelerationFactor.current = 0.1;
+      accelerationFactor.current = 0.05;
       isScrolling.current = true;
       onScroll(true, null, null);
     }
@@ -99,7 +99,7 @@ function RouletteNFT({ children, select, onScroll }: RouletteNFTProps) {
         top={"0px"}
         zIndex={1}
         w={"3px"}
-        h={"280px"}
+        h={"238px"}
         bg={"red"}
       />
       <Box

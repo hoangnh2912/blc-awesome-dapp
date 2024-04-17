@@ -198,14 +198,14 @@ export default function Sidebar({
   isLoading: boolean;
 }) {
   return (
-    <Box minH="100vh" bgGradient={colors.gradient.background} pb={20}>
+    <Box minH="100vh" bgGradient={colors.gradient.background}>
       <ModalSwitchNetwork />
       <ModalSignMessage />
       <AppNav data={data} selectIndex={selectIndex} />
       <Box
         style={{
           transition: "all 0.3s ease",
-          paddingTop: "250px",
+          paddingTop: "165px",
         }}
       >
         {isLoading ? (
@@ -277,19 +277,30 @@ const NavItem = ({ icon, children, link, ...rest }: NavItemProps) => {
 };
 
 const BlockchainState = () => {
-  const [currentBlockNumber, accumulatedUsdt, nextBetBlock] = [
-    useStoreState((states) => states.app.currentBlockNumber),
-    useStoreState((states) => states.bet.accumulatedUsdt),
-    useStoreState((states) => states.app.nextBetBlock),
+  const [currentBlockNumber, accumulatedUsdt, nextBetBlock, walletUsdtBalance] =
+    [
+      useStoreState((states) => states.app.currentBlockNumber),
+      useStoreState((states) => states.bet.accumulatedUsdt),
+      useStoreState((states) => states.app.nextBetBlock),
+      useStoreState((states) => states.bet.walletUsdtBalance),
+    ];
+
+  const [startWatchBlockNumber, stopWatchBlockNumber, setNextBetBlock] = [
+    useStoreActions((actions) => actions.app.startWatchBlockNumber),
+    useStoreActions((actions) => actions.app.stopWatchBlockNumber),
+    useStoreActions((actions) => actions.app.setNextBetBlock),
   ];
+
+  useEffect(() => {
+    startWatchBlockNumber(PolygonAmoyTestnet);
+    return () => {
+      stopWatchBlockNumber();
+    };
+  }, [startWatchBlockNumber, stopWatchBlockNumber]);
+
   return (
     <Flex gap={"2rem"}>
-      <Stack
-        p={"1rem"}
-        textAlign={"center"}
-        borderRadius={"lg"}
-        bg={colors.primary.select}
-      >
+      <Stack textAlign={"center"}>
         <Text fontFamily={"mono"} fontWeight="bold" color={colors.primary.text}>
           Current block
         </Text>
@@ -298,20 +309,36 @@ const BlockchainState = () => {
           fontWeight="bold"
           fontSize={"25px"}
           color={colors.primary.text}
-          bgGradient={colors.gradient.button}
           borderRadius={"8px"}
-          p={"1rem"}
-          boxShadow={"0 0 15px 0 rgba(0,0,0,0.5)"}
+          flexDirection={"row"}
+          display={"flex"}
+          justifyContent={"center"}
+          gap={"0.5rem"}
+          alignItems={"center"}
         >
-          {currentBlockNumber.toLocaleString()}
+          <AnimatedCounter num={currentBlockNumber} />
         </Text>
       </Stack>
-      <Stack
-        p={"1rem"}
-        borderRadius={"lg"}
-        textAlign={"center"}
-        bg={colors.primary.select}
-      >
+      <Stack textAlign={"center"}>
+        <Text fontFamily={"mono"} fontWeight="bold" color={colors.primary.text}>
+          Next bet block
+        </Text>
+        <Text
+          fontFamily={"mono"}
+          fontWeight="bold"
+          fontSize={"25px"}
+          color={colors.primary.text}
+          borderRadius={"8px"}
+          flexDirection={"row"}
+          display={"flex"}
+          justifyContent={"center"}
+          gap={"0.5rem"}
+          alignItems={"center"}
+        >
+          <AnimatedCounter num={nextBetBlock} />
+        </Text>
+      </Stack>
+      <Stack textAlign={"center"}>
         <Text fontFamily={"mono"} fontWeight="bold" color={colors.primary.text}>
           Accumulated reward
         </Text>
@@ -320,10 +347,7 @@ const BlockchainState = () => {
           fontWeight="bold"
           fontSize={"25px"}
           color={colors.primary.text}
-          bgGradient={colors.gradient.button}
           borderRadius={"8px"}
-          p={"1rem"}
-          boxShadow={"0 0 15px 0 rgba(0,0,0,0.5)"}
           flexDirection={"row"}
           display={"flex"}
           justifyContent={"center"}
@@ -335,26 +359,24 @@ const BlockchainState = () => {
         </Text>
       </Stack>
 
-      <Stack
-        p={"1rem"}
-        borderRadius={"lg"}
-        textAlign={"center"}
-        bg={colors.primary.select}
-      >
+      <Stack textAlign={"center"}>
         <Text fontFamily={"mono"} fontWeight="bold" color={colors.primary.text}>
-          Next bet block
+          Your USDT balance
         </Text>
         <Text
           fontFamily={"mono"}
           fontWeight="bold"
           fontSize={"25px"}
           color={colors.primary.text}
-          bgGradient={colors.gradient.button}
           borderRadius={"8px"}
-          p={"1rem"}
-          boxShadow={"0 0 15px 0 rgba(0,0,0,0.5)"}
+          flexDirection={"row"}
+          display={"flex"}
+          justifyContent={"center"}
+          gap={"0.5rem"}
+          alignItems={"center"}
         >
-          {nextBetBlock.toLocaleString()}
+          <AnimatedCounter num={walletUsdtBalance} />
+          <Image w={"1.5rem"} h={"1.5rem"} alt="USDT" src={USDT_ICON} />
         </Text>
       </Stack>
     </Flex>
@@ -372,22 +394,20 @@ const AppNav = ({ data }: AppNavProps) => {
       position={"fixed"}
       right={0}
       left={0}
-      p={{ base: 1, md: 3 }}
-      py={{ base: 2, md: 3 }}
+      px={"1rem"}
+      pt={"0.5rem"}
       bgGradient={colors.gradient.background}
-      borderBottomWidth={1}
-      borderColor={colors.primary.default}
       zIndex={2}
       justifyContent={"space-between"}
       alignItems={"center"}
     >
-      <Stack w={"100%"} flexDirection={"row"}>
+      <Stack w={"100%"} alignItems={"center"} flexDirection={"row"}>
         <Text
           flex={1}
           fontWeight="bold"
           color={colors.primary.text}
           className={fonts.bungeeShade.className}
-          fontSize="2xl"
+          fontSize="xl"
         >
           GAMBLOCK
         </Text>
@@ -406,8 +426,8 @@ const AppNav = ({ data }: AppNavProps) => {
         <HStack flex={1} justifyContent={"right"} spacing={"2.5rem"}>
           <HStack>
             <Image
-              w={"50px"}
-              h={"50px"}
+              w={"35px"}
+              h={"35px"}
               alt={PolygonAmoyTestnet.name}
               src={ipfsToHttps(PolygonAmoyTestnet.icon.url)}
             />
@@ -419,7 +439,12 @@ const AppNav = ({ data }: AppNavProps) => {
               {PolygonAmoyTestnet.name}
             </Text>
           </HStack>
-          <ConnectWallet />
+          <ConnectWallet
+            hideTestnetFaucet={false}
+            style={{
+              height: "50px",
+            }}
+          />
         </HStack>
       </Stack>
       <Divider
@@ -429,6 +454,12 @@ const AppNav = ({ data }: AppNavProps) => {
         bg={colors.primary.default}
       />
       <BlockchainState />
+      <Divider
+        height={"0.5px"}
+        width={"200vh"}
+        opacity={1}
+        bg={colors.primary.default}
+      />
     </Stack>
   );
 };

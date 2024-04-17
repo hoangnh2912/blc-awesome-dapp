@@ -26,7 +26,7 @@ const NFTComponent = (props: {
   return (
     <Flex
       flexDirection={"column"}
-      w={widthPx ? `${widthPx}px` : "200px"}
+      w={widthPx ? `${widthPx}px` : "170px"}
       borderRadius="lg"
       onClick={onClick}
       alignItems={"center"}
@@ -37,8 +37,8 @@ const NFTComponent = (props: {
         id={id}
         className={className}
         transition="all 0.5s ease-in-out"
-        w={widthPx ? `${widthPx - 20}px` : "180px"}
-        h={widthPx ? `${widthPx - 20}px` : "180px"}
+        w={widthPx ? `${widthPx - 20}px` : "150px"}
+        h={widthPx ? `${widthPx - 20}px` : "150px"}
         mt={"10px"}
         backgroundImage={`url(${image})`}
         cursor="pointer"
@@ -48,19 +48,23 @@ const NFTComponent = (props: {
         backgroundColor="transparent"
         backgroundPosition="center"
       />
-      <Center position={"absolute"} top={"5rem"}>
+      <Center position={"absolute"} top={"3rem"}>
         {!!numberBet && (
           <Stack
             flexDirection={"row"}
             bgGradient={colors.gradient.tether}
-            px={"1rem"}
-            py={"0.5rem"}
+            px={"0.35rem"}
+            py={"0.35rem"}
             transform={"rotate(-45deg)"}
-            borderRadius={"8px"}
+            boxShadow={"0 0 25px 0 rgba(0,0,0,1)"}
+            borderRadius={"4px"}
           >
-            <Image w={"1.5rem"} h={"1.5rem"} alt="USDT" src={USDT_ICON} />
-            <Text fontWeight="bold" color={colors.primary.text} fontSize={"lg"}>
-              <AnimatedCounter num={numberBet} />
+            <Image w={"1rem"} h={"1rem"} alt="USDT" src={USDT_ICON} />
+            <Text fontWeight="bold" color={colors.primary.text} fontSize={"sm"}>
+              <AnimatedCounter
+                isConvertToInternationalCurrencySystem
+                num={numberBet}
+              />
             </Text>
           </Stack>
         )}
@@ -72,6 +76,7 @@ const NFTComponent = (props: {
           fontSize={"sm"}
           color={colors.primary.text}
           textOverflow="ellipsis"
+          textAlign={"center"}
           noOfLines={1}
         >
           {name}

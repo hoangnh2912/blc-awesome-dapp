@@ -14,3 +14,16 @@ a {
 * {
   box-sizing: border-box;
 }
+
+::-webkit-scrollbar {
+  width: 4px;
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: #d69e2e;
+  border-radius: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #9f7aea;
+  border-radius: 8px;
+}

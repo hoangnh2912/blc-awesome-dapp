@@ -1,7 +1,5 @@
 import { Axios, AxiosRequestConfig, AxiosResponse } from "axios";
-import {
-  GetUserOutput
-} from "./types";
+import { GetUserOutput } from "./types";
 type SuccessResponse<T> = {
   data: T;
   message: string;

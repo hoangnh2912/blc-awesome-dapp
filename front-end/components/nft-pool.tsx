@@ -4,6 +4,7 @@ import NFTComponent from "./nft";
 import fonts from "../constants/font";
 import { useStoreActions, useStoreState } from "../services/redux/hook";
 import AnimatedCounter from "./animate-counter";
+import { convertToInternationalCurrencySystem } from "../constants/utils";
 
 const NftPool = () => {
   const setNftTokenId = useStoreActions((actions) => actions.bet.setNftTokenId);
@@ -12,7 +13,7 @@ const NftPool = () => {
   return (
     <Stack
       flex={1.5}
-      height={"650px"}
+      height={"500px"}
       borderWidth={"2px"}
       p={"1rem"}
       borderRadius={"25px"}
@@ -53,7 +54,11 @@ const NftPool = () => {
                     flexDirection={"row"}
                     gap={"0.5rem"}
                   >
-                    Total: <AnimatedCounter num={numberBet} />
+                    Total:{" "}
+                    <AnimatedCounter
+                      isConvertToInternationalCurrencySystem
+                      num={numberBet}
+                    />
                   </Text>
                   <Image w={"1.5rem"} h={"1.5rem"} alt="USDT" src={USDT_ICON} />
                 </HStack>

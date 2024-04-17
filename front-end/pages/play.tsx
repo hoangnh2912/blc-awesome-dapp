@@ -1,37 +1,30 @@
-import { Center, HStack, Image, Stack, Text } from "@chakra-ui/react";
-import { PolygonAmoyTestnet } from "@thirdweb-dev/chains";
+import { HStack } from "@chakra-ui/react";
 import { useAddress } from "@thirdweb-dev/react";
-import { debounce, delay, set } from "lodash";
+import { debounce, delay } from "lodash";
 import type { NextPage } from "next";
 import { useEffect, useState } from "react";
-import AnimatedCounter from "../components/animate-counter";
 import BetSuccessHistory from "../components/bet-success-history";
 import NFTComponent from "../components/nft";
 import NftBetSelect from "../components/nft-bet-select";
 import NftPool from "../components/nft-pool";
 import RouletteNFT from "../components/roulette-nft";
-import { USDT_ICON, colors, mock } from "../constants/constants";
+import { mock } from "../constants/constants";
 import { findNextNumberDivisible } from "../constants/utils";
 import BaseLayout from "../layouts/base";
 import { useStoreActions, useStoreState } from "../services/redux/hook";
 
 const Play: NextPage = () => {
-  const scrollDataDefault = Array.from({ length: 10 }, () =>
-    JSON.parse(JSON.stringify(mock.nftData))
-  ).flat();
+  const scrollDataDefault = Array.from({ length: 60 })
+    .map(() => ({
+      image: mock.nftBox.image,
+      name: mock.nftBox.name,
+    }))
+    .flat();
 
   const walletAddress = useAddress();
 
-  const [
-    currentBlockNumber,
-    startWatchBlockNumber,
-    stopWatchBlockNumber,
-    nextBetBlock,
-    setNextBetBlock,
-  ] = [
+  const [currentBlockNumber, nextBetBlock, setNextBetBlock] = [
     useStoreState((state) => state.app.currentBlockNumber),
-    useStoreActions((actions) => actions.app.startWatchBlockNumber),
-    useStoreActions((actions) => actions.app.stopWatchBlockNumber),
     useStoreState((state) => state.app.nextBetBlock),
     useStoreActions((actions) => actions.app.setNextBetBlock),
   ];
@@ -139,11 +132,7 @@ const Play: NextPage = () => {
 
   useEffect(() => {
     setWalletUsdtBalance(20000);
-    startWatchBlockNumber(PolygonAmoyTestnet);
-    return () => {
-      stopWatchBlockNumber();
-    };
-  }, [startWatchBlockNumber, stopWatchBlockNumber, setWalletUsdtBalance]);
+  }, [setWalletUsdtBalance]);
 
   return (
     <BaseLayout>
@@ -160,33 +149,6 @@ const Play: NextPage = () => {
           ))}
         </HStack>
       </RouletteNFT>
-
-      <Center>
-        <Stack p={"1rem"} textAlign={"center"}>
-          <Text
-            fontFamily={"mono"}
-            fontWeight="bold"
-            color={colors.primary.text}
-          >
-            Your USDT balance
-          </Text>
-          <Text
-            fontFamily={"mono"}
-            fontWeight="bold"
-            fontSize={"25px"}
-            color={colors.primary.text}
-            borderRadius={"8px"}
-            flexDirection={"row"}
-            display={"flex"}
-            justifyContent={"center"}
-            gap={"0.5rem"}
-            alignItems={"center"}
-          >
-            <AnimatedCounter num={walletUsdtBalance} />
-            <Image w={"1.5rem"} h={"1.5rem"} alt="USDT" src={USDT_ICON} />
-          </Text>
-        </Stack>
-      </Center>
       <HStack mt={"2.5rem"} px={"1rem"} spacing={"2rem"}>
         <NftPool />
         <NftBetSelect />
