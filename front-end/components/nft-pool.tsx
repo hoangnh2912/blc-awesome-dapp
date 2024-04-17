@@ -2,14 +2,17 @@ import { HStack, Image, SimpleGrid, Stack, Text, Wrap } from "@chakra-ui/react";
 import { USDT_ICON, colors, mock } from "../constants/constants";
 import NFTComponent from "./nft";
 import fonts from "../constants/font";
-import { useStoreActions } from "../services/redux/hook";
+import { useStoreActions, useStoreState } from "../services/redux/hook";
+import AnimatedCounter from "./animate-counter";
 
 const NftPool = () => {
   const setNftTokenId = useStoreActions((actions) => actions.bet.setNftTokenId);
+  const betSession = useStoreState((states) => states.bet.betSession);
 
   return (
     <Stack
       flex={1.5}
+      height={"650px"}
       borderWidth={"2px"}
       p={"1rem"}
       borderRadius={"25px"}
@@ -31,24 +34,33 @@ const NftPool = () => {
       >
         NFT Pool
       </Text>
-      <Wrap spacing={"2rem"}>
-        {mock.nftData.map((item, index) => (
-          <NFTComponent
-            key={index}
-            image={item.image}
-            name={item.name}
-            numberBet={Math.round(Math.random() * 1000)}
-            onClick={setNftTokenId.bind(null, index)}
-            bottom={
-              <HStack w={"100%"} pb="0.5rem" justifyContent={"center"}>
-                <Text color={colors.primary.text}>
-                  Total: <b>{Number(item.bet + Math.round(Math.random() * 10000)).toLocaleString()}</b>
-                </Text>
-                <Image w={"1.5rem"} h={"1.5rem"} alt="USDT" src={USDT_ICON} />
-              </HStack>
-            }
-          />
-        ))}
+      <Wrap overflowY={"scroll"} spacing={"2rem"}>
+        {mock.nftData.map((item, index) => {
+          const numberBet =
+            betSession.find((bet) => bet.nftTokenId === index)?.usdt || 0;
+          return (
+            <NFTComponent
+              key={index}
+              image={item.image}
+              name={item.name}
+              numberBet={numberBet}
+              onClick={setNftTokenId.bind(null, index)}
+              bottom={
+                <HStack w={"100%"} pb="0.5rem" justifyContent={"center"}>
+                  <Text
+                    color={colors.primary.text}
+                    display={"flex"}
+                    flexDirection={"row"}
+                    gap={"0.5rem"}
+                  >
+                    Total: <AnimatedCounter num={numberBet} />
+                  </Text>
+                  <Image w={"1.5rem"} h={"1.5rem"} alt="USDT" src={USDT_ICON} />
+                </HStack>
+              }
+            />
+          );
+        })}
       </Wrap>
     </Stack>
   );

@@ -4,12 +4,15 @@ import {
   Button,
   Center,
   HStack,
+  Icon,
   Image,
   ScaleFade,
   Stack,
   Text,
   useToken,
 } from "@chakra-ui/react";
+import { ConnectWallet, useConnectionStatus } from "@thirdweb-dev/react";
+import { IoCloseCircle } from "react-icons/io5";
 import AutosizeInput from "react-input-autosize";
 import {
   USDT_ICON,
@@ -21,9 +24,6 @@ import {
 import fonts from "../constants/font";
 import { useStoreActions, useStoreState } from "../services/redux/hook";
 import NFTComponent from "./nft";
-import { IoCloseCircle } from "react-icons/io5";
-import { Icon } from "@chakra-ui/react";
-import { ConnectWallet, useConnectionStatus } from "@thirdweb-dev/react";
 
 const NftBetSelect = () => {
   const [usdtAmount, setUSDTAmount] = [
@@ -35,7 +35,13 @@ const NftBetSelect = () => {
     useStoreActions((actions) => actions.bet.setNftTokenId),
   ];
 
-  const setBetResult = useStoreActions((actions) => actions.bet.setBetResult);
+  const [walletUsdtBalance, setWalletUsdtBalance] = [
+    useStoreState((state) => state.bet.walletUsdtBalance),
+    useStoreActions((actions) => actions.bet.setWalletUsdtBalance),
+  ];
+
+  const addBetSession = useStoreActions((actions) => actions.bet.addBetSession);
+
   const connectionStatus = useConnectionStatus();
 
   const colorHex = useToken("colors", colors.primary.default);
@@ -46,6 +52,7 @@ const NftBetSelect = () => {
     <ScaleFade in={nftTokenId !== -1} initialScale={0.01}>
       <Stack
         flex={1}
+        height={"650px"}
         borderWidth={"2px"}
         p={"1rem"}
         transition="all 0.5s ease-in-out"
@@ -75,7 +82,10 @@ const NftBetSelect = () => {
           position={"absolute"}
           as={IoCloseCircle}
           bg={colors.primary.text}
-          onClick={setNftTokenId.bind(null, -1)}
+          onClick={() => {
+            setNftTokenId(-1);
+            setUSDTAmount(10);
+          }}
           cursor={"pointer"}
           boxSize={"2.5rem"}
           borderRadius={"50%"}
@@ -98,6 +108,7 @@ const NftBetSelect = () => {
           </AbsoluteCenter>
         )}
         <Stack
+          overflowY={"scroll"}
           filter={connectionStatus !== "connected" ? blurs.blur10 : undefined}
           pointerEvents={connectionStatus !== "connected" ? "none" : undefined}
         >
@@ -126,7 +137,7 @@ const NftBetSelect = () => {
               {exampleBetUsdt.map((item, index) => (
                 <Button
                   key={index}
-                  onClick={setUSDTAmount.bind(null, item.value)}
+                  onClick={setUSDTAmount.bind(null, usdtAmount + item.value)}
                   boxShadow={"0 0 15px 0 rgba(0,0,0,0.5)"}
                   bgGradient={colors.gradient.button}
                   flex={1}
@@ -156,8 +167,13 @@ const NftBetSelect = () => {
             }}
             _active={{}}
             onClick={() => {
-              setBetResult(nftTokenId);
               setNftTokenId(-1);
+              addBetSession({
+                nftTokenId,
+                usdt: usdtAmount,
+              });
+              setUSDTAmount(10);
+              setWalletUsdtBalance(walletUsdtBalance - usdtAmount);
             }}
           >
             Bet now !

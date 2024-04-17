@@ -13,11 +13,14 @@ const colors = {
       "linear-gradient(120deg, rgba(239,148,255,1) 12%, rgba(25,47,189,1) 100%)",
     active:
       "linear-gradient(90deg,rgba(51,0,148,1) 12%,rgba(221,137,255,1) 100%)",
+    tether:
+      "linear-gradient(50deg, rgba(0,106,66,1) 12%, rgba(34,147,104,1) 100%)",
   },
   primary: {
     select: "purple.400",
     default: "yellow.500",
     text: "yellow.100",
+    polygon: "#6D28DF",
   },
 };
 

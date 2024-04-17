@@ -32,7 +32,10 @@ function RouletteNFT({ children, select, onScroll }: RouletteNFTProps) {
   const isScrolling = useRef<boolean>(false);
 
   useEffect(() => {
-    if (select >= 0 && !isScrolling.current) {
+    if (select >= 0 && isScrolling.current) {
+      accelerationFactor.current = -0.5;
+    }
+    if (select === -1) {
       speedFactor.current = 1;
       accelerationFactor.current = 0.1;
       isScrolling.current = true;
@@ -46,8 +49,9 @@ function RouletteNFT({ children, select, onScroll }: RouletteNFTProps) {
   useAnimationFrame(() => {
     speedFactor.current += accelerationFactor.current;
     speedFactor.current = Math.max(speedFactor.current, 0);
-    if (select != -1 && speedFactor.current >= 50) {
-      accelerationFactor.current = -0.1;
+    if (speedFactor.current >= 20) {
+      accelerationFactor.current = 0;
+      // accelerationFactor.current = -0.1;
     }
 
     baseX.set(baseX.get() + speedFactor.current * 0.01);
@@ -93,7 +97,7 @@ function RouletteNFT({ children, select, onScroll }: RouletteNFTProps) {
         id="red-line-center"
         position={"absolute"}
         top={"0px"}
-        zIndex={10}
+        zIndex={1}
         w={"3px"}
         h={"280px"}
         bg={"red"}

@@ -6,7 +6,14 @@ const getCenterPointOfElement = (el: Element) => {
   };
 };
 
+const findNextNumberDivisible = (
+  currentNumber: number,
+  divisible: number = 10
+) => {
+  return currentNumber + divisible - (currentNumber % divisible);
+};
+
 const ipfsToHttps = (url: string) => {
   return url.replace("ipfs://", "https://ipfs.io/ipfs/");
 };
-export { getCenterPointOfElement, ipfsToHttps };
+export { getCenterPointOfElement, ipfsToHttps, findNextNumberDivisible };

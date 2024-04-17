@@ -2,11 +2,13 @@ import {
   AbsoluteCenter,
   Box,
   Center,
+  Flex,
   Image,
   Stack,
   Text,
 } from "@chakra-ui/react";
 import { USDT_ICON, colors } from "../constants/constants";
+import AnimatedCounter from "./animate-counter";
 
 const NFTComponent = (props: {
   image: string;
@@ -22,7 +24,8 @@ const NFTComponent = (props: {
     props;
 
   return (
-    <Stack
+    <Flex
+      flexDirection={"column"}
       w={widthPx ? `${widthPx}px` : "200px"}
       borderRadius="lg"
       onClick={onClick}
@@ -45,13 +48,11 @@ const NFTComponent = (props: {
         backgroundColor="transparent"
         backgroundPosition="center"
       />
-      {numberBet && (
-        <Center position={"absolute"} top={"5rem"}>
+      <Center position={"absolute"} top={"5rem"}>
+        {!!numberBet && (
           <Stack
             flexDirection={"row"}
-            bgGradient={
-              "linear-gradient(50deg, rgba(0,106,66,1) 12%, rgba(34,147,104,1) 100%)"
-            }
+            bgGradient={colors.gradient.tether}
             px={"1rem"}
             py={"0.5rem"}
             transform={"rotate(-45deg)"}
@@ -59,12 +60,11 @@ const NFTComponent = (props: {
           >
             <Image w={"1.5rem"} h={"1.5rem"} alt="USDT" src={USDT_ICON} />
             <Text fontWeight="bold" color={colors.primary.text} fontSize={"lg"}>
-              {numberBet.toLocaleString()}
+              <AnimatedCounter num={numberBet} />
             </Text>
           </Stack>
-        </Center>
-      )}
-
+        )}
+      </Center>
       <Stack p="3" backdropFilter="auto">
         <Text
           cursor="pointer"
@@ -78,7 +78,7 @@ const NFTComponent = (props: {
         </Text>
       </Stack>
       {bottom && bottom}
-    </Stack>
+    </Flex>
   );
 };
 

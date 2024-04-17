@@ -1,14 +1,17 @@
-import { Stack, Text } from "@chakra-ui/react";
+import { Box, Flex, Stack, Text } from "@chakra-ui/react";
 import { colors, mock } from "../constants/constants";
 import fonts from "../constants/font";
 import NFTComponent from "./nft";
+import { useStoreState } from "../services/redux/hook";
 
 const BetSuccessHistory = () => {
+  const historyBet = useStoreState((states) => states.bet.historyBet);
   return (
     <Stack
       flex={1}
       borderWidth={"2px"}
       p={"1rem"}
+      height={"650px"}
       borderRadius={"25px"}
       borderColor={colors.primary.default}
       position={"relative"}
@@ -28,18 +31,32 @@ const BetSuccessHistory = () => {
       >
         Award History
       </Text>
-      <Stack maxH={"600px"} overflowY={"scroll"}>
-        {[
-          ...mock.betSuccessHistoryData,
-          ...mock.betSuccessHistoryData,
-          ...mock.betSuccessHistoryData,
-        ].map((data, index) => (
-          <Stack key={index}>
-            <NFTComponent
-              widthPx={100}
-              image={mock.nftData[data.nft_id].image}
-              name={mock.nftData[data.nft_id].name}
-            />
+      <Stack overflowY={"scroll"}>
+        {historyBet.map((data, index) => (
+          <Stack flexDir={"row"} alignItems={"center"} key={index}>
+            <Flex>
+              <NFTComponent
+                widthPx={180}
+                image={mock.nftData[data.nft_id].image}
+                name={mock.nftData[data.nft_id].name}
+              />
+            </Flex>
+            <Stack>
+              <Text fontFamily={"mono"} color={colors.primary.text}>
+                Total Winners {data.number_of_winners} - Total bet{" "}
+                {data.total_bet} USDT at block {data.at_block.toLocaleString()}{" "}
+                - {new Date(data.at).toLocaleString()}
+              </Text>
+              {data.awards.map((award, indexAward) => (
+                <Text
+                  fontFamily={"mono"}
+                  color={colors.primary.text}
+                  key={indexAward}
+                >
+                  {award.amount} USDT for {award.wallet_address}
+                </Text>
+              ))}
+            </Stack>
           </Stack>
         ))}
       </Stack>

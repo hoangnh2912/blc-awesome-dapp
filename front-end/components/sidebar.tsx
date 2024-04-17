@@ -2,10 +2,12 @@ import {
   Box,
   Button,
   Center,
+  Divider,
   Flex,
   FlexProps,
   HStack,
   Icon,
+  Image,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -31,10 +33,12 @@ import {
 import { useRouter } from "next/router";
 import React, { ReactNode, useCallback, useEffect, useMemo } from "react";
 import { IconType } from "react-icons";
-import { colors } from "../constants/constants";
+import { USDT_ICON, colors } from "../constants/constants";
 import { SideBarData, SideBarDataProps } from "../constants/data/sidebar";
 import fonts from "../constants/font";
-import { useStoreActions } from "../services/redux/hook";
+import { ipfsToHttps } from "../constants/utils";
+import { useStoreActions, useStoreState } from "../services/redux/hook";
+import AnimatedCounter from "./animate-counter";
 
 export const ModalSwitchNetwork = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -201,7 +205,7 @@ export default function Sidebar({
       <Box
         style={{
           transition: "all 0.3s ease",
-          paddingTop: "80px",
+          paddingTop: "250px",
         }}
       >
         {isLoading ? (
@@ -272,12 +276,97 @@ const NavItem = ({ icon, children, link, ...rest }: NavItemProps) => {
   );
 };
 
+const BlockchainState = () => {
+  const [currentBlockNumber, accumulatedUsdt, nextBetBlock] = [
+    useStoreState((states) => states.app.currentBlockNumber),
+    useStoreState((states) => states.bet.accumulatedUsdt),
+    useStoreState((states) => states.app.nextBetBlock),
+  ];
+  return (
+    <Flex gap={"2rem"}>
+      <Stack
+        p={"1rem"}
+        textAlign={"center"}
+        borderRadius={"lg"}
+        bg={colors.primary.select}
+      >
+        <Text fontFamily={"mono"} fontWeight="bold" color={colors.primary.text}>
+          Current block
+        </Text>
+        <Text
+          fontFamily={"mono"}
+          fontWeight="bold"
+          fontSize={"25px"}
+          color={colors.primary.text}
+          bgGradient={colors.gradient.button}
+          borderRadius={"8px"}
+          p={"1rem"}
+          boxShadow={"0 0 15px 0 rgba(0,0,0,0.5)"}
+        >
+          {currentBlockNumber.toLocaleString()}
+        </Text>
+      </Stack>
+      <Stack
+        p={"1rem"}
+        borderRadius={"lg"}
+        textAlign={"center"}
+        bg={colors.primary.select}
+      >
+        <Text fontFamily={"mono"} fontWeight="bold" color={colors.primary.text}>
+          Accumulated reward
+        </Text>
+        <Text
+          fontFamily={"mono"}
+          fontWeight="bold"
+          fontSize={"25px"}
+          color={colors.primary.text}
+          bgGradient={colors.gradient.button}
+          borderRadius={"8px"}
+          p={"1rem"}
+          boxShadow={"0 0 15px 0 rgba(0,0,0,0.5)"}
+          flexDirection={"row"}
+          display={"flex"}
+          justifyContent={"center"}
+          gap={"0.5rem"}
+          alignItems={"center"}
+        >
+          <AnimatedCounter num={accumulatedUsdt} />
+          <Image w={"1.5rem"} h={"1.5rem"} alt="USDT" src={USDT_ICON} />
+        </Text>
+      </Stack>
+
+      <Stack
+        p={"1rem"}
+        borderRadius={"lg"}
+        textAlign={"center"}
+        bg={colors.primary.select}
+      >
+        <Text fontFamily={"mono"} fontWeight="bold" color={colors.primary.text}>
+          Next bet block
+        </Text>
+        <Text
+          fontFamily={"mono"}
+          fontWeight="bold"
+          fontSize={"25px"}
+          color={colors.primary.text}
+          bgGradient={colors.gradient.button}
+          borderRadius={"8px"}
+          p={"1rem"}
+          boxShadow={"0 0 15px 0 rgba(0,0,0,0.5)"}
+        >
+          {nextBetBlock.toLocaleString()}
+        </Text>
+      </Stack>
+    </Flex>
+  );
+};
+
 interface AppNavProps {
   data: Array<SideBarDataProps>;
   selectIndex: number;
 }
 
-const AppNav = ({ data, selectIndex }: AppNavProps) => {
+const AppNav = ({ data }: AppNavProps) => {
   return (
     <Stack
       position={"fixed"}
@@ -285,16 +374,16 @@ const AppNav = ({ data, selectIndex }: AppNavProps) => {
       left={0}
       p={{ base: 1, md: 3 }}
       py={{ base: 2, md: 3 }}
-      direction={"row"}
       bgGradient={colors.gradient.background}
-      borderBottomWidth={2.5}
+      borderBottomWidth={1}
       borderColor={colors.primary.default}
-      zIndex={10}
+      zIndex={2}
       justifyContent={"space-between"}
       alignItems={"center"}
     >
-      <Flex h="58px" alignItems="center" justifyContent="space-between">
+      <Stack w={"100%"} flexDirection={"row"}>
         <Text
+          flex={1}
           fontWeight="bold"
           color={colors.primary.text}
           className={fonts.bungeeShade.className}
@@ -302,22 +391,44 @@ const AppNav = ({ data, selectIndex }: AppNavProps) => {
         >
           GAMBLOCK
         </Text>
-      </Flex>
-      <HStack>
-        {data.map((item, index) => (
-          <NavItem
-            key={index}
-            link={item.link}
-            icon={item.icon}
-            maintain={item.disabled}
-          >
-            {item.name}
-          </NavItem>
-        ))}
-      </HStack>
-      <Stack height={"58px"} justifyContent={"center"}>
-        <ConnectWallet />
+        <HStack justifyContent={"center"} flex={1}>
+          {data.map((item, index) => (
+            <NavItem
+              key={index}
+              link={item.link}
+              icon={item.icon}
+              maintain={item.disabled}
+            >
+              {item.name}
+            </NavItem>
+          ))}
+        </HStack>
+        <HStack flex={1} justifyContent={"right"} spacing={"2.5rem"}>
+          <HStack>
+            <Image
+              w={"50px"}
+              h={"50px"}
+              alt={PolygonAmoyTestnet.name}
+              src={ipfsToHttps(PolygonAmoyTestnet.icon.url)}
+            />
+            <Text
+              fontFamily={"mono"}
+              fontWeight="bold"
+              color={colors.primary.default}
+            >
+              {PolygonAmoyTestnet.name}
+            </Text>
+          </HStack>
+          <ConnectWallet />
+        </HStack>
       </Stack>
+      <Divider
+        height={"0.5px"}
+        width={"200vh"}
+        opacity={1}
+        bg={colors.primary.default}
+      />
+      <BlockchainState />
     </Stack>
   );
 };
