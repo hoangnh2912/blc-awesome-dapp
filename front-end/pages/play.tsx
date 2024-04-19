@@ -54,7 +54,10 @@ const Play: NextPage = () => {
 
   useEffect(() => {
     if (!nextBetBlock && currentBlockNumber) {
-      setNextBetBlock(findNextNumberDivisible(currentBlockNumber));
+      debounce(
+        setNextBetBlock,
+        1000
+      )(findNextNumberDivisible(currentBlockNumber));
     }
   }, [currentBlockNumber, nextBetBlock, setNextBetBlock]);
 

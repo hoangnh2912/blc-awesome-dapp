@@ -285,10 +285,9 @@ const BlockchainState = () => {
       useStoreState((states) => states.bet.walletUsdtBalance),
     ];
 
-  const [startWatchBlockNumber, stopWatchBlockNumber, setNextBetBlock] = [
+  const [startWatchBlockNumber, stopWatchBlockNumber] = [
     useStoreActions((actions) => actions.app.startWatchBlockNumber),
     useStoreActions((actions) => actions.app.stopWatchBlockNumber),
-    useStoreActions((actions) => actions.app.setNextBetBlock),
   ];
 
   useEffect(() => {
