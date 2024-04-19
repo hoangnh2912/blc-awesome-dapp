@@ -1,8 +1,8 @@
+import 'module-alias/register';
+import 'dotenv/config';
 import { connectToMongoDB, startSynchronizeDataFromSmartContract } from '@providers';
 import cors from 'cors';
-import 'dotenv/config';
 import express, { Request, Response } from 'express';
-import 'module-alias/register';
 import swaggerUi from 'swagger-ui-express';
 import { RegisterRoutes } from '../build/routes';
 import { logger } from './constants';
@@ -27,25 +27,15 @@ app.use(function (req, _res, next) {
   next();
 });
 
-// router.get("/file", (req, res) => {
-//   try {
-//     const { name } = req.query;
-//     let filePath = `${__dirname}/${PATH_UPLOAD_FILE}${name}`;
-//     if (fs.existsSync(filePath)) {
-//       var path = require("path");
-//       return res.sendFile(path.resolve(filePath));
-//     } else throw new Error("File not found");
-//   } catch (error) {
-//     return res.json(onError(error));
-//   }
-// });
-
-app.use('/docs', swaggerUi.serve, async (_req: Request, res: Response) => {
+app.use('/docs', swaggerUi.serve as any, async (_req: Request, res: Response) => {
   return res.send(swaggerUi.generateHTML(await import('../build/swagger.json')));
 });
 
 logger.info('Server start at ' + new Date().toUTCString());
-app.listen(parseInt(process.env.PORT || ''), '0.0.0.0', () => {
-  logger.info(`Server running on port ${process.env.PORT}`);
+
+const PORT = parseInt(`${process.env.PORT}`) || 5001;
+
+app.listen(PORT, '0.0.0.0', () => {
+  logger.info(`Server running on port ${PORT}`);
 });
 RegisterRoutes(app);

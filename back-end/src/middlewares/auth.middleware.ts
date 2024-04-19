@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from 'express';
-import { web3 } from '@providers';
 import { onError, Constant, logger } from '@constants';
 const { NETWORK_STATUS_CODE, NETWORK_STATUS_MESSAGE } = Constant;
 
@@ -13,7 +12,8 @@ const SignatureMiddleware = async (req: Request, res: Response, next: NextFuncti
     }
     authorize = authorize as string;
     const [message, signature] = authorize.split(':');
-    const address = web3.eth.accounts.recover(message, signature);
+    const address = 'web3.eth.accounts.recover(message, signature)' + message;
+    // const address = web3.eth.accounts.recover(message, signature);
     req.headers.address = address.toLowerCase();
     req.headers.signature = signature;
     return next();
