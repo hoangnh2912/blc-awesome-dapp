@@ -84,3 +84,5 @@ test.js
 test
 .env
 *.pem
+
+.vscode
